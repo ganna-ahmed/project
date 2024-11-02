@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:project/core/constants/colors.dart';
+import 'package:go_router/go_router.dart';
+import 'package:project/core/utils/app_router.dart';
 import 'package:project/features/question/presentation/views/widgets/question_section.dart';
 
 import 'widgets/custom_button.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: AddQuestion(),
-  ));
-}
-
 class AddQuestion extends StatelessWidget {
+  const AddQuestion({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,15 +16,17 @@ class AddQuestion extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             QuestionSectionWidget(),
-            SizedBox(height: 36),
-            MoreButtonWidget(),
+            const SizedBox(height: 36),
+            MoreButtonWidget(
+              onPressed: () {
+                GoRouter.of(context).push(AppRouter.kLastQuestion);
+              },
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-

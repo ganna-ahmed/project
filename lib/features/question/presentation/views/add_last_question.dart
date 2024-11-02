@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:project/core/constants/colors.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: AddLastQuestion(),
-  ));
-}
-
 class AddLastQuestion extends StatelessWidget {
+  const AddLastQuestion({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +12,7 @@ class AddLastQuestion extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.only(top: 30),
               child: Container(
@@ -26,7 +22,7 @@ class AddLastQuestion extends StatelessWidget {
                   color: AppColors.ceruleanBlue,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     'Question 20:',
                     style: TextStyle(
@@ -38,8 +34,8 @@ class AddLastQuestion extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 36),
-            TextField(
+            const SizedBox(height: 36),
+            const TextField(
               decoration: InputDecoration(
                 hintText: 'Input the question',
                 hintStyle: TextStyle(fontSize: 18, color: AppColors.black),
@@ -48,8 +44,7 @@ class AddLastQuestion extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 18),
-
+            const SizedBox(height: 18),
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -60,15 +55,16 @@ class AddLastQuestion extends StatelessWidget {
                 return TextField(
                   decoration: InputDecoration(
                     hintText: 'Answer ${index + 1}',
-                    hintStyle: TextStyle(fontSize: 18, color: AppColors.black),
-                    enabledBorder: OutlineInputBorder(
+                    hintStyle:
+                        const TextStyle(fontSize: 18, color: AppColors.black),
+                    enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: AppColors.black, width: 2),
                     ),
                   ),
                 );
               }),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               children: List.generate(4, (index) {
                 return Row(
@@ -80,48 +76,48 @@ class AddLastQuestion extends StatelessWidget {
                     ),
                     Text(
                       '${index + 1}',
-                      style: TextStyle(fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ],
                 );
               }),
             ),
-            SizedBox(height: 36),
-            Row(  // استخدام Row لعرض الأزرار جنبًا إلى جنب
+            const SizedBox(height: 36),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.ceruleanBlue,
+                    fixedSize: const Size(125, 60), // حجم الزر
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
                     'More',
                     style: TextStyle(
                       fontSize: 24,
                       color: AppColors.white,
                     ),
                   ),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.ceruleanBlue,
-                    fixedSize: Size(125, 60), // حجم الزر
+                    backgroundColor: AppColors.darkBlue,
+                    fixedSize: const Size(125, 60),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                ),
-                SizedBox(width: 20), // مساحة بين الزرين
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     'Done',
                     style: TextStyle(
                       fontSize: 24,
                       color: AppColors.white,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.darkBlue,
-                    fixedSize: Size(125, 60),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),

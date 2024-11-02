@@ -4,54 +4,34 @@ import 'package:project/core/constants/colors.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/section.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: BubbleSheetForm(),
-    );
-  }
-}
-
 class BubbleSheetForm extends StatelessWidget {
   final double containerWidth = 320;
   final double cornerRadius = 30;
 
+  const BubbleSheetForm({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(cornerRadius),
-            ),
-            width: containerWidth,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  HeaderSection(),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        FormSection(),
-                        SizedBox(height: 20),
-                        DoneButton(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      appBar: AppBar(
+        backgroundColor: AppColors.ceruleanBlue,
+        foregroundColor: AppColors.white,
+        title: const Text(
+          'Create Bubble Sheet',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: const Center(
+        child: SingleChildScrollView(
+          child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              //HeaderSection(),
+              FormSection(),
+              SizedBox(height: 20),
+              DoneButton(),
+            ],
           ),
         ),
       ),
