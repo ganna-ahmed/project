@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:project/features/auth/presentation/view/login_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
+import 'package:project/features/intro/presentation/views/intro.dart';
 import 'package:project/features/question/presentation/views/add_last_question.dart';
 import 'package:project/features/question/presentation/views/add_question.dart';
 import 'package:project/features/question/presentation/views/bubble_sheet.dart';
@@ -18,6 +19,7 @@ abstract class AppRouter {
   static const kAddQuestion = '/AddQuestion';
   static const kLastQuestion = '/LastQuestion';
   static const kBubbleShett = '/BubbleSheet';
+  static const kOnBoarding = '/OnBording';
 
   static final router = GoRouter(
     routes: [
@@ -56,6 +58,10 @@ abstract class AppRouter {
       GoRoute(
         path: kBubbleShett,
         builder: (context, state) => const BubbleSheetForm(),
+      ),
+      GoRoute(
+        path: kOnBoarding,
+        builder: (context, state) => const OnBoarding(),
       ),
     ],
   );

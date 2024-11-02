@@ -18,9 +18,14 @@ class HomeView extends StatelessWidget {
           style: TextStyle(color: AppColors.darkBlue),
         ),
         actions: [
-          Image.asset(
-            AssetsData.profile,
-            width: 73,
+          GestureDetector(
+            onTap: () {
+              GoRouter.of(context).push(AppRouter.kProfileView);
+            },
+            child: Image.asset(
+              AssetsData.profile,
+              width: 73,
+            ),
           )
         ],
       ),
@@ -84,7 +89,7 @@ class HomeView extends StatelessWidget {
                           vertical: 40.0,
                           horizontal: 5.0,
                         ),
-                        minimumSize: Size(160, 60),
+                        minimumSize: const Size(160, 60),
                       ),
                       onPressed: () {
                         GoRouter.of(context).push(AppRouter.kAddQuestion);

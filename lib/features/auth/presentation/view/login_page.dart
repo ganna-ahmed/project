@@ -56,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                     LoginTexts.loginTitle,
                     style: TextStyle(color: customWhite, fontSize: 28),
                   ),
-                  const SizedBox(height: 240),
+                  const SizedBox(height: 290),
                   const CustomTextField(
                     label: LoginTexts.emailLabel,
                     hintText: LoginTexts.emailHintText,
