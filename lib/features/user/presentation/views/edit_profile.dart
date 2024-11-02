@@ -5,10 +5,13 @@ import 'package:project/features/auth/presentation/view/widgets/custom_button.da
 import 'package:project/features/auth/presentation/view/widgets/icons.dart';
 
 class EditProfileScreen extends StatelessWidget {
+  const EditProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         leading: BackIconWidget(
           onPressed: () {
             Navigator.pop(context);

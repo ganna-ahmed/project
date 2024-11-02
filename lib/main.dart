@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
-import 'package:project/features/question/presentation/views/add_last_question.dart';
-import 'package:project/features/question/presentation/views/add_question.dart';
+import 'package:project/core/utils/app_router.dart';
 import 'package:project/features/splash/presentation/views/splash_view.dart';
 
 void main() {
@@ -15,12 +14,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp.router(
+      routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
       theme: ThemeData().copyWith(
         scaffoldBackgroundColor: AppColors.white,
       ),
-      home: AddLastQuestion(),
     );
   }
 }

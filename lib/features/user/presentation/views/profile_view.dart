@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/core/utils/app_router.dart';
 import 'package:project/core/utils/assets.dart';
 import 'package:project/features/user/presentation/views/widgets/custom_app_bar_button.dart';
 import 'package:project/features/user/presentation/views/widgets/custom_card.dart';
@@ -18,8 +20,11 @@ class ProfileView extends StatelessWidget {
               color: AppColors.darkBlue,
             )),
         backgroundColor: Colors.transparent,
-        actions: const [
+        actions: [
           CustomAppBarButton(
+            onTap: () {
+              GoRouter.of(context).push(AppRouter.kEditProfileView);
+            },
             text: 'edit',
           ),
         ],
