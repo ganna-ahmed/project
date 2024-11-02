@@ -112,6 +112,7 @@ class HomeView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
