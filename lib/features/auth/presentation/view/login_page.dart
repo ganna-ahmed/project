@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:project/core/utils/app_router.dart';
 import 'widgets/custom_button.dart';
 import '../../../user/presentation/views/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatelessWidget {
   static const Color customWhite = Color(0xffffffff);
+
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +36,15 @@ class LoginScreen extends StatelessWidget {
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  const Row(
                     children: [
                       Icon(Icons.arrow_back, color: customWhite),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         LoginTexts.backButtonText,
                         style: TextStyle(color: customWhite, fontSize: 20),
@@ -47,7 +52,7 @@ class LoginScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Text(
+                  const Text(
                     LoginTexts.loginTitle,
                     style: TextStyle(color: customWhite, fontSize: 28),
                   ),
@@ -66,7 +71,7 @@ class LoginScreen extends StatelessWidget {
                   CustomButton(
                     text: LoginTexts.loginButtonText,
                     onPressed: () {
-                      // Define what happens when the button is pressed
+                      GoRouter.of(context).push(AppRouter.kProfileView);
                     },
                   ),
                 ],
