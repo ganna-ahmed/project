@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/features/question/presentation/views/add_last_question.dart';
+import 'package:project/features/question/presentation/views/add_question.dart';
 import 'package:project/features/splash/presentation/views/splash_view.dart';
 
 void main() {
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData().copyWith(
         scaffoldBackgroundColor: AppColors.white,
       ),
-      home: const SplashView(),
+      home: AddLastQuestion(),
     );
   }
 }
