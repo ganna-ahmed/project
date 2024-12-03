@@ -60,7 +60,7 @@ class ProfileView extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.sizeOf(context).height * 0.1,
+                height: MediaQuery.sizeOf(context).height * 0.05,
               ),
               const Stack(
                 clipBehavior: Clip.none,

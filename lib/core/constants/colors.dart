@@ -10,5 +10,7 @@ class AppColors {
   static const Color splashBlue = Color(0xff608dd4);
   static const Color wildBlueYonder = Color(0xff829fcd);
   static const Color black = Color(0xff3f3f3f);
+  static const Color stoneBlue = Color(0xFF507687);
+  static const Color paleSky = Color(0xFFADB4C3);
+  static const Color babyBlue = Color(0xFFB1CDFC);
 }
-

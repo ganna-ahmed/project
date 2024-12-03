@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:project/features/Main/presentation/view/main_screen.dart';
 import 'package:project/features/auth/presentation/view/login_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
@@ -20,6 +21,7 @@ abstract class AppRouter {
   static const kLastQuestion = '/LastQuestion';
   static const kBubbleShett = '/BubbleSheet';
   static const kOnBoarding = '/OnBording';
+  static const kMainScreen = '/MainScreen';
 
   static final router = GoRouter(
     routes: [
@@ -45,7 +47,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kUploadView,
-        builder: (context, state) => const UploadFileScreen(),
+        builder: (context, state) => const MainScreen(),
       ),
       GoRoute(
         path: kAddQuestion,
@@ -62,6 +64,10 @@ abstract class AppRouter {
       GoRoute(
         path: kOnBoarding,
         builder: (context, state) => const OnBoarding(),
+      ),
+      GoRoute(
+        path: kMainScreen,
+        builder: (context, state) => const MainScreen(),
       ),
     ],
   );

@@ -71,7 +71,7 @@ class LoginScreen extends StatelessWidget {
                   CustomButton(
                     text: LoginTexts.loginButtonText,
                     onPressed: () {
-                      GoRouter.of(context).push(AppRouter.kHomeView);
+                      GoRouter.of(context).push(AppRouter.kMainScreen);
                     },
                   ),
                 ],
