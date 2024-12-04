@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:project/core/constants/colors.dart';
+import 'package:project/features/question/presentation/views/widgets/custom_button.dart';
+
+import 'widgets/aswe_field.dart';
+import 'widgets/input_field.dart';
+import 'widgets/question_section.dart';
 
 class AddLastQuestion extends StatelessWidget {
   const AddLastQuestion({super.key});
@@ -10,116 +14,49 @@ class AddLastQuestion extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Container(
-                width: 250,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: AppColors.ceruleanBlue,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Question 20:',
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 36),
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Input the question',
-                hintStyle: TextStyle(fontSize: 18, color: AppColors.black),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.black, width: 2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              mainAxisSpacing: 9,
-              crossAxisSpacing: 9,
-              childAspectRatio: 3,
-              children: List.generate(4, (index) {
-                return TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Answer ${index + 1}',
-                    hintStyle:
-                        const TextStyle(fontSize: 18, color: AppColors.black),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.black, width: 2),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 20),
+
+
+            const QuestionTitle(title: 'Question 20:'),
+
+            const SizedBox(height: 50),
+            const InputField(hintText: 'Input the question'),
+
+            const SizedBox(height: 80),
+
+
             Column(
               children: List.generate(4, (index) {
-                return Row(
+                return Column(
                   children: [
-                    Radio<int>(
-                      value: index + 1,
-                      groupValue: null,
-                      onChanged: (value) {},
-                    ),
-                    Text(
-                      '${index + 1}',
-                      style: const TextStyle(fontSize: 18),
-                    ),
+                    AnswerField(answerIndex: index + 1),
+                    const SizedBox(height: 30),
                   ],
                 );
               }),
             ),
-            const SizedBox(height: 36),
+
+            const SizedBox(height: 40),
+
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.ceruleanBlue,
-                    fixedSize: const Size(125, 60), // حجم الزر
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'More',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: AppColors.white,
-                    ),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: const [
+                Expanded(
+                  child: MoreButton(
+                    width: double.infinity,  // Make More Button take full width
+                    height: 55,
+                    fontSize: 22,
                   ),
                 ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.darkBlue,
-                    fixedSize: const Size(125, 60),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Done',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: AppColors.white,
-                    ),
-                  ),
+                SizedBox(width: 20),
+                Expanded(
+                  child: DoneButton(
+                    width: double.infinity,
+                    height: 55,
+                    fontSize: 22, ),
                 ),
               ],
             ),

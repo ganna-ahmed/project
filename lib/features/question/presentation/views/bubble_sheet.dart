@@ -24,13 +24,17 @@ class BubbleSheetForm extends StatelessWidget {
       body: const Center(
         child: SingleChildScrollView(
           child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              //HeaderSection(),
               FormSection(),
+
               SizedBox(height: 20),
-              DoneButton(),
+
+              DoneButton(
+                width: 250,
+                height: 55,
+                fontSize: 20,
+              ),
             ],
           ),
         ),

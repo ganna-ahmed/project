@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:project/core/utils/app_router.dart';
-import 'widgets/custom_button.dart';
+import 'package:project/core/constants/colors.dart';
+import 'package:project/features/auth/presentation/view/widgets/back_grod_paiter.dart';
+import 'package:project/features/auth/presentation/view/widgets/custom_button.dart';
+
+import '../../../../core/utils/app_router.dart';
 import '../../../user/presentation/views/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatelessWidget {
-  static const Color customWhite = Color(0xffffffff);
-
   const LoginScreen({super.key});
 
   @override
@@ -16,45 +16,24 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Positioned(
-            top: -100,
-            left: -80,
-            child: SvgPicture.asset(
-              'assets/svg/loginCircle.svg',
-              width: 300,
-              height: 300,
-              colorFilter: const ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+          Positioned.fill(
+            child: CustomPaint(
+              painter: BackgroundPainter(),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SvgPicture.asset(
-              'assets/svg/circles.svg',
-              width: 2000,
-              height: 566,
-            ),
-          ),
+
           SingleChildScrollView(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              const EdgeInsets.symmetric(horizontal: 24.0, vertical: 65.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.arrow_back, color: customWhite),
-                      SizedBox(width: 8),
-                      Text(
-                        LoginTexts.backButtonText,
-                        style: TextStyle(color: customWhite, fontSize: 20),
-                      ),
-                    ],
-                  ),
+
                   const SizedBox(height: 24),
                   const Text(
                     LoginTexts.loginTitle,
-                    style: TextStyle(color: customWhite, fontSize: 28),
+                    style: TextStyle(color: Colors.white, fontSize: 28),
                   ),
                   const SizedBox(height: 290),
                   const CustomTextField(

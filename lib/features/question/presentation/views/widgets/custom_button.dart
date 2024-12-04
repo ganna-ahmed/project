@@ -1,26 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/core/utils/app_router.dart';
 
-class MoreButtonWidget extends StatelessWidget {
-  const MoreButtonWidget({super.key, required this.onPressed});
-  final Function() onPressed;
+class MoreButton extends StatelessWidget {
+  final double width;
+  final double height;
+  final double fontSize;
+
+  const MoreButton({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.fontSize,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.ceruleanBlue,
-          fixedSize: Size(250, 60),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: ElevatedButton(
+          onPressed: () {
+            GoRouter.of(context).push(AppRouter.kLastQuestion);
+          },
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: AppColors.ceruleanBlue,
           ),
-        ),
-        child: const Text(
-          'More',
-          style: TextStyle(
-            fontSize: 24,
-            color: AppColors.white,
+          child: Text(
+            'More',
+            style: TextStyle(fontSize: fontSize, color: Colors.white),
           ),
         ),
       ),
@@ -28,33 +42,39 @@ class MoreButtonWidget extends StatelessWidget {
   }
 }
 
-class DoneButton extends StatelessWidget {
-  final double buttonFontSize = 16;
-  final double buttonPaddingVertical = 10;
-  final double buttonPaddingHorizontal = 20;
 
-  const DoneButton({super.key});
+class DoneButton extends StatelessWidget {
+  final double width;
+  final double height;
+  final double fontSize;
+
+  const DoneButton({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.fontSize,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.ceruleanBlue,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: buttonPaddingVertical,
-          horizontal: buttonPaddingHorizontal,
-        ),
-        child: Text(
-          "Done",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: buttonFontSize,
+    return Center(
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: ElevatedButton(
+          onPressed: () {
+            GoRouter.of(context).push(AppRouter.kLastQuestion);
+          },
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: AppColors.ceruleanBlue,
+          ),
+          child: Text(
+            'Done',
+            style: TextStyle(fontSize: fontSize, color: Colors.white),
           ),
         ),
       ),
