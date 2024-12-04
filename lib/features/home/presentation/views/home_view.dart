@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/assets.dart';
-
 import '../../../../core/utils/app_router.dart';
 
 class HomeView extends StatelessWidget {
