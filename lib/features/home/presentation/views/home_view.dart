@@ -12,21 +12,18 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.white,
         centerTitle: true,
-        leading: const Icon(
-          Icons.arrow_back,
-          color: AppColors.darkBlue,
-        ),
         title: const Text(
           "Home",
           style: TextStyle(color: AppColors.darkBlue),
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              GoRouter.of(context).push(AppRouter.kProfileView);
-            },
+            // onTap: () {
+            //   GoRouter.of(context).push(AppRouter.kEditProfileView);
+            // },
             child: Image.asset(
               AssetsData.profile,
               width: 73,
