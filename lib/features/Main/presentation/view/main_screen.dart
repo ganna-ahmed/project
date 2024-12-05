@@ -2,7 +2,6 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
-import 'package:project/features/update/presentation/view/update_view.dart';
 import 'package:project/features/user/presentation/views/profile_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -20,7 +19,6 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeView(),
     const ProfileView(),
-    const UpdatePage(),
   ];
 
   @override

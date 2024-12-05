@@ -26,7 +26,7 @@ class MoreButton extends StatelessWidget {
             GoRouter.of(context).push(AppRouter.kLastQuestion);
           },
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -41,7 +41,6 @@ class MoreButton extends StatelessWidget {
     );
   }
 }
-
 
 class DoneButton extends StatelessWidget {
   final double width;
@@ -66,7 +65,7 @@ class DoneButton extends StatelessWidget {
             GoRouter.of(context).push(AppRouter.kLastQuestion);
           },
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -78,6 +77,62 @@ class DoneButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class NavigationButtons extends StatelessWidget {
+  final double buttonWidth;
+  final double buttonHeight;
+  final double fontSize;
+
+  const NavigationButtons({
+    super.key,
+    required this.buttonWidth,
+    required this.buttonHeight,
+    required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // زر السهم للرجوع
+        Positioned(
+          top: 10,
+          left: 10,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, size: 30, color: Colors.black),
+            onPressed: () {
+              Navigator.pop(context); // الرجوع للصفحة السابقة
+            },
+          ),
+        ),
+        // الأزرار الأخرى
+        Padding(
+          padding: const EdgeInsets.only(top: 50), // إزاحة المحتوى لأسفل بسبب زر السهم
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: MoreButton(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  fontSize: fontSize,
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: DoneButton(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  fontSize: fontSize,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

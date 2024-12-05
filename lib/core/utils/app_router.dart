@@ -7,7 +7,6 @@ import 'package:project/features/question/presentation/views/add_last_question.d
 import 'package:project/features/question/presentation/views/add_question.dart';
 import 'package:project/features/question/presentation/views/bubble_sheet.dart';
 import 'package:project/features/splash/presentation/views/splash_view.dart';
-import 'package:project/features/upload/presentation/view/upload_view.dart';
 import 'package:project/features/user/presentation/views/edit_profile.dart';
 import 'package:project/features/user/presentation/views/profile_view.dart';
 
