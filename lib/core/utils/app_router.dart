@@ -26,35 +26,35 @@ abstract class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => SplashView(),
+        builder: (context, state) => const SplashView(),
       ),
       GoRoute(
         path: kLoginView,
-        builder: (context, state) => LoginScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: kProfileView,
-        builder: (context, state) => ProfileView(),
+        builder: (context, state) => const ProfileView(),
       ),
       GoRoute(
         path: kEditProfileView,
-        builder: (context, state) => EditProfileScreen(),
+        builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
         path: kHomeView,
-        builder: (context, state) => HomeView(),
+        builder: (context, state) => const HomeView(),
       ),
       GoRoute(
         path: kUploadView,
-        builder: (context, state) => MainScreen(),
+        builder: (context, state) => const MainScreen(),
       ),
       GoRoute(
         path: kAddQuestion,
-        builder: (context, state) => AddQuestion(),
+        builder: (context, state) => const AddQuestion(),
       ),
       GoRoute(
         path: kLastQuestion,
-        builder: (context, state) => AddLastQuestion(),
+        builder: (context, state) => const AddLastQuestion(),
       ),
       GoRoute(
         path: kBubbleShett,
@@ -62,11 +62,11 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kOnBoarding,
-        builder: (context, state) => OnBoarding(),
+        builder: (context, state) => const OnBoarding(),
       ),
       GoRoute(
         path: kMainScreen,
-        builder: (context, state) => MainScreen(),
+        builder: (context, state) => const MainScreen(),
       ),
     ],
   );

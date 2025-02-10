@@ -14,7 +14,7 @@ class OnBoarding extends StatelessWidget {
       body: OnBoardingSlider(
         headerBackgroundColor: Colors.white,
         finishButtonText: 'Login',
-        finishButtonStyle: FinishButtonStyle(
+        finishButtonStyle: const FinishButtonStyle(
           backgroundColor: Colors.black,
           // تغيير النص ليكون بحجم أكبر باستخدام Theme أو TextStyle
         ),
