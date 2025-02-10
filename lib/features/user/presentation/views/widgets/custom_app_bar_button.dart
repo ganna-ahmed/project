@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 
 class CustomAppBarButton extends StatelessWidget {
-  CustomAppBarButton(
-      {super.key, required this.text, this.color, required this.onTap});
+  const CustomAppBarButton({
+    super.key,
+    required this.text,
+    this.color,
+    required this.onTap,
+  });
+
   final String text;
   final Color? color;
-  Function()? onTap;
+  final Function()? onTap;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(right: 32),
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 4),
+        margin: EdgeInsets.only(right: 32.w),
+        padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 4.h),
         decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(24),
+          color: color ?? Colors.transparent,
+          borderRadius: BorderRadius.circular(24.r),
           border: Border.all(
-            width: 2,
+            width: 2.w,
             color: AppColors.darkBlue,
           ),
         ),
-        child: const Text(
-          'edit',
-          style: TextStyle(color: AppColors.darkBlue),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: AppColors.darkBlue,
+            fontSize: 16.sp,
+          ),
         ),
       ),
     );

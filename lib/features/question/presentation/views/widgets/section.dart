@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FormSection extends StatelessWidget {
-  final double textFieldFontSize = 16;
+  final double textFieldFontSize = 16.sp;
 
-  const FormSection({super.key});
+  FormSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -29,7 +30,7 @@ class FormSection extends StatelessWidget {
 
   Widget buildTextField(String hint) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       child: TextField(
         style: TextStyle(fontSize: textFieldFontSize),
         decoration: InputDecoration(
@@ -38,7 +39,7 @@ class FormSection extends StatelessWidget {
           filled: true,
           fillColor: Colors.blue[50],
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(10.r),
             borderSide: BorderSide.none,
           ),
         ),

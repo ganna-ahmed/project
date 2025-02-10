@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // تأكد من استيراد الحزمة
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/question/presentation/views/widgets/input_field.dart';
 
@@ -22,8 +23,10 @@ class AnswerField extends StatelessWidget {
         Expanded(
           child: InputField(
             hintText: 'Answer $answerIndex',
-            borderColor: AppColors.black, // Custom color for answers
-            borderRadius: 12.0,
+            borderColor: AppColors.black,
+            borderRadius: 12.r,
+
+            // height: 48.h,
           ),
         ),
       ],

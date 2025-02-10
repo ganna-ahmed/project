@@ -1,6 +1,5 @@
-
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 
 class InputField extends StatelessWidget {
@@ -20,12 +19,18 @@ class InputField extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(fontSize: 18, color: Colors.black),
+        hintStyle: TextStyle(
+          fontSize: 18.sp,
+          color: Colors.black,
+        ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: borderColor, width: 2),
+          borderSide: BorderSide(
+            color: borderColor,
+            width: 2.w,
+          ),
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+          borderRadius: BorderRadius.all(Radius.circular(borderRadius.r)),
         ),
       ),
     );

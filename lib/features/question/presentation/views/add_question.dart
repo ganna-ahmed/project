@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/question/presentation/views/widgets/input_field.dart';
 import 'widgets/aswe_field.dart';
@@ -11,38 +12,38 @@ class AddQuestion extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
               },
               child: Container(
-                padding: const EdgeInsets.all(14.0),
+                padding: EdgeInsets.all(14.w),
                 decoration: BoxDecoration(
                   color: AppColors.ceruleanBlue,
-                  borderRadius: BorderRadius.circular(24.0),
+                  borderRadius: BorderRadius.circular(24.r),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
-                      blurRadius: 4.0,
-                      offset: const Offset(0, 2),
+                      blurRadius: 4.w,
+                      offset: Offset(0, 2.h),
                     ),
                   ],
                 ),
                 child: Row(
                   children: [
                     const Icon(Icons.arrow_back, color: Colors.white, size: 32),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8.w),
                     Expanded(
                       child: Center(
-                        child: const Text(
+                        child:  Text(
                           'Question 1',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: 28.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -53,24 +54,24 @@ class AddQuestion extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 50),
+            SizedBox(height: 50.h),
             const InputField(hintText: 'Input the question'),
-            const SizedBox(height: 80),
+            SizedBox(height: 80.h),
             Column(
               children: List.generate(4, (index) {
                 return Column(
                   children: [
                     AnswerField(answerIndex: index + 1),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                   ],
                 );
               }),
             ),
-            const SizedBox(height: 40),
-            const MoreButton(
-              width: 270,
-              height: 55,
-              fontSize: 22,
+            SizedBox(height: 40.h),
+             MoreButton(
+              width: 270.w,
+              height: 55.h,
+              fontSize: 22.sp,
             ),
             // Done Button
           ],

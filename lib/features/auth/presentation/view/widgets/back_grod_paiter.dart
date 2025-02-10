@@ -1,6 +1,7 @@
 import 'dart:ui';
-import 'package:project/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:project/core/constants/colors.dart';
 
 class BackgroundPainter extends CustomPainter {
   @override
@@ -9,49 +10,46 @@ class BackgroundPainter extends CustomPainter {
 
     paint.color = AppColors.ceruleanBlue;
     canvas.drawCircle(
-      Offset(size.width * -0.1, size.height * -0.1),
-      size.width * 0.7,
+      Offset((-0.1).w, (-0.1).h),
+      0.5.sw,
       paint,
     );
+
+
     paint.color = Colors.grey.shade300;
     final path1 = Path()
-      ..moveTo(0, size.height * 0.35)
+      ..moveTo(0, 0.35.sh)
       ..quadraticBezierTo(
-        size.width * 0.5,
-        size.height * 0.25,
-        size.width,
-        size.height * 0.35,
+        0.5.sw, 0.25.sh,
+        1.sw, 0.35.sh,
       )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
+      ..lineTo(1.sw, 1.sh)
+      ..lineTo(0, 1.sh)
       ..close();
     canvas.drawPath(path1, paint);
 
+
     paint.color = Colors.grey.shade400;
     final path2 = Path()
-      ..moveTo(0, size.height * 0.45)
+      ..moveTo(0, 0.45.sh)
       ..quadraticBezierTo(
-        size.width * 0.5,
-        size.height * 0.35,
-        size.width,
-        size.height * 0.45,
+        0.5.sw, 0.35.sh,
+        1.sw, 0.45.sh,
       )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
+      ..lineTo(1.sw, 1.sh)
+      ..lineTo(0, 1.sh)
       ..close();
     canvas.drawPath(path2, paint);
 
     paint.color = AppColors.ceruleanBlue;
     final path3 = Path()
-      ..moveTo(0, size.height * 0.55)
+      ..moveTo(0, 0.55.sh)
       ..quadraticBezierTo(
-        size.width * 0.5,
-        size.height * 0.45,
-        size.width,
-        size.height * 0.55,
+        0.5.sw, 0.45.sh,
+        1.sw, 0.55.sh,
       )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
+      ..lineTo(1.sw, 1.sh)
+      ..lineTo(0, 1.sh)
       ..close();
     canvas.drawPath(path3, paint);
   }

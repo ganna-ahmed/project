@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ImageWidget extends StatelessWidget {
   final double height;
@@ -13,10 +14,10 @@ class ImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(width * 0.05),
+      padding: EdgeInsets.all(width * 0.20.w),
       child: Image.asset(
         'assets/images/update.png',
-        height: height,
+        height: height.h,
         fit: BoxFit.contain,
       ),
     );
