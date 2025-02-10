@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/assets.dart';
 import '../../../../core/utils/app_router.dart';
@@ -29,35 +30,34 @@ class HomeView extends StatelessWidget {
             },
             child: Image.asset(
               AssetsData.profile,
-              width: 73,
+              width: 73.w,
             ),
           )
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: EdgeInsets.all(25.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10.h),
             ElevatedButton(
               onPressed: () {
                 GoRouter.of(context).push(AppRouter.kBubbleShett);
               },
               style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.ceruleanBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  minimumSize: const Size(130, 60)),
-              child: const Text(
+                backgroundColor: AppColors.ceruleanBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                ),
+                minimumSize: Size(130.w, 60.h),
+              ),
+              child: Text(
                 "New Project",
-                style: TextStyle(color: AppColors.white, fontSize: 20),
+                style: TextStyle(color: AppColors.white, fontSize: 20.sp),
               ),
             ),
-            const SizedBox(height: 60),
+            SizedBox(height: 60.h),
             Expanded(
               child: ListView(
                 children: [
@@ -113,41 +113,40 @@ class ExamCard extends StatelessWidget {
     required this.color,
     required this.onTap,
   });
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(left: 2, bottom: 19, right: 30),
-        padding: const EdgeInsets.all(15),
+        margin: EdgeInsets.only(left: 2.w, bottom: 19.h, right: 30.w),
+        padding: EdgeInsets.all(15.w), // Use ScreenUtil for padding
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.white),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.white,
+              ),
             ),
             Text(
               "$questions questions",
-              style: const TextStyle(fontSize: 16, color: AppColors.white),
+              style: TextStyle(fontSize: 16.sp, color: AppColors.white),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: professors
-                  .map((professor) => Text(
-                        professor,
-                        style: const TextStyle(
-                            fontSize: 16, color: AppColors.white),
-                      ))
-                  .toList(),
+              children: professors.map((professor) => Text(
+                professor,
+                style: TextStyle(fontSize: 16.sp, color: AppColors.white),
+              )).toList(),
             ),
           ],
         ),

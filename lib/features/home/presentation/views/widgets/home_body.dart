@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 
@@ -9,10 +10,9 @@ class HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      //crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          height: 400,
+          height: 400.h,
           decoration: const BoxDecoration(
             color: AppColors.wildBlueYonder,
             borderRadius: BorderRadius.only(
@@ -20,10 +20,10 @@ class HomeBody extends StatelessWidget {
               bottomRight: Radius.circular(150.0),
             ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+          padding: EdgeInsets.symmetric(vertical: 30.h, horizontal: 20.w),
           child: Column(
             children: [
-              const SizedBox(height: 60),
+              SizedBox(height: 60.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -31,27 +31,27 @@ class HomeBody extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.ceruleanBlue,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 40.0,
-                        horizontal: 5.0,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 40.h,
+                        horizontal: 5.w,
                       ),
-                      minimumSize: const Size(160, 60),
+                      minimumSize: Size(160.w, 60.h),
                     ),
                     onPressed: () {
                       GoRouter.of(context).push(AppRouter.kUploadView);
                     },
-                    child: const Column(
+                    child: Column( // Removed "const" here
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Update',
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                         Text(
                           'Project',
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                       ],
                     ),
@@ -60,27 +60,27 @@ class HomeBody extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.ceruleanBlue,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 40.0,
-                        horizontal: 5.0,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 40.h,
+                        horizontal: 5.w,
                       ),
-                      minimumSize: const Size(160, 60),
+                      minimumSize: Size(160.w, 60.h),
                     ),
                     onPressed: () {
                       GoRouter.of(context).push(AppRouter.kAddQuestion);
                     },
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'New',
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                         Text(
                           'Project',
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                       ],
                     ),
@@ -90,9 +90,9 @@ class HomeBody extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 40),
+        SizedBox(height: 40.h),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -100,56 +100,56 @@ class HomeBody extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.ceruleanBlue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.r),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  minimumSize: const Size(double.infinity, 48),
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  minimumSize: Size(double.infinity, 48.h),
                 ),
                 onPressed: () {
                   GoRouter.of(context).push(AppRouter.kBubbleShett);
                 },
-                child: const Text(
+                child: Text(
                   'Create Bubble Sheet',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 22.sp,
                     color: AppColors.snow,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.ceruleanBlue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.r),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  minimumSize: const Size(double.infinity, 48),
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  minimumSize: Size(double.infinity, 48.h),
                 ),
                 onPressed: () {},
-                child: const Text(
-                  'Creat Models Of Question',
+                child: Text(
+                  'Create Models Of Question',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 22.sp,
                     color: AppColors.snow,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.ceruleanBlue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.r),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  minimumSize: const Size(double.infinity, 48),
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  minimumSize: Size(double.infinity, 48.h),
                 ),
                 onPressed: () {},
-                child: const Text(
+                child: Text(
                   'Correction Of Bubble Sheet',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 22.sp,
                     color: AppColors.snow,
                   ),
                 ),

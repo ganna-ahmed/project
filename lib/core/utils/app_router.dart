@@ -58,7 +58,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kBubbleShett,
-        builder: (context, state) => const BubbleSheetForm(),
+        builder: (context, state) =>  BubbleSheetForm(),
       ),
       GoRoute(
         path: kOnBoarding,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // تأكد من استيراد الحزمة
 import 'package:project/core/constants/colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -13,6 +14,7 @@ class WelcomeScreen extends StatelessWidget {
     this.titleFontSize = 30.0,
     this.subtitleFontSize = 20.0,
   });
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -31,31 +33,30 @@ class WelcomeScreen extends StatelessWidget {
             'Welcome to ORM',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: titleFontSize,
+              fontSize: titleFontSize.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
         ),
-        // محتوى الشاشة
         Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 100),
+              SizedBox(height: 100.h),
               SizedBox(
-                width: imageWidth,
-                height: imageHeight,
+                width: imageWidth.w,
+                height: imageHeight.h,
                 child: Image.asset(
                   'assets/images/welcom.png',
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h),
               Text(
                 'where your grades are securely managed.',
                 style: TextStyle(
-                  fontSize: subtitleFontSize,
+                  fontSize: subtitleFontSize.sp,
                   color: AppColors.ceruleanBlue,
                 ),
               ),

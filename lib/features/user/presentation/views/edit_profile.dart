@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -6,24 +7,21 @@ class EditProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           "Edit profile",
           style: TextStyle(
-            fontSize: 28.0,
+            fontSize: 28.sp,
             color: AppColors.black,
           ),
         ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -31,22 +29,22 @@ class EditProfileScreen extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {},
                 child: CircleAvatar(
-                  radius: screenHeight * 0.1,
+                  radius: 0.1.sh,
                   backgroundColor: Colors.transparent,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       Image.asset(
                         'assets/images/profile.png',
-                        height: screenHeight * 0.9,
-                        width: screenHeight * 0.9,
+                        height: 0.9.sh,
+                        width: 0.9.sh,
                       ),
                       Positioned(
-                        bottom: screenHeight * 0.05,
+                        bottom: 0.05.sh,
                         child: Image.asset(
                           'assets/images/camera.png',
-                          height: screenHeight * 0.07,
-                          width: screenHeight * 0.07,
+                          height: 0.07.sh,
+                          width: 0.07.sh,
                         ),
                       ),
                     ],
@@ -54,46 +52,40 @@ class EditProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: screenHeight * 0.05),
+            SizedBox(height: 0.05.sh),
             _buildTextField(
               label: "Name",
-              screenWidth: screenWidth,
               textColor: AppColors.black,
-              textSize: screenWidth * 0.05,
             ),
-            SizedBox(height: screenHeight * 0.05),
+            SizedBox(height: 0.05.sh),
             _buildTextField(
               label: "Email",
-              screenWidth: screenWidth,
               textColor: AppColors.black,
-              textSize: screenWidth * 0.05,
             ),
-            SizedBox(height: screenHeight * 0.05),
+            SizedBox(height: 0.05.sh),
             _buildTextField(
               label: "Department",
-              screenWidth: screenWidth,
               textColor: AppColors.black,
-              textSize: screenWidth * 0.05,
             ),
             const Spacer(),
           ],
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.ceruleanBlue,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(24.r),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            minimumSize: Size(screenWidth, screenHeight * 0.07),
+            padding: EdgeInsets.symmetric(vertical: 14.h),
+            minimumSize: Size(double.infinity, 0.07.sh),
           ),
-          child: const Text(
+          child: Text(
             'Done',
-            style: TextStyle(color: Colors.white, fontSize: 28.0),
+            style: TextStyle(color: Colors.white, fontSize: 28.sp),
           ),
         ),
       ),
@@ -102,9 +94,7 @@ class EditProfileScreen extends StatelessWidget {
 
   Widget _buildTextField({
     required String label,
-    required double screenWidth,
     required Color textColor,
-    required double textSize,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,21 +102,21 @@ class EditProfileScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: textSize, 
+            fontSize: 20.sp,
             fontWeight: FontWeight.w400,
             color: textColor,
           ),
         ),
-        SizedBox(height: screenWidth * 0.01),
+        SizedBox(height: 8.h),
         TextField(
           style: TextStyle(
-            fontSize: screenWidth * 0.04,
+            fontSize: 16.sp,
             color: Colors.black,
           ),
           decoration: InputDecoration(
             hintText: "type here...",
             hintStyle: TextStyle(
-              fontSize: screenWidth * 0.04,
+              fontSize: 16.sp,
               color: Colors.grey,
             ),
             enabledBorder: const UnderlineInputBorder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 
 class QuestionTitle extends StatelessWidget {
@@ -11,17 +12,17 @@ class QuestionTitle extends StatelessWidget {
     return Center(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.h),
         decoration: BoxDecoration(
           color: AppColors.ceruleanBlue,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 30,
+            fontSize: 30.sp,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 
@@ -19,22 +20,22 @@ class MoreButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: width,
-        height: height,
+        width: width.w,
+        height: height.h,
         child: ElevatedButton(
           onPressed: () {
             GoRouter.of(context).push(AppRouter.kLastQuestion);
           },
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.r),
             ),
             backgroundColor: AppColors.ceruleanBlue,
           ),
           child: Text(
             'More',
-            style: TextStyle(fontSize: fontSize, color: Colors.white),
+            style: TextStyle(fontSize: fontSize.sp, color: Colors.white),
           ),
         ),
       ),
@@ -58,22 +59,22 @@ class DoneButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: width,
-        height: height,
+        width: width.w,
+        height: height.h,
         child: ElevatedButton(
           onPressed: () {
             GoRouter.of(context).push(AppRouter.kLastQuestion);
           },
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.r),
             ),
             backgroundColor: AppColors.ceruleanBlue,
           ),
           child: Text(
             'Done',
-            style: TextStyle(fontSize: fontSize, color: Colors.white),
+            style: TextStyle(fontSize: fontSize.sp, color: Colors.white),
           ),
         ),
       ),
@@ -97,20 +98,19 @@ class NavigationButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // زر السهم للرجوع
         Positioned(
-          top: 10,
-          left: 10,
+          top: 10.h,
+          left: 10.w,
           child: IconButton(
             icon: const Icon(Icons.arrow_back, size: 30, color: Colors.black),
             onPressed: () {
-              Navigator.pop(context); // الرجوع للصفحة السابقة
+              Navigator.pop(context);
             },
           ),
         ),
-        // الأزرار الأخرى
+
         Padding(
-          padding: const EdgeInsets.only(top: 50), // إزاحة المحتوى لأسفل بسبب زر السهم
+          padding: EdgeInsets.only(top: 50.h),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -121,7 +121,7 @@ class NavigationButtons extends StatelessWidget {
                   fontSize: fontSize,
                 ),
               ),
-              const SizedBox(width: 20),
+               SizedBox(width: 20.w),
               Expanded(
                 child: DoneButton(
                   width: buttonWidth,

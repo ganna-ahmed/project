@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/auth/presentation/view/widgets/back_grod_paiter.dart';
@@ -12,6 +13,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -21,32 +23,29 @@ class LoginScreen extends StatelessWidget {
               painter: BackgroundPainter(),
             ),
           ),
-
           SingleChildScrollView(
             child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 24.0, vertical: 65.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 65.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  const SizedBox(height: 24),
-                  const Text(
+                  SizedBox(height: 24.h),
+                  Text(
                     LoginTexts.loginTitle,
-                    style: TextStyle(color: Colors.white, fontSize: 28),
+                    style: TextStyle(color: Colors.white, fontSize: 28.sp),
                   ),
-                  const SizedBox(height: 290),
-                  const CustomTextField(
+                  SizedBox(height: 290.h),
+                  CustomTextField(
                     label: LoginTexts.emailLabel,
                     hintText: LoginTexts.emailHintText,
                   ),
-                  const SizedBox(height: 20),
-                  const CustomTextField(
+                  SizedBox(height: 20.h),
+                  CustomTextField(
                     label: LoginTexts.passwordLabel,
                     hintText: LoginTexts.passwordHintText,
                     obscureText: true,
                   ),
-                  const SizedBox(height: 26),
+                  SizedBox(height: 26.h),
                   CustomButton(
                     text: LoginTexts.loginButtonText,
                     onPressed: () {
