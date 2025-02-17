@@ -11,8 +11,10 @@ class CustomTextField extends StatelessWidget {
     Key? key,
     required this.label,
     required this.hintText,
+    this.onChanged,
     this.obscureText = false,
   }) : super(key: key);
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +29,14 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         SizedBox(height: 22.h),
-        TextField(
+        TextFormField(
           obscureText: obscureText,
+          validator: (data) {
+            if (data!.isEmpty) {
+              return 'field is required';
+            }
+          },
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(

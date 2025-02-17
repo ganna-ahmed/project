@@ -3,36 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart'; // تأكد من استيراد الحزمة
 import 'package:project/core/constants/colors.dart';
-import 'package:project/features/splash/presentation/views/welcom_view.dart';
+import 'package:project/features/intro/presentation/views/widgets/welcom_view.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoarding extends StatelessWidget {
-  const OnBoarding({super.key});
-
+  OnBoarding({super.key});
+  PageController _controller = PageController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OnBoardingSlider(
-        headerBackgroundColor: Colors.white,
-        finishButtonText: 'Login',
-        finishButtonStyle: const FinishButtonStyle(
-          backgroundColor: Colors.black,
-          // تغيير النص ليكون بحجم أكبر باستخدام Theme أو TextStyle
+      body: Stack(children: [
+        PageView(
+          controller: _controller,
+          children: [
+            const WelcomeScreen(),
+            Container(
+              color: AppColors.ceruleanBlue,
+            ),
+          ],
         ),
-        background: [
-          // تأكد من أن الصورة متاحة في المسار الصحيح
-          Image.asset(
-            'assets/svg/welcom.svg',
-            width: 300.w, // استخدم ScreenUtil للعرض
-            height: 200.h, // استخدم ScreenUtil للارتفاع
-            fit: BoxFit.cover,
-          ),
-        ],
-        totalPage: 1,
-        speed: 1.8,
-        pageBodies: const [
-          WelcomeScreen(),
-        ],
-      ),
+        Container(
+            alignment: Alignment(0, 0.75),
+            child: SmoothPageIndicator(controller: _controller, count: 2))
+      ]),
     );
   }
 }

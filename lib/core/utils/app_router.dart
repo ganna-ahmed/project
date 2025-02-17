@@ -30,7 +30,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kLoginView,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
         path: kProfileView,
@@ -62,7 +62,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kOnBoarding,
-        builder: (context, state) => const OnBoarding(),
+        builder: (context, state) => OnBoarding(),
       ),
       GoRoute(
         path: kMainScreen,
