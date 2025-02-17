@@ -20,6 +20,29 @@ class Api {
   //         'there is a problem with status code ${response.statusCode}');
   //   }
   // }
+  // Future<dynamic> get({required String url, String? token}) async {
+  //   try {
+  //     Map<String, String> headers = {};
+  //     if (token != null) {
+  //       headers.addAll({'Authorization': 'Bearer $token'});
+  //     }
+
+  //     final response = await http.get(Uri.parse(url), headers: headers).timeout(
+  //           const Duration(seconds: 15), // Add timeout
+  //           onTimeout: () => throw Exception('Connection timeout'),
+  //         );
+
+  //     if (response.statusCode == 200) {
+  //       return jsonDecode(response.body);
+  //     } else {
+  //       throw Exception('Server error: ${response.statusCode}');
+  //     }
+  //   } on FormatException {
+  //     throw Exception('Invalid response format');
+  //   } catch (e) {
+  //     throw Exception('Network error: ${e.toString()}');
+  //   }
+  // }
   Future<dynamic> get({required String url, String? token}) async {
     try {
       Map<String, String> headers = {};
@@ -28,7 +51,7 @@ class Api {
       }
 
       final response = await http.get(Uri.parse(url), headers: headers).timeout(
-            const Duration(seconds: 15), // Add timeout
+            const Duration(seconds: 15),
             onTimeout: () => throw Exception('Connection timeout'),
           );
 

@@ -38,21 +38,33 @@ class LoginCubit extends Cubit<LoginState> {
 //   }
 // }
 
+  //
   Future<void> loginUser({required String id, required String password}) async {
     emit(LoginLoading());
-    List<dynamic> data = await Api().get(
-        url:
-            'https://4b10-2c0f-fc88-5-a18b-21f2-4b14-a0cb-16e9.ngrok-free.app/Doctor/loginDoctor307f5f6f08c68dc1c04e400f59b4ae765fbafc524190f59b4ae765fbafc52419');
-    List<SignInModel> loginData = [];
-    for (int i = 0; i < data.length; i++) {
-      loginData.add(SignInModel.fromJson(data[i]));
-    }
-    for (var docData in loginData) {
-      if (docData.idDoctor == id && docData.passDoctor == password) {
+
+    try {
+      var response = await Api().get(
+        url: 'https://api.jsonbin.io/v3/b/67b267b1e41b4d34e4909b7d',
+      );
+
+      List<dynamic> data = response['record'];
+      print(data);
+      bool isAuthenticated = false;
+      for (var docData in data) {
+        if (docData['IdDoctor'] == id && docData['passDoctor'] == password) {
+          isAuthenticated = true;
+          print(docData);
+          break;
+        }
+      }
+
+      if (isAuthenticated) {
         emit(LoginSuccess());
       } else {
-        emit(LoginFailure(errMessage: 'Invaid ID or password'));
+        emit(LoginFailure(errMessage: 'Invalid ID or password'));
       }
+    } catch (e) {
+      emit(LoginFailure(errMessage: 'Error: $e'));
     }
   }
 }

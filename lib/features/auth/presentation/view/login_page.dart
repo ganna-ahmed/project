@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,10 +13,22 @@ import 'package:project/helper/show_snack_bar.dart';
 import '../../../../core/utils/app_router.dart';
 import '../../../user/presentation/views/widgets/custom_text_field.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
+
   String? id, password;
+
+  TextEditingController pass = TextEditingController();
+
+  TextEditingController email = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
@@ -54,6 +68,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 290.h),
                       CustomTextField(
+                        controller: email,
                         label: LoginTexts.emailLabel,
                         hintText: LoginTexts.emailHintText,
                         onChanged: (data) {
@@ -62,6 +77,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 20.h),
                       CustomTextField(
+                        controller: pass,
                         label: LoginTexts.passwordLabel,
                         hintText: LoginTexts.passwordHintText,
                         obscureText: true,
@@ -74,7 +90,7 @@ class LoginScreen extends StatelessWidget {
                         text: LoginTexts.loginButtonText,
                         onPressed: () async {
                           BlocProvider.of<LoginCubit>(context)
-                              .loginUser(id: id!, password: password!);
+                              .loginUser(id: "915685", password: "uMSJT0XpV7");
                         },
                       ),
                     ],
