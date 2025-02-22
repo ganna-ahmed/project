@@ -190,6 +190,7 @@ class _CourseState extends State<Course> {
           if (state is PDFCreatedSuccess) {
             QuickAlert.show(
                 showCancelBtn: true,
+                confirmBtnText: 'Continue',
                 context: context,
                 type: QuickAlertType.success,
                 text: 'Download Completed Successfully!',
