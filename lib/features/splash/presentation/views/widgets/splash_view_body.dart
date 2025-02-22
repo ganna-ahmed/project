@@ -19,15 +19,11 @@ class _SplashViewBodyState extends State<SplashViewBody> {
   }
 
   void navigateToHome() {
-    final dynamic currentcontext = context;
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        // Get.to(() => LoginScreen(),
-        //     transition: Transition.fade, duration: kTransitionDuration);
-        GoRouter.of(currentcontext).push(AppRouter.kLoginView);
-      },
-    );
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        GoRouter.of(context).replace(AppRouter.kOnBoarding);
+      }
+    });
   }
 
   @override
@@ -43,16 +39,12 @@ class _SplashViewBodyState extends State<SplashViewBody> {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Image.asset(
-            AssetsData.splashLogo,
-            width: 272,
-            height: 59,
-          ),
-        ],
+      child: Center(
+        child: Image.asset(
+          AssetsData.splashLogo,
+          width: 272,
+          height: 59,
+        ),
       ),
     );
   }

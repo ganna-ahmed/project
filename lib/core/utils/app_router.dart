@@ -1,12 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:project/features/Main/presentation/view/main_screen.dart';
 import 'package:project/features/auth/presentation/view/login_page.dart';
-import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
 import 'package:project/features/question/presentation/views/add_last_question.dart';
 import 'package:project/features/question/presentation/views/add_question.dart';
-import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet.dart';
+import 'package:project/features/question/presentation/views/bubble_sheet.dart';
 import 'package:project/features/splash/presentation/views/splash_view.dart';
 import 'package:project/features/user/presentation/views/edit_profile.dart';
 import 'package:project/features/user/presentation/views/profile_view.dart';
@@ -34,9 +33,14 @@ abstract class AppRouter {
         builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
-        path: kProfileView,
-        builder: (context, state) => const ProfileView(),
+        path: '$kProfileView/:doctorId/:password',
+        builder: (context, state) {
+          final doctorId = state.pathParameters['doctorId'] ?? '';
+          final password = state.pathParameters['password'] ?? '';
+          return ProfileView(doctorId: doctorId, password: password);
+        },
       ),
+
       GoRoute(
         path: kEditProfileView,
         builder: (context, state) => const EditProfileScreen(),
@@ -51,15 +55,15 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kAddQuestion,
-        builder: (context, state) => const AddQuestion(),
+        builder: (context, state) => AddQuestionPage(),
       ),
-      GoRoute(
-        path: kLastQuestion,
-        builder: (context, state) => const AddLastQuestion(),
-      ),
+      //GoRoute(
+      //  path: kLastQuestion,
+      //builder: (context, state) => const AddLastQuestion(),
+      // ),
       GoRoute(
         path: kBubbleShett,
-        builder: (context, state) => BubbleSheetPage(),
+        builder: (context, state) => BubbleSheetForm(),
       ),
       GoRoute(
         path: kOnBoarding,
