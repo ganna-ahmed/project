@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:project/features/auth/presentation/view/cubits/login_cubit/login_cubit.dart';
+import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 import 'package:project/features/auth/presentation/view/widgets/back_grod_paiter.dart';
 import 'package:project/features/auth/presentation/view/widgets/custom_button.dart';
 import 'package:project/helper/show_snack_bar.dart';
@@ -39,7 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
           GoRouter.of(context).push(AppRouter.kMainScreen);
           isLoading = false;
         } else if (state is LoginFailure) {
-          showSnackBar(context, state.errMessage);
+          showSnackBar(
+            context,
+            state.errMessage,
+          );
           isLoading = false;
         }
       },
@@ -89,9 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       CustomButton(
                         text: LoginTexts.loginButtonText,
                         onPressed: () async {
-                          GoRouter.of(context).push(AppRouter.kMainScreen);
-                          // BlocProvider.of<LoginCubit>(context)
-                          //     .loginUser(id: id!, password: password!);
+                          //GoRouter.of(context).push(AppRouter.kMainScreen);
+                          BlocProvider.of<LoginCubit>(context)
+                              .loginUser(id: id!, password: password!);
                         },
                       ),
                     ],

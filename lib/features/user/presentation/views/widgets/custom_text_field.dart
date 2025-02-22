@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/helper/show_snack_bar.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -35,7 +36,7 @@ class CustomTextField extends StatelessWidget {
           obscureText: obscureText,
           validator: (data) {
             if (data!.isEmpty) {
-              return 'field is required';
+              showSnackBar(context, 'inter your$hintText');
             }
           },
           onChanged: onChanged,
@@ -62,7 +63,7 @@ class CustomTextField extends StatelessWidget {
 class LoginTexts {
   static const String backButtonText = 'Back';
   static const String loginTitle = 'Log In';
-  static const String emailLabel = 'Email';
+  static const String emailLabel = 'Doctor ID';
   static const String passwordLabel = 'Password';
   static const String emailHintText = 'type here...';
   static const String passwordHintText = 'type here...';
