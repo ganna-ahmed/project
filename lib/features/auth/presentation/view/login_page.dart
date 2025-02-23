@@ -92,9 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       CustomButton(
                         text: LoginTexts.loginButtonText,
                         onPressed: () async {
-                          //GoRouter.of(context).push(AppRouter.kMainScreen);
-                          BlocProvider.of<LoginCubit>(context)
-                              .loginUser(id: id!, password: password!);
+                          GoRouter.of(context).push(AppRouter.kMainScreen);
+                          // BlocProvider.of<LoginCubit>(context)
+                          //     .loginUser(id: id!, password: password!);
                         },
                       ),
                     ],

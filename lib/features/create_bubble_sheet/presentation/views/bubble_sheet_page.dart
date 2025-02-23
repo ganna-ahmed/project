@@ -11,6 +11,8 @@ import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class BubbleSheetPage extends StatefulWidget {
+  const BubbleSheetPage({super.key});
+
   @override
   State<BubbleSheetPage> createState() => _BubbleSheetPageState();
 }
