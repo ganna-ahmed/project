@@ -42,16 +42,19 @@ class HomeBody extends StatelessWidget {
                     onPressed: () {
                       GoRouter.of(context).push(AppRouter.kUploadView);
                     },
-                    child: Column( // Removed "const" here
+                    child: Column(
+                      // Removed "const" here
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Update',
-                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
+                          style:
+                              TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                         Text(
                           'Project',
-                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
+                          style:
+                              TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                       ],
                     ),
@@ -76,11 +79,13 @@ class HomeBody extends StatelessWidget {
                       children: [
                         Text(
                           'New',
-                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
+                          style:
+                              TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                         Text(
                           'Project',
-                          style: TextStyle(fontSize: 28.sp, color: Colors.white),
+                          style:
+                              TextStyle(fontSize: 28.sp, color: Colors.white),
                         ),
                       ],
                     ),
@@ -106,7 +111,7 @@ class HomeBody extends StatelessWidget {
                   minimumSize: Size(double.infinity, 48.h),
                 ),
                 onPressed: () {
-                  GoRouter.of(context).push(AppRouter.kBubbleShett);
+                  GoRouter.of(context).push(AppRouter.kCreateBubbleSheet);
                 },
                 child: Text(
                   'Create Bubble Sheet',

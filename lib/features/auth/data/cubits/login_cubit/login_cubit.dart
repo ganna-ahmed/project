@@ -9,6 +9,38 @@ part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginInitial());
+  Future<void> loginUser({required String id, required String password}) async {
+    emit(LoginLoading());
+
+    try {
+      var response = await Api().get(
+        url: 'https://api.jsonbin.io/v3/b/67b267b1e41b4d34e4909b7d',
+      );
+
+      List<dynamic> data = response['record'];
+      print(data);
+      bool isAuthenticated = false;
+      String? userId; // متغير لحفظ الـ _id
+
+      for (var docData in data) {
+        if (docData['IdDoctor'] == id && docData['passDoctor'] == password) {
+          isAuthenticated = true;
+          userId = docData['_id']; // حفظ الـ _id هنا
+          print(docData);
+          break;
+        }
+      }
+
+      if (isAuthenticated) {
+        emit(LoginSuccess(userId: userId)); // إرسال الـ _id مع حالة النجاح
+      } else {
+        emit(LoginFailure(errMessage: 'Invalid ID or password'));
+      }
+    } catch (e) {
+      emit(LoginFailure(errMessage: 'Error: $e'));
+    }
+  }
+}
 
 //   Future<void> loginUser({required id, required String password}) async {
 //     emit(LoginLoading());
@@ -39,35 +71,35 @@ class LoginCubit extends Cubit<LoginState> {
 // }
 
   //
-  Future<void> loginUser({required String id, required String password}) async {
-    emit(LoginLoading());
+//   Future<void> loginUser({required String id, required String password}) async {
+//     emit(LoginLoading());
 
-    try {
-      var response = await Api().get(
-        url: 'https://api.jsonbin.io/v3/b/67b267b1e41b4d34e4909b7d',
-      );
+//     try {
+//       var response = await Api().get(
+//         url: 'https://api.jsonbin.io/v3/b/67b267b1e41b4d34e4909b7d',
+//       );
 
-      List<dynamic> data = response['record'];
-      print(data);
-      bool isAuthenticated = false;
-      for (var docData in data) {
-        if (docData['IdDoctor'] == id && docData['passDoctor'] == password) {
-          isAuthenticated = true;
-          print(docData);
-          break;
-        }
-      }
+//       List<dynamic> data = response['record'];
+//       print(data);
+//       bool isAuthenticated = false;
+//       for (var docData in data) {
+//         if (docData['IdDoctor'] == id && docData['passDoctor'] == password) {
+//           isAuthenticated = true;
+//           print(docData);
+//           break;
+//         }
+//       }
 
-      if (isAuthenticated) {
-        emit(LoginSuccess());
-      } else {
-        emit(LoginFailure(errMessage: 'Invalid ID or password'));
-      }
-    } catch (e) {
-      emit(LoginFailure(errMessage: 'Error: $e'));
-    }
-  }
-}
+//       if (isAuthenticated) {
+//         emit(LoginSuccess());
+//       } else {
+//         emit(LoginFailure(errMessage: 'Invalid ID or password'));
+//       }
+//     } catch (e) {
+//       emit(LoginFailure(errMessage: 'Error: $e'));
+//     }
+//   }
+
 
 //   Future<void> loginUser({required String id, required String password}) async {
 //     emit(LoginLoading());

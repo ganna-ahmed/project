@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:project/features/Main/presentation/view/main_screen.dart';
 import 'package:project/features/auth/presentation/view/login_page.dart';
+import 'package:project/features/auth/presentation/view/login_screen.dart';
+import 'package:project/features/correction_bubble_sheet/presentation/views/correction_bubble_sheet.dart';
 import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
@@ -19,9 +21,10 @@ abstract class AppRouter {
   static const kUploadView = '/UploadFileScreen';
   static const kAddQuestion = '/AddQuestion';
   static const kLastQuestion = '/LastQuestion';
-  static const kBubbleShett = '/BubbleSheet';
+  static const kCreateBubbleSheet = '/BubbleSheet';
   static const kOnBoarding = '/OnBording';
   static const kMainScreen = '/MainScreen';
+  static const kCorrectionBubbleSheet = '/CorrectionBubbleSheet';
 
   static final router = GoRouter(
     routes: [
@@ -31,10 +34,10 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kLoginView,
-        builder: (context, state) => LoginScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
-        path: '$kProfileView/:doctorId/:password',
+        path: kProfileView,
         builder: (context, state) {
           final doctorId = state.pathParameters['doctorId'] ?? '';
           final password = state.pathParameters['password'] ?? '';
@@ -63,16 +66,20 @@ abstract class AppRouter {
       //builder: (context, state) => const AddLastQuestion(),
       // ),
       GoRoute(
-        path: kBubbleShett,
+        path: kCreateBubbleSheet,
         builder: (context, state) => const BubbleSheetPage(),
       ),
       GoRoute(
         path: kOnBoarding,
-        builder: (context, state) => OnBoarding(),
+        builder: (context, state) => const OnBoarding(),
       ),
       GoRoute(
         path: kMainScreen,
         builder: (context, state) => const MainScreen(),
+      ),
+      GoRoute(
+        path: kCorrectionBubbleSheet,
+        builder: (context, state) => const CorrectionBubbleSheet(),
       ),
     ],
   );

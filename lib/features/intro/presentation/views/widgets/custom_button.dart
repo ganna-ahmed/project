@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/features/auth/presentation/view/login_screen.dart';
 
 import '../../../../auth/presentation/view/login_page.dart';
 
@@ -25,7 +26,7 @@ class NextButton extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         },
         style: ElevatedButton.styleFrom(

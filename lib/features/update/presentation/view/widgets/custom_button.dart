@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/core/utils/app_router.dart';
 
 class ButtonsWidget extends StatelessWidget {
   final double screenHeight;
@@ -44,9 +46,13 @@ class ButtonsWidget extends StatelessWidget {
       children: [
         buildButton('Create Models Of Question', () {}),
         SizedBox(height: screenHeight * 0.02.h),
-        buildButton('Correction Of Bubble Sheet', () {}),
+        buildButton('Correction Of Bubble Sheet', () {
+          GoRouter.of(context).push(AppRouter.kCorrectionBubbleSheet);
+        }),
         SizedBox(height: screenHeight * 0.02.h),
-        buildButton('Create Bubble Sheet', () {}),
+        buildButton('Create Bubble Sheet', () {
+          GoRouter.of(context).push(AppRouter.kCreateBubbleSheet);
+        }),
       ],
     );
   }

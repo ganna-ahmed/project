@@ -3,11 +3,17 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/assets.dart';
+import 'package:project/features/user/presentation/manager/cubit/doctor_cubit.dart';
 import '../../../../core/utils/app_router.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +49,7 @@ class HomeView extends StatelessWidget {
             SizedBox(height: 10.h),
             ElevatedButton(
               onPressed: () {
-                GoRouter.of(context).push(AppRouter.kBubbleShett);
+                GoRouter.of(context).push(AppRouter.kCreateBubbleSheet);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.ceruleanBlue,
@@ -143,10 +149,13 @@ class ExamCard extends StatelessWidget {
             SizedBox(height: 10.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: professors.map((professor) => Text(
-                professor,
-                style: TextStyle(fontSize: 16.sp, color: AppColors.white),
-              )).toList(),
+              children: professors
+                  .map((professor) => Text(
+                        professor,
+                        style:
+                            TextStyle(fontSize: 16.sp, color: AppColors.white),
+                      ))
+                  .toList(),
             ),
           ],
         ),
