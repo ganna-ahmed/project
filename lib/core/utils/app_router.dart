@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:project/features/Main/presentation/view/main_screen.dart';
 import 'package:project/features/auth/presentation/view/login_page.dart';
 import 'package:project/features/auth/presentation/view/login_screen.dart';
-import 'package:project/features/correction_bubble_sheet/presentation/views/correction_bubble_sheet.dart';
+import 'package:project/features/correction_bubble_sheet/presentation/views/upload_model_answer.dart';
 import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
@@ -75,7 +75,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kCorrectionBubbleSheet,
-        builder: (context, state) => const CorrectionBubbleSheet(),
+        builder: (context, state) => UploadModelAnswer(),
       ),
     ],
   );
