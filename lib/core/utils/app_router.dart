@@ -38,11 +38,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kProfileView,
-        builder: (context, state) {
-          final doctorId = state.pathParameters['doctorId'] ?? '';
-          final password = state.pathParameters['password'] ?? '';
-          return ProfileView(doctorId: doctorId, password: password);
-        },
+        builder: (context, state) => const EditProfileScreen(),
       ),
 
       GoRoute(

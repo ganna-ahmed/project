@@ -1,9 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:project/features/user/data/models/profile_model.dart';
 
 class DoctorRepository {
-  final String apiUrl = 'https://98b3-2c0f-fc88-5-b4ad-595e-dcc0-953e-40f7.ngrok-free.app/Admine/Doctor/apiAllDoctor';
+  final String apiUrl =
+      'https://ac65-2a09-bac5-d57b-1eb-00-31-111.ngrok-free.app/Admine/Doctor/apiAllDoctor';
 
   Future<List<Doctor>> fetchDoctors() async {
     try {

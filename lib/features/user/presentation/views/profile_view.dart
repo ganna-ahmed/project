@@ -3,121 +3,115 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
-import 'package:project/core/utils/app_router.dart';
-import 'package:project/features/user/data/repository/doctor_repository.dart';
-import 'package:project/features/user/presentation/manager/cubit/doctor_cubit.dart';
-import 'package:project/features/user/presentation/manager/cubit/doctor_state.dart';
+import 'package:project/core/utils/assets.dart';
+import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 import 'package:project/features/user/presentation/views/widgets/custom_app_bar_button.dart';
 import 'package:project/features/user/presentation/views/widgets/custom_card.dart';
 
 class ProfileView extends StatelessWidget {
-  const ProfileView(
-      {super.key, required String doctorId, required String password});
+  const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DoctorCubit(DoctorRepository())..getDoctors(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Profile',
-            style: TextStyle(color: AppColors.darkBlue, fontSize: 20.sp),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back,
-              color: AppColors.darkBlue,
+    return BlocBuilder<LoginCubit, LoginState>(
+      builder: (context, state) {
+        if (state is LoginSuccess) {
+          final doctor = state.doctor;
+
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.darkBlue),
+              ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+              title: Text(
+                'Profile',
+                style: TextStyle(color: AppColors.darkBlue, fontSize: 20.sp),
+              ),
+              actions: [
+                CustomAppBarButton(
+                  onTap: () {
+                    GoRouter.of(context).push('/edit-profile');
+                  },
+                  text: 'edit',
+                ),
+              ],
             ),
-          ),
-          actions: [
-            CustomAppBarButton(
-              onTap: () {
-                GoRouter.of(context).push(AppRouter.kEditProfileView);
-              },
-              text: 'edit',
-            ),
-          ],
-        ),
-        body: BlocBuilder<DoctorCubit, DoctorState>(
-          builder: (context, state) {
-            if (state is DoctorLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is DoctorLoaded) {
-              if (state.doctors.isEmpty) {
-                return const Center(child: Text('No Doctors Available'));
-              }
-              final doctor =
-                  state.doctors.first; // عرض أول دكتور فقط كـ Profile
-              return Column(children: [
-                SizedBox(
-                  height: 0.02.sh,
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(170.r),
-                  child: Image.network(
-                    doctor.imageUrl,
-                    fit: BoxFit.fill,
-                    width: 180.w,
-                    height: 190.h,
+            body: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: 40.h),
+                  CircleAvatar(
+                    radius: 90.r,
+                    backgroundImage: doctor.imageUrl != null
+                        ? NetworkImage(doctor.imageUrl!)
+                        : const AssetImage(AssetsData.profile) as ImageProvider,
                   ),
-                ),
-                SizedBox(
-                  height: 0.02.sh,
-                ),
-                Text(
-                  'DR. ${doctor.name}',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.darkBlue,
-                  ),
-                ),
-                SizedBox(
-                  height: 0.05.sh,
-                ),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    CustomCard(
-                      title: 'Email',
-                      subTitle: doctor.email,
+                  SizedBox(height: 10.h),
+                  Text(
+                    'DR. ${doctor.name}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                       color: AppColors.darkBlue,
+                      fontSize: 38.sp,
                     ),
-                    Positioned(
-                      right: 0,
-                      left: 0,
-                      bottom: -107.h,
-                      child: CustomCard(
-                        title: 'Name',
-                        subTitle: doctor.name,
-                        color: AppColors.ceruleanBlue,
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    doctor.email,
+                    style:
+                        TextStyle(fontSize: 20.sp, color: Colors.grey.shade600),
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    doctor.specialization,
+                    style:
+                        TextStyle(fontSize: 20.sp, color: AppColors.darkBlue),
+                  ),
+                  SizedBox(height: 40.h),
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CustomCard(
+                        title: 'Email',
+                        subTitle: doctor.email,
+                        color: AppColors.darkBlue,
                       ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      left: 0,
-                      bottom: -214.h,
-                      child: CustomCard(
-                        title: 'Department',
-                        subTitle: doctor.department,
-                        color: AppColors.wildBlueYonder, ),
-                    ),
-                  ],
-                )
-              ]);
-            } else if (state is DoctorError) {
-              return Center(child: Text('Error: ${state.message}'));
-            } else {
-              return const Center(child: Text('No Data'));
-            }
-          },
-        ),
-      ),
+                      Positioned(
+                        right: 0,
+                        left: 0,
+                        bottom: -95.h,
+                        child: CustomCard(
+                          title: 'Name',
+                          subTitle: doctor.name,
+                          color: AppColors.ceruleanBlue,
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        left: 0,
+                        bottom: -185.h,
+                        child: CustomCard(
+                          title: 'Department',
+                          subTitle: doctor.specialization,
+                          color: AppColors.wildBlueYonder,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          return const Scaffold(
+            body: Center(child: Text('No doctor logged in')),
+          );
+        }
+      },
     );
   }
 }

@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/core/utils/app_router.dart';
 import 'package:project/core/utils/assets.dart';
-import 'package:project/features/user/presentation/manager/cubit/doctor_cubit.dart';
-import '../../../../core/utils/app_router.dart';
+import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
-  @override
-  State<HomeView> createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,12 +27,21 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              GoRouter.of(context).push(AppRouter.kProfileView);
-            },
-            child: Image.asset(
-              AssetsData.profile,
-              width: 73.w,
+            onTap: () {}, // تعطيل الحدث عند الضغط على الصورة
+            child: BlocBuilder<LoginCubit, LoginState>(
+              builder: (context, state) {
+                if (state is LoginSuccess) {
+                  return CircleAvatar(
+                    radius: 25.r,
+                    backgroundImage: NetworkImage(state.doctor.imageUrl),
+                  );
+                } else {
+                  return Image.asset(
+                    AssetsData.profile,
+                    width: 73.w,
+                  );
+                }
+              },
             ),
           )
         ],
@@ -63,8 +68,9 @@ class _HomeViewState extends State<HomeView> {
                 style: TextStyle(color: AppColors.white, fontSize: 20.sp),
               ),
             ),
-            SizedBox(height: 60.h),
-            Expanded(
+            SizedBox(height: 20.h),
+            SizedBox(
+              height: 400.h,
               child: ListView(
                 children: [
                   ExamCard(
@@ -72,27 +78,21 @@ class _HomeViewState extends State<HomeView> {
                     questions: 20,
                     professors: const ["DR. Osama", "DR. Amr"],
                     color: AppColors.stoneBlue,
-                    onTap: () {
-                      GoRouter.of(context).push(AppRouter.kAddQuestion);
-                    },
+                    onTap: () {},
                   ),
                   ExamCard(
                     title: "Exam Two",
                     questions: 50,
                     professors: const ["DR. Osama"],
                     color: AppColors.paleSky,
-                    onTap: () {
-                      GoRouter.of(context).push(AppRouter.kAddQuestion);
-                    },
+                    onTap: () {},
                   ),
                   ExamCard(
                     title: "Exam Three",
                     questions: 100,
                     professors: const ["DR. Osama", "DR. Sara"],
                     color: AppColors.babyBlue,
-                    onTap: () {
-                      GoRouter.of(context).push(AppRouter.kAddQuestion);
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -125,35 +125,35 @@ class ExamCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(left: 2.w, bottom: 19.h, right: 30.w),
-        padding: EdgeInsets.all(15.w), // Use ScreenUtil for padding
+        margin: const EdgeInsets.only(left: 2, bottom: 19, right: 30),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: TextStyle(
-                fontSize: 20.sp,
+              style: const TextStyle(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.white,
+                color: Colors.white,
               ),
             ),
             Text(
               "$questions questions",
-              style: TextStyle(fontSize: 16.sp, color: AppColors.white),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
-            SizedBox(height: 10.h),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: professors
                   .map((professor) => Text(
                         professor,
                         style:
-                            TextStyle(fontSize: 16.sp, color: AppColors.white),
+                            const TextStyle(fontSize: 16, color: Colors.white),
                       ))
                   .toList(),
             ),

@@ -1,10 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/update/presentation/view/update_view.dart';
 import 'package:project/features/user/presentation/views/profile_view.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   final List<Widget> _screens = [
     const HomeView(),
-    const ProfileView(doctorId: '', password: '',),
+    const ProfileView(),
     const UpdatePage(),
   ];
 
