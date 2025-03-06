@@ -55,6 +55,10 @@ dependencies:
   open_file: ^3.5.10
   flutter_plugin_android_lifecycle: ^2.0.15
   meta: ^1.15.0
+  fluttertoast: ^8.2.2
+  http_parser: ^4.0.2
+  equatable: ^2.0.7
+  downloads_path_provider_28: ^0.1.2
 
 dev_dependencies:
   flutter_test:

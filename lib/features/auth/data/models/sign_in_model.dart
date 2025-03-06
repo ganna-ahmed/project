@@ -49,7 +49,7 @@ class ImageModel {
   final String destination;
   final String filename;
   final String path;
-  final double size;
+  final int size;
 
   ImageModel(
       {required this.fieldname,

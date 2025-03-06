@@ -46,13 +46,13 @@ class ProfileView extends StatelessWidget {
                   SizedBox(height: 40.h),
                   CircleAvatar(
                     radius: 90.r,
-                    backgroundImage: doctor.imageUrl != null
-                        ? NetworkImage(doctor.imageUrl!)
+                    backgroundImage: doctor.image.path != null
+                        ? NetworkImage(doctor.image.path!)
                         : const AssetImage(AssetsData.profile) as ImageProvider,
                   ),
                   SizedBox(height: 10.h),
                   Text(
-                    'DR. ${doctor.name}',
+                    'DR. ${doctor.nameDoctor}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.darkBlue,
@@ -61,13 +61,13 @@ class ProfileView extends StatelessWidget {
                   ),
                   SizedBox(height: 5.h),
                   Text(
-                    doctor.email,
+                    doctor.emailDoctor,
                     style:
                         TextStyle(fontSize: 20.sp, color: Colors.grey.shade600),
                   ),
                   SizedBox(height: 5.h),
                   Text(
-                    doctor.specialization,
+                    doctor.specializationDoctor,
                     style:
                         TextStyle(fontSize: 20.sp, color: AppColors.darkBlue),
                   ),
@@ -77,7 +77,7 @@ class ProfileView extends StatelessWidget {
                     children: [
                       CustomCard(
                         title: 'Email',
-                        subTitle: doctor.email,
+                        subTitle: doctor.emailDoctor,
                         color: AppColors.darkBlue,
                       ),
                       Positioned(
@@ -86,7 +86,7 @@ class ProfileView extends StatelessWidget {
                         bottom: -95.h,
                         child: CustomCard(
                           title: 'Name',
-                          subTitle: doctor.name,
+                          subTitle: doctor.nameDoctor,
                           color: AppColors.ceruleanBlue,
                         ),
                       ),
@@ -96,7 +96,7 @@ class ProfileView extends StatelessWidget {
                         bottom: -185.h,
                         child: CustomCard(
                           title: 'Department',
-                          subTitle: doctor.specialization,
+                          subTitle: doctor.specializationDoctor,
                           color: AppColors.wildBlueYonder,
                         ),
                       ),

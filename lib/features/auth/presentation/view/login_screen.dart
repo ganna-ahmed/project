@@ -115,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (id.isEmpty || password.isEmpty) {
                                 showSnackBar(context, 'Please fill all fields');
                               } else {
+                                //GoRouter.of(context).push(AppRouter.kHomeView);
                                 BlocProvider.of<LoginCubit>(context).loginUser(
                                   id: id,
                                   password: password,

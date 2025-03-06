@@ -7,9 +7,14 @@ import 'package:project/core/utils/app_router.dart';
 import 'package:project/core/utils/assets.dart';
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +38,7 @@ class HomeView extends StatelessWidget {
                 if (state is LoginSuccess) {
                   return CircleAvatar(
                     radius: 25.r,
-                    backgroundImage: NetworkImage(state.doctor.imageUrl),
+                    backgroundImage: NetworkImage(state.doctor.image.path),
                   );
                 } else {
                   return Image.asset(
@@ -54,7 +59,7 @@ class HomeView extends StatelessWidget {
             SizedBox(height: 10.h),
             ElevatedButton(
               onPressed: () {
-                GoRouter.of(context).push(AppRouter.kCreateBubbleSheet);
+                GoRouter.of(context).push(AppRouter.kUpdateView);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.ceruleanBlue,
@@ -69,9 +74,9 @@ class HomeView extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20.h),
-            SizedBox(
-              height: 400.h,
+            Expanded(
               child: ListView(
+                shrinkWrap: true,
                 children: [
                   ExamCard(
                     title: "Exam One",

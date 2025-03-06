@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:project/features/auth/data/models/sign_in_model.dart';
 import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_state.dart';
 import 'package:project/features/create_bubble_sheet/data/models/course_model.dart';
 import 'package:project/features/create_bubble_sheet/data/repos/bubble_sheet_repo.dart';
@@ -60,6 +61,7 @@ class BubbleSheetCubit extends Cubit<BubbleSheetState> {
   // Add these variables to store the data
   List<CourseModel> _courses = [];
   CourseModel? _selectedCourse;
+  SignInModel? doctor;
 
   // Add getters to access the data
   List<CourseModel> get courses => _courses;

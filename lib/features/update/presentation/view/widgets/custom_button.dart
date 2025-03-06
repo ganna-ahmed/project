@@ -47,11 +47,15 @@ class ButtonsWidget extends StatelessWidget {
         buildButton('Create Models Of Question', () {}),
         SizedBox(height: screenHeight * 0.02.h),
         buildButton('Correction Of Bubble Sheet', () {
-          GoRouter.of(context).push(AppRouter.kCorrectionBubbleSheet);
+          GoRouter.of(context).push(AppRouter.kUploadModelAnswer);
         }),
         SizedBox(height: screenHeight * 0.02.h),
         buildButton('Create Bubble Sheet', () {
           GoRouter.of(context).push(AppRouter.kCreateBubbleSheet);
+        }),
+        SizedBox(height: screenHeight * 0.02.h),
+        buildButton('Create New List', () {
+          GoRouter.of(context).push(AppRouter.kListScreen);
         }),
       ],
     );

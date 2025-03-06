@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
+import 'package:project/features/auth/data/models/sign_in_model.dart';
 import 'dart:convert';
 import '../models/course_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,13 +11,17 @@ import 'package:open_file/open_file.dart';
 
 class BubbleSheetRepository {
   final String baseUrl =
-      'https://a15f-2c0f-fc88-5-cd18-dc88-8654-edec-1703.ngrok-free.app';
+      'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app';
+  //final String id ="${context.watch<LoginCubit>().doctorDatabaseId} ";
 
   Future<List<CourseModel>> fetchCourses() async {
     try {
+      //final loginCubit = context.read<LoginCubit>();
+      //inal SignInModel? doctor = loginCubit.state.user;
       final response = await http.patch(
         Uri.parse('$baseUrl/Doctor/CreateBubbleSheet'),
         headers: {'Content-Type': 'application/json'},
+        //  body: jsonEncode({'idDoctor': doctor.id}
       );
 
       if (response.statusCode == 200) {
@@ -180,23 +186,21 @@ class BubbleSheetRepository {
 //   }
 // }
 
-  
+// Future<File?> downloadFile(String fileName, http.Response response) async {
+//   try {
+//     // الحصول على مسار التخزين
+//     final appStorage = await getApplicationDocumentsDirectory();
+//     final file = File('${appStorage.path}/$fileName');
 
-  // Future<File?> downloadFile(String fileName, http.Response response) async {
-  //   try {
-  //     // الحصول على مسار التخزين
-  //     final appStorage = await getApplicationDocumentsDirectory();
-  //     final file = File('${appStorage.path}/$fileName');
+//     // كتابة البيانات إلى الملف
+//     await file.writeAsBytes(response.bodyBytes);
 
-  //     // كتابة البيانات إلى الملف
-  //     await file.writeAsBytes(response.bodyBytes);
-
-  //     return file;
-  //   } catch (e) {
-  //     print('Error saving file: $e');
-  //     return null;
-  //   }
-  // }
+//     return file;
+//   } catch (e) {
+//     print('Error saving file: $e');
+//     return null;
+//   }
+// }
 //  Future<File?> downloadFile(String fileName, http.Response response) async {
 //     try {
 //       // الحصول على مسار التخزين الخارجي (مجلد التنزيلات العام)
