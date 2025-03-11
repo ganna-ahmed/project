@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 
@@ -32,7 +33,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
   }
 
   void _startProcessing() {
-    Timer(const Duration(seconds: 8), () {
+    Timer(const Duration(seconds: 6), () {
       setState(() {
         isProcessingComplete = true;
       });
@@ -43,7 +44,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
 
   Future<void> _sendForCorrection() async {
     final url = Uri.parse(
-      'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app/Doctor/waitedUpload',
+      '$kBaseUrl/Doctor/waitedUpload',
     );
 
     try {

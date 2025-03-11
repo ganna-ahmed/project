@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:project/constants.dart';
 import 'package:project/core/utils/app_router.dart';
 
 class ProgressScreen extends StatefulWidget {
@@ -44,8 +45,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app/Doctor/progrssCorrcetBubbleSheed'),
+        Uri.parse('$kBaseUrl/Doctor/progrssCorrcetBubbleSheed'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'BubbleSheetStudentBaseName': bubbleSheetStudentBaseName,
@@ -71,8 +71,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 //'AnswerBubbleSheet': widget.answerBubbleSheet,
                 'BubbleSheetStudent': widget.bubbleSheetStudent,
                 'fileName': widget.fileName, // تمرير fileName
-                'degree': '0', // استبدل بقيمة ديناميكية إذا كانت متوفرة
-                // 'namePdf': widget.bubbleSheetStudent, // يمكن تعديله حسب الحاجة
+                'degree': '20', // استبدل بقيمة ديناميكية إذا كانت متوفرة
+                'namePdf': widget.bubbleSheetStudent, // يمكن تعديله حسب الحاجة
               });
             },
           );
