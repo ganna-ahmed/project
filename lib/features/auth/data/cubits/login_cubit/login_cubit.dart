@@ -1,5 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:project/constants.dart';
 import 'package:project/features/auth/data/models/sign_in_model.dart';
 import 'package:project/helper/api.dart';
 
@@ -59,8 +62,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     try {
       final response = await Api().get(
-        url:
-            'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Admine/Doctor/apiAllDoctor',
+        url: '$kBaseUrl/Admine/Doctor/apiAllDoctor',
       );
 
       if (response is! List) {

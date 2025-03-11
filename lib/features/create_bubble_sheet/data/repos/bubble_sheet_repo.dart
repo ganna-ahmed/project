@@ -1,4 +1,7 @@
 import 'package:http/http.dart' as http;
+import 'package:project/constants.dart';
+import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
+import 'package:project/features/auth/data/models/sign_in_model.dart';
 import 'dart:convert';
 import '../models/course_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,8 +10,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
 
 class BubbleSheetRepository {
-  final String baseUrl =
-      'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app';
+  final String baseUrl = kBaseUrl;
+  // 'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app';
   //final String id ="${context.watch<LoginCubit>().doctorDatabaseId} ";
 
   Future<List<CourseModel>> fetchCourses() async {

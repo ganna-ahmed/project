@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:project/constants.dart';
 
 import 'package:project/features/user/data/models/profile_model.dart';
 
 class DoctorRepository {
-  final String apiUrl =
-      'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Admine/Doctor/apiAllDoctor';
+  final String apiUrl = '$kBaseUrl/Admine/Doctor/apiAllDoctor';
 
   Future<List<Doctor>> fetchDoctors() async {
     try {

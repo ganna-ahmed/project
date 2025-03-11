@@ -1,3 +1,5 @@
+import 'package:project/constants.dart';
+
 class SignInModel {
   final String id;
   final String nameDoctor;
@@ -68,7 +70,9 @@ class ImageModel {
         mimetype: jsonData['mimetype'],
         destination: jsonData['destination'],
         filename: jsonData['filename'],
-        path: jsonData['path'],
+        path: jsonData['image'] != null && jsonData['image']['filename'] != null
+            ? '$kBaseUrl/images/${jsonData['image']['filename']}'
+            : '$kBaseUrl/default_image.jpg',
         size: jsonData['size']);
   }
 }
