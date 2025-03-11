@@ -3,6 +3,8 @@ import 'package:project/core/constants/colors.dart';
 import 'package:project/features/intro/presentation/views/widgets/custom_button.dart';
 
 class FAQScreen extends StatelessWidget {
+  const FAQScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;

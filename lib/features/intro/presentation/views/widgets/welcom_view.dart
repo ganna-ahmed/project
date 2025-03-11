@@ -8,7 +8,7 @@ class WelcomeScreen extends StatelessWidget {
   final double titleFontSize;
   final double subtitleFontSize;
 
-  const WelcomeScreen({
+  const WelcomeScreen({super.key, 
     this.imageWidth = 300.0,
     this.imageHeight = 300.0,
     this.titleFontSize = 30.0,

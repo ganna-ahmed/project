@@ -6,11 +6,11 @@ class CustomTextField extends StatelessWidget {
   final Color borderColor;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     this.borderColor = Colors.purple, // الافتراضي لون بنفسجي
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class CustomTextField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.purple, width: 2),
+            borderSide: const BorderSide(color: Colors.purple, width: 2),
           ),
         ),
       ),

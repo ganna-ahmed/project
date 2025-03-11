@@ -158,11 +158,12 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:project/core/utils/app_router.dart';
+import 'package:project/core/constants/colors.dart';
 
 class CheckForUpload extends StatefulWidget {
   final Map<String, dynamic>? extra;
 
-  const CheckForUpload({this.extra, Key? key}) : super(key: key);
+  const CheckForUpload({this.extra, super.key});
 
   @override
   _CheckForUploadState createState() => _CheckForUploadState();
@@ -174,13 +175,12 @@ class _CheckForUploadState extends State<CheckForUpload> {
   int pageCount = 0;
   List<int> missingPages = [];
   Timer? _timer;
-  String? fileName; // الاسم من الصفحة السابقة
-  String? bubbleSheetStudent; // الاسم من السيرفر
+  String? fileName;
+  String? bubbleSheetStudent;
 
   @override
   void initState() {
     super.initState();
-    // استخراج البيانات من extra
     final extra = widget.extra ??
         GoRouterState.of(context).extra as Map<String, dynamic>?;
     if (extra != null) {
@@ -212,12 +212,10 @@ class _CheckForUploadState extends State<CheckForUpload> {
     try {
       final response = await http.post(
         Uri.parse(
-            "https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app/Doctor/checkForUpload"),
+            "https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Doctor/checkForUpload"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"BubbleSheetStudent": bubbleSheetStudent}),
       );
-
-      print("🚀 Response from API: ${response.body}");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -228,10 +226,6 @@ class _CheckForUploadState extends State<CheckForUpload> {
           isLoading = false;
         });
 
-        print("📌 Message: $completeMessage");
-        print("📄 Total Pages: $pageCount");
-        print("❌ Missing Pages: $missingPages");
-
         if (!completeMessage.contains("missing")) {
           _timer?.cancel();
           navigateToCorrectionPage();
@@ -240,7 +234,6 @@ class _CheckForUploadState extends State<CheckForUpload> {
         throw Exception("Failed to fetch data. Status: ${response.statusCode}");
       }
     } catch (e) {
-      print("❌ Error: $e");
       setState(() {
         isLoading = false;
       });
@@ -268,8 +261,7 @@ class _CheckForUploadState extends State<CheckForUpload> {
         'fileName': fileName,
         'BubbleSheetStudent': bubbleSheetStudent,
         'pagesNumber': pageCount.toString(),
-        'id': 'someId', // استبدل بقيمة ديناميكية إذا كانت متوفرة
-        //'AnswerBubbleSheet': bubbleSheetStudent, // افتراضي، يمكن تعديله
+        'id': 'someId',
       });
     } else {
       Fluttertoast.showToast(msg: 'Missing fileName or BubbleSheetStudent!');
@@ -279,7 +271,14 @@ class _CheckForUploadState extends State<CheckForUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Check for Upload")),
+      appBar: AppBar(
+        backgroundColor: AppColors.ceruleanBlue,
+        title: const Text(
+          "Check for Upload",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: Center(
         child: isLoading
             ? const CircularProgressIndicator()
@@ -291,10 +290,12 @@ class _CheckForUploadState extends State<CheckForUpload> {
                         ? "⏳ Waiting for all pages to upload..."
                         : "✅ All pages are complete! Redirecting to correction...",
                     style: TextStyle(
-                        fontSize: 18,
-                        color: completeMessage.contains("missing")
-                            ? Colors.orange
-                            : Colors.green),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: completeMessage.contains("missing")
+                          ? Colors.orange
+                          : Colors.green,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),

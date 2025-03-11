@@ -5,7 +5,7 @@ import 'package:project/features/user/data/models/profile_model.dart';
 
 class DoctorRepository {
   final String apiUrl =
-      'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app/Admine/Doctor/apiAllDoctor';
+      'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Admine/Doctor/apiAllDoctor';
 
   Future<List<Doctor>> fetchDoctors() async {
     try {

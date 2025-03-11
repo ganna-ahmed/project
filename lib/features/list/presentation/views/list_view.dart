@@ -55,7 +55,7 @@ class _ListScreenState extends State<ListScreen> {
         title: Text(
           "Doctor _id: ${context.watch<LoginCubit>().doctorDatabaseId ?? 'No doctor logged in'}"
           "Material list by Department",
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xff2262C6),
         centerTitle: true,
@@ -65,11 +65,11 @@ class _ListScreenState extends State<ListScreen> {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: Color(0xff727272AB), width: 1),
+                border: Border.all(color: const Color(0xff727272ab), width: 1),
               ),
               child: Row(
                 children: [
@@ -82,14 +82,14 @@ class _ListScreenState extends State<ListScreen> {
                           color: Colors.grey[700],
                         ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                       ),
                     ),
                   ),
                   SizedBox(width: 5.w),
                   DropdownButton<String>(
                     value: selectedDepartment,
-                    underline: SizedBox(),
+                    underline: const SizedBox(),
                     onChanged: (newValue) {
                       setState(() {
                         selectedDepartment = newValue!;
@@ -105,30 +105,30 @@ class _ListScreenState extends State<ListScreen> {
                             ))
                         .toList(),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Container(
                     width: 30,
                     height: 30,
                     decoration: BoxDecoration(
-                      color: Color(0xff2262C6),
+                      color: const Color(0xff2262C6),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: IconButton(
-                      icon: Icon(Icons.add, color: Colors.white, size: 15),
+                      icon: const Icon(Icons.add, color: Colors.white, size: 15),
                       onPressed: addMaterial,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: materials.length,
                 itemBuilder: (context, index) {
                   final material = materials[index];
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
+                    margin: const EdgeInsets.symmetric(vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(8),
@@ -137,10 +137,10 @@ class _ListScreenState extends State<ListScreen> {
                       title: Row(
                         children: [
                           Text(material['name']!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                               )),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Text("(${material['department']})",
                               style: TextStyle(color: Colors.grey[700])),
                         ],
@@ -149,11 +149,11 @@ class _ListScreenState extends State<ListScreen> {
                         width: 35,
                         height: 35,
                         decoration: BoxDecoration(
-                          color: Color(0xffF0394E),
+                          color: const Color(0xffF0394E),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: IconButton(
-                          icon: Icon(Icons.delete_sweep,
+                          icon: const Icon(Icons.delete_sweep,
                               color: Colors.white, size: 18),
                           onPressed: () => removeMaterial(index),
                         ),

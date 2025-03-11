@@ -10,13 +10,12 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
 
   const CustomTextField(
-      {Key? key,
+      {super.key,
       required this.label,
       required this.hintText,
       this.onChanged,
       this.obscureText = false,
-      required this.controller})
-      : super(key: key);
+      required this.controller});
   final Function(String)? onChanged;
 
   @override
@@ -38,6 +37,7 @@ class CustomTextField extends StatelessWidget {
             if (data!.isEmpty) {
               showSnackBar(context, 'inter your$hintText');
             }
+            return null;
           },
           onChanged: onChanged,
           controller: controller,

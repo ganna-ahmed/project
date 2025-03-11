@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:project/core/constants/colors.dart';
-import 'package:project/core/utils/app_router.dart';
 import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_cubit.dart';
 import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_state.dart';
 import 'package:project/features/create_bubble_sheet/presentation/views/widgets/course.dart';
-import 'package:project/features/create_bubble_sheet/presentation/views/widgets/course_form.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class BubbleSheetPage extends StatefulWidget {
   const BubbleSheetPage({super.key});

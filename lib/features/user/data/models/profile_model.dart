@@ -78,8 +78,8 @@ class Doctor {
           ? json['expDoctor']
           : int.tryParse(json['expDoctor'].toString()) ?? 0,
       imageUrl: json['image'] != null && json['image']['filename'] != null
-          ? 'https://4882-156-210-92-118.ngrok-free.app/images/${json['image']['filename']}'
-          : 'https://4882-156-210-92-118.ngrok-free.app/default_image.jpg',
+          ? 'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/images/${json['image']['filename']}'
+          : 'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/default_image.jpg',
     );
   }
 }

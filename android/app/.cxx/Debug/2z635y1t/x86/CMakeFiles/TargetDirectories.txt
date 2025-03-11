@@ -1,0 +1,2 @@
+D:/Camera Roll/project/android/app/.cxx/Debug/2z635y1t/x86/CMakeFiles/edit_cache.dir
+D:/Camera Roll/project/android/app/.cxx/Debug/2z635y1t/x86/CMakeFiles/rebuild_cache.dir

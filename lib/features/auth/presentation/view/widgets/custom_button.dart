@@ -6,10 +6,10 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class DoneButton extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
 
-  const DoneButton({
+  const DoneButton({super.key, 
     required this.onPressed,
     this.backgroundColor = Colors.blue,
     this.textColor = Colors.white,
@@ -73,7 +73,7 @@ class DoneButton extends StatelessWidget {
 class BottomDoneButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  BottomDoneButton({required this.onPressed});
+  const BottomDoneButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

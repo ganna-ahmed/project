@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
-import 'package:project/features/auth/data/models/sign_in_model.dart';
 import 'dart:convert';
 import '../models/course_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -83,7 +80,7 @@ class BubbleSheetRepository {
   Future<File?> downloadFile(String fileName, http.Response response) async {
     try {
       final directory = await getExternalStorageDirectory();
-      final downloadPath = '/storage/emulated/0/Download';
+      const downloadPath = '/storage/emulated/0/Download';
       await Directory(downloadPath).create(recursive: true);
 
       final file = File('$downloadPath/$fileName');

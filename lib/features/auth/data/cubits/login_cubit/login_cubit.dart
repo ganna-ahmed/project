@@ -1,9 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:project/features/auth/data/models/sign_in_model.dart';
-import 'package:project/features/user/data/models/profile_model.dart';
 import 'package:project/helper/api.dart';
 
 part 'login_state.dart';
@@ -63,7 +60,7 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       final response = await Api().get(
         url:
-            'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app/Admine/Doctor/apiAllDoctor',
+            'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Admine/Doctor/apiAllDoctor',
       );
 
       if (response is! List) {
@@ -74,7 +71,7 @@ class LoginCubit extends Cubit<LoginState> {
       // البحث عن الطبيب باستخدام firstWhere مع شرط افتراضي
       SignInModel? foundDoctor;
       try {
-        foundDoctor = (response as List)
+        foundDoctor = (response)
             .map((docData) => SignInModel.fromJson(docData))
             .firstWhere(
                 (doctor) =>

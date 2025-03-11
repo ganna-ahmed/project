@@ -47,7 +47,7 @@ class ProfileView extends StatelessWidget {
                   CircleAvatar(
                     radius: 90.r,
                     backgroundImage: doctor.image.path != null
-                        ? NetworkImage(doctor.image.path!)
+                        ? NetworkImage(doctor.image.path)
                         : const AssetImage(AssetsData.profile) as ImageProvider,
                   ),
                   SizedBox(height: 10.h),

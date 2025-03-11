@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/auth/presentation/view/login_screen.dart';
 
-import '../../../../auth/presentation/view/login_page.dart';
 
 class NextButton extends StatelessWidget {
   final double width;
@@ -14,8 +13,8 @@ class NextButton extends StatelessWidget {
     required this.height,
     this.borderRadius = 12,
     this.fontSize = 32,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

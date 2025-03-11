@@ -1,42 +1,39 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
-import 'package:project/core/utils/app_router.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:lottie/lottie.dart';
+import 'package:project/core/constants/colors.dart';
 
 class ProgressScreen extends StatefulWidget {
   final String? idDoctor;
-  // final String? answerBubbleSheet;
   final String? bubbleSheetStudent;
-  final String? fileName; // إضافة fileName كمعامل
+  final String? fileName;
   final String? pagesNumber;
 
   const ProgressScreen({
-    Key? key,
+    super.key,
     this.idDoctor,
-    //this.answerBubbleSheet,
     this.bubbleSheetStudent,
     this.fileName,
     this.pagesNumber,
-  }) : super(key: key);
+  });
 
   @override
   _ProgressScreenState createState() => _ProgressScreenState();
 }
 
 class _ProgressScreenState extends State<ProgressScreen> {
-  bool isLoading = false;
+  bool isLoading = true; // يبدأ التحميل تلقائيًا
   bool isComplete = false;
   String? bubbleSheetStudentBaseName;
 
   @override
   void initState() {
     super.initState();
-    // استخراج اسم الملف بدون الامتداد .pdf
-    bubbleSheetStudentBaseName =
-        widget.bubbleSheetStudent?.replaceAll('.pdf', '');
-    //startProcess();
+    bubbleSheetStudentBaseName = widget.bubbleSheetStudent?.replaceAll('.pdf', '');
+    startProcess(); // يبدأ المعالجة مباشرة عند الدخول للشاشة
   }
 
   Future<void> startProcess() async {
@@ -45,7 +42,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://bf40-2c0f-fc88-5-10ae-f4f8-1ba7-f2db-11b6.ngrok-free.app/Doctor/progrssCorrcetBubbleSheed'),
+            'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Doctor/progrssCorrcetBubbleSheed'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'BubbleSheetStudentBaseName': bubbleSheetStudentBaseName,
@@ -61,18 +58,16 @@ class _ProgressScreenState extends State<ProgressScreen> {
             isComplete = true;
           });
 
-          // انتظار ثانية ثم الانتقال إلى الشاشة التالية
+          // الانتقال للشاشة التالية بعد 1.5 ثانية
           Future.delayed(
-            const Duration(seconds: 1),
+            const Duration(seconds: 2),
             () {
               if (!mounted) return;
               GoRouter.of(context).push('/resultStudent', extra: {
                 'id': widget.idDoctor,
-                //'AnswerBubbleSheet': widget.answerBubbleSheet,
                 'BubbleSheetStudent': widget.bubbleSheetStudent,
-                'fileName': widget.fileName, // تمرير fileName
-                'degree': '0', // استبدل بقيمة ديناميكية إذا كانت متوفرة
-                // 'namePdf': widget.bubbleSheetStudent, // يمكن تعديله حسب الحاجة
+                'fileName': widget.fileName,
+                'degree': '0', // استبدل بقيمة ديناميكية إذا لزم الأمر
               });
             },
           );
@@ -89,27 +84,54 @@ class _ProgressScreenState extends State<ProgressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Processing Bubble Sheet')),
+      appBar: AppBar(
+        backgroundColor: AppColors.ceruleanBlue,
+        title: const Text(
+          'Processing Bubble Sheet',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (isLoading) CircularProgressIndicator(),
+            if (isLoading)
+              Column(
+                children: [
+                  Lottie.asset(
+                    'assets/lottie/loading.json',
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(height: 10),
+                 const Text(
+                        "Processing, please wait...",
+                        style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                         color: Colors.blue, // يمكنك تغيير اللون هنا
+                      ),
+                             ),
+
+                ],
+              ),
             if (isComplete)
               Column(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.green, size: 50),
-                  SizedBox(height: 10),
-                  Text(
+                  Lottie.asset(
+                    'assets/lottie/mainscene.json',
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
                     '🎉 Process Completed Successfully!',
                     style: TextStyle(fontSize: 18, color: Colors.green),
                   ),
                 ],
-              ),
-            if (!isComplete && !isLoading)
-              ElevatedButton(
-                onPressed: startProcess,
-                child: Text('Start Processing'),
               ),
           ],
         ),

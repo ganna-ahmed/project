@@ -72,7 +72,7 @@ abstract class AppRouter {
       // ),
       GoRoute(
         path: kAddQuestion,
-        builder: (context, state) => AddQuestionPage(),
+        builder: (context, state) => const AddQuestionPage(),
       ),
       //GoRoute(
       //  path: kLastQuestion,
@@ -96,7 +96,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kUploadModelAnswer,
-        builder: (context, state) => UploadModelAnswer(),
+        builder: (context, state) => const UploadModelAnswer(),
       ),
       GoRoute(
         path: kUpdateView,
@@ -108,7 +108,7 @@ abstract class AppRouter {
           final fileName = state.extra as String?;
           if (fileName == null) {
             Fluttertoast.showToast(msg: 'No file name received!');
-            return Scaffold(
+            return const Scaffold(
                 body: Center(child: Text('Error: No file provided')));
           }
           return CorrectBubbleSheetForStudent(fileName: fileName);
@@ -203,7 +203,7 @@ abstract class AppRouter {
       // ),
       GoRoute(
         path: '/resultStudent',
-        builder: (context, state) => ResultStudentPage(),
+        builder: (context, state) => const ResultStudentPage(),
       ),
     ],
   );

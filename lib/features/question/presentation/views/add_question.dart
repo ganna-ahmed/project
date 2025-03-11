@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'widgets/custom_text_field.dart';
 
 class AddQuestionPage extends StatefulWidget {
+  const AddQuestionPage({super.key});
+
   @override
   _AddQuestionPageState createState() => _AddQuestionPageState();
 }
@@ -63,7 +65,9 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
             questionCount++;
             questionController.clear();
             pdfController.clear();
-            answerControllers.forEach((controller) => controller.clear());
+            for (var controller in answerControllers) {
+              controller.clear();
+            }
             correctAnswerController.clear();
           });
         } else {
@@ -96,11 +100,11 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(color: Colors.black26, blurRadius: 10),
               ],
             ),
@@ -111,12 +115,12 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                 children: [
                   Text(
                     'Question $questionCount',
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.purple),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   CustomTextField(
                       controller: pdfController, hintText: 'Enter PDF Name'),
                   CustomTextField(
@@ -133,7 +137,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                     hintText: 'Correct Answer',
                     borderColor: Colors.green,
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -156,10 +160,10 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      child: Text(text, style: TextStyle(color: Colors.white)),
+      child: Text(text, style: const TextStyle(color: Colors.white)),
     );
   }
 }
