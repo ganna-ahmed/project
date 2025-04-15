@@ -7,6 +7,7 @@ import 'package:project/core/constants/colors.dart';
 import 'dart:convert';
 
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
+import 'package:project/features/question/presentation/views/chapter_and_question.dart';
 
 class QuestionBank extends StatefulWidget {
   @override
@@ -147,39 +148,21 @@ class CourseItem extends StatelessWidget {
             // اسم المادة
             Text(
               course,
-              style: TextStyle(
-                fontSize: 18,
+              style: const TextStyle(
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF004aad),
               ),
             ),
             // خط أفقي رفيع أسفل كل عنصر
             Divider(
-              color: Color(0xFF004aad).withOpacity(0.5),
+              color: const Color(0xFF004aad).withOpacity(0.5),
               thickness: 1,
               indent: 16,
               endIndent: 16,
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ChapterAndQuestionsScreen extends StatelessWidget {
-  final String courseName;
-
-  ChapterAndQuestionsScreen({required this.courseName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(courseName),
-      ),
-      body: Center(
-        child: Text('Details for $courseName'),
       ),
     );
   }
