@@ -29,13 +29,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginLoading) {
-          isLoading = true;
+          setState(() {
+            isLoading = true;
+          });
         } else if (state is LoginSuccess) {
+          setState(() {
+            isLoading = false;
+          });
           GoRouter.of(context).push(AppRouter.kMainScreen);
-          isLoading = false;
         } else if (state is LoginFailure) {
+          setState(() {
+            isLoading = false;
+          });
           showSnackBar(context, state.errMessage);
-          isLoading = false;
         }
       },
       builder: (context, state) => ModalProgressHUD(
@@ -81,8 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: passController,
                           label: 'Password',
                           hintText: 'Enter your password',
-                          obscureText:
-                              !isPasswordVisible, // التحكم في إظهار/إخفاء الباسورد
+                          obscureText: !isPasswordVisible,
                           suffixIcon: IconButton(
                             icon: Icon(
                               isPasswordVisible
@@ -92,8 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                isPasswordVisible =
-                                    !isPasswordVisible; // تغيير الحالة
+                                isPasswordVisible = !isPasswordVisible;
                               });
                             },
                           ),
@@ -115,10 +119,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (id.isEmpty || password.isEmpty) {
                                 showSnackBar(context, 'Please fill all fields');
                               } else {
-                               // GoRouter.of(context).push(AppRouter.kHomeView);
                                 BlocProvider.of<LoginCubit>(context).loginUser(
-                                 id: id,
-                                 password: password,
+                                  id: id,
+                                  password: password,
                                 );
                               }
                             }
@@ -136,14 +139,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Private method لإنشاء TextFormField
   Widget _buildCustomTextField({
     required TextEditingController controller,
     required String label,
     required String hintText,
     bool obscureText = false,
     String? Function(String?)? validator,
-    Widget? suffixIcon, // إضافة معامل suffixIcon
+    Widget? suffixIcon,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

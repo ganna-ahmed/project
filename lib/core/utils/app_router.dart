@@ -18,6 +18,7 @@ import 'package:project/features/list/presentation/views/list_view.dart';
 import 'package:project/features/question/presentation/views/add_last_question.dart';
 import 'package:project/features/question/presentation/views/add_question.dart';
 import 'package:project/features/question/presentation/views/bubble_sheet.dart';
+import 'package:project/features/question/presentation/views/question_bank.dart';
 import 'package:project/features/splash/presentation/views/splash_view.dart';
 import 'package:project/features/update/presentation/view/update_view.dart';
 import 'package:project/features/user/presentation/views/edit_profile.dart';
@@ -43,6 +44,8 @@ abstract class AppRouter {
   static const kProgrssScreen = '/progressCorrect';
   static const kResultStudent = '/resultStudent';
   static const kStartCorrectScreen = '/StartCorrectScreen';
+  static const kQuestionBank = '/QuestionBank';
+
   static final router = GoRouter(
     routes: [
       GoRoute(
@@ -203,7 +206,11 @@ abstract class AppRouter {
       // ),
       GoRoute(
         path: '/resultStudent',
-        builder: (context, state) => const ResultStudentPage(),
+        builder: (context, state) => ResultStudentPage(),
+      ),
+      GoRoute(
+        path: kQuestionBank,
+        builder: (context, state) => const QuestionBank(),
       ),
     ],
   );

@@ -44,10 +44,10 @@ class ButtonsWidget extends StatelessWidget {
 
     return Column(
       children: [
-        buildButton('Create Models Of Question', () {}),
+        buildButton('Question Bank', () {}),
         SizedBox(height: screenHeight * 0.02.h),
         buildButton('Correction Of Bubble Sheet', () {
-          GoRouter.of(context).push(AppRouter.kUploadModelAnswer);
+          GoRouter.of(context).push(AppRouter.kQuestionBank);
         }),
         SizedBox(height: screenHeight * 0.02.h),
         buildButton('Create Bubble Sheet', () {
