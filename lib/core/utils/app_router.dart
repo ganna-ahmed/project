@@ -212,6 +212,7 @@ abstract class AppRouter {
         path: kQuestionBank,
         builder: (context, state) => QuestionBank(),
       ),
+
     ],
   );
 }

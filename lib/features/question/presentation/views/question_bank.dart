@@ -7,7 +7,11 @@ import 'package:project/core/constants/colors.dart';
 import 'dart:convert';
 
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
+<<<<<<< HEAD
 import 'package:project/features/question/presentation/views/chapter_and_question.dart';
+=======
+import 'chapter_and_questions.dart' show ChapterAndQuestionsPage;
+>>>>>>> 224a548d46e536d7bcb4ef730a847e876121137f
 
 class QuestionBank extends StatefulWidget {
   @override
@@ -27,7 +31,8 @@ class _QuestionBankState extends State<QuestionBank> {
 
   Future<void> _fetchCourses() async {
     final doctorId = BlocProvider.of<LoginCubit>(context).doctorDatabaseId;
-    print('🚀🚀🚀🚀🚀🚀🚀🚀$doctorId');
+    print('🚀 Doctor ID: $doctorId');
+
     if (doctorId == null) {
       setState(() {
         errorMessage = 'Doctor ID not found. Please log in again.';
@@ -76,10 +81,8 @@ class _QuestionBankState extends State<QuestionBank> {
       body: Column(
         children: [
           SizedBox(height: 20.h),
-
-          // العنوان الرئيسي
           const Text(
-            ' Your material according to your list',
+            'Your material according to your list',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -88,17 +91,13 @@ class _QuestionBankState extends State<QuestionBank> {
             ),
           ),
           SizedBox(height: 20.h),
-
-          // الصورة التوضيحية
           Image.asset(
-            'assets/images/material.png', // استبدل بهذا المسار الصورة الخاصة بك
+            'assets/images/material.png',
             width: 200.w,
             height: 200.h,
             fit: BoxFit.contain,
           ),
           SizedBox(height: 20.h),
-
-          // شاشة التحميل أو الخطأ
           if (isLoading)
             CircularProgressIndicator()
           else if (errorMessage.isNotEmpty)
@@ -121,7 +120,6 @@ class _QuestionBankState extends State<QuestionBank> {
   }
 }
 
-// Widget لعرض كل مادة
 class CourseItem extends StatelessWidget {
   final String course;
 
@@ -129,23 +127,24 @@ class CourseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final doctorId = BlocProvider.of<LoginCubit>(context).doctorDatabaseId;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
       child: InkWell(
         onTap: () {
-          // انتقال إلى صفحة التفاصيل عند النقر على المادة
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ChapterAndQuestionsScreen(
+              builder: (context) => ChapterAndQuestionsPage(
                 courseName: course,
+                doctorId: doctorId ?? '',
               ),
             ),
           );
         },
         child: Column(
           children: [
-            // اسم المادة
             Text(
               course,
               style: const TextStyle(
@@ -154,7 +153,6 @@ class CourseItem extends StatelessWidget {
                 color: Color(0xFF004aad),
               ),
             ),
-            // خط أفقي رفيع أسفل كل عنصر
             Divider(
               color: const Color(0xFF004aad).withOpacity(0.5),
               thickness: 1,
