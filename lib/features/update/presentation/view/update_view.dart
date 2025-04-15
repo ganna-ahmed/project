@@ -16,18 +16,16 @@ class UpdatePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-
             ImageWidget(
-              height: screenHeight * 0.5.h,
+              height: screenHeight * 0.4,
               width: screenWidth.w,
             ),
-
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1.w),
                 child: ButtonsWidget(
-                  screenHeight: screenHeight.h,
-                  screenWidth: screenWidth.w,
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
                 ),
               ),
             ),

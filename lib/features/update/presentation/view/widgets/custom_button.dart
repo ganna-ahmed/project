@@ -27,7 +27,7 @@ class ButtonsWidget extends StatelessWidget {
         ),
         child: SizedBox(
           width: double.infinity,
-          height: screenHeight * 0.07.h,
+          // height: screenHeight * 0.07.h,
           child: Center(
             child: Text(
               text,
@@ -44,10 +44,12 @@ class ButtonsWidget extends StatelessWidget {
 
     return Column(
       children: [
-        buildButton('Question Bank', () {}),
+        buildButton('Question Bank', () {
+          GoRouter.of(context).push(AppRouter.kQuestionBank);
+        }),
         SizedBox(height: screenHeight * 0.02.h),
         buildButton('Correction Of Bubble Sheet', () {
-          GoRouter.of(context).push(AppRouter.kQuestionBank);
+          GoRouter.of(context).push(AppRouter.kUploadModelAnswer);
         }),
         SizedBox(height: screenHeight * 0.02.h),
         buildButton('Create Bubble Sheet', () {

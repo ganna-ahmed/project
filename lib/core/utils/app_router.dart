@@ -210,7 +210,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kQuestionBank,
-        builder: (context, state) => const QuestionBank(),
+        builder: (context, state) => QuestionBank(),
       ),
     ],
   );

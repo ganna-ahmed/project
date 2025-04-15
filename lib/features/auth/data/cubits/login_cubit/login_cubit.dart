@@ -15,7 +15,7 @@ class LoginCubit extends Cubit<LoginState> {
   SignInModel? get loggedInDoctor => _loggedInDoctor;
 
   // Getter لاسترجاع ID الطبيب مباشرة
-  String? get doctorDatabaseId => _loggedInDoctor?.idDoctor;
+  String? get doctorDatabaseId => _loggedInDoctor?.id;
 
   Future<void> loginUser({required String id, required String password}) async {
     emit(LoginLoading());
