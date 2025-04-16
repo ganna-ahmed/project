@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/question/presentation/views/add_previous_exam.dart';
+import 'package:project/features/question/presentation/views/chapters_screen.dart';
 
 class ChapterAndQuestionsPage extends StatelessWidget {
   final String courseName;
@@ -75,8 +76,15 @@ class ChapterAndQuestionsPage extends StatelessWidget {
                 GradientButton(
                   text: 'From Chapters',
                   onPressed: () {
-                    Navigator.pushNamed(
-                        context, '/Chapter?course=$courseName&id=$doctorId');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChaptersScreen(
+                          courseName: courseName,
+                          doctorId: doctorId,
+                        ),
+                      ),
+                    );
                   },
                 ),
                 GradientButton(
