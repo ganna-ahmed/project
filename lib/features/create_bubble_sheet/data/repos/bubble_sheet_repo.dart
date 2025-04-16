@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/constants.dart';
+import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 import 'dart:convert';
 import '../models/course_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +12,8 @@ import 'package:open_file/open_file.dart';
 
 class BubbleSheetRepository {
   final String baseUrl = kBaseUrl;
+  // BuildContext buildContext = BuildContext();
+  // final String? id = BlocProvider.of<LoginCubit>(context).doctorDatabaseId;
 
   /// 🔹 **جلب الكورسات الخاصة بالدكتور باستخدام `PATCH`**
   Future<List<CourseModel>> fetchCourses() async {
