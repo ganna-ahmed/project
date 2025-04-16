@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/features/question/presentation/views/add_previous_exam.dart';
 
 class ChapterAndQuestionsPage extends StatelessWidget {
   final String courseName;
@@ -61,25 +62,35 @@ class ChapterAndQuestionsPage extends StatelessWidget {
                 GradientButton(
                   text: 'ADD previous Exam',
                   onPressed: () {
-                    Navigator.pushNamed(context, '/previousExam?course=$courseName&id=$doctorId');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddPreviousExamsScreen(
+                          courseName: courseName,
+                        ),
+                      ),
+                    );
                   },
                 ),
                 GradientButton(
                   text: 'From Chapters',
                   onPressed: () {
-                    Navigator.pushNamed(context, '/Chapter?course=$courseName&id=$doctorId');
+                    Navigator.pushNamed(
+                        context, '/Chapter?course=$courseName&id=$doctorId');
                   },
                 ),
                 GradientButton(
                   text: 'make model from previous exam',
                   onPressed: () {
-                    Navigator.pushNamed(context, '/makeModel?course=$courseName&id=$doctorId');
+                    Navigator.pushNamed(
+                        context, '/makeModel?course=$courseName&id=$doctorId');
                   },
                 ),
                 GradientButton(
                   text: 'Show Details',
                   onPressed: () {
-                    Navigator.pushNamed(context, '/showDetails?course=$courseName&id=$doctorId');
+                    Navigator.pushNamed(context,
+                        '/showDetails?course=$courseName&id=$doctorId');
                   },
                 ),
               ],
