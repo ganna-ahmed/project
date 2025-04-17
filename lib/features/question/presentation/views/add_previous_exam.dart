@@ -222,7 +222,7 @@ class _AddPreviousExamsScreenState extends State<AddPreviousExamsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xFF004aad),
+        backgroundColor: AppColors.ceruleanBlue,
         title: Text(
           'Add Exams - ${widget.courseName}',
           style: TextStyle(color: Colors.white),

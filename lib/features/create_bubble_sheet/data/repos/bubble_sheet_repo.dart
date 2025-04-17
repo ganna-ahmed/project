@@ -11,17 +11,17 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
 
 class BubbleSheetRepository {
-  final String baseUrl = kBaseUrl;
-  // BuildContext buildContext = BuildContext();
-  // final String? id = BlocProvider.of<LoginCubit>(context).doctorDatabaseId;
+  // final String baseUrl = kBaseUrl;
+  final String id;
 
-  /// 🔹 **جلب الكورسات الخاصة بالدكتور باستخدام `PATCH`**
+  BubbleSheetRepository({required this.id});
+
   Future<List<CourseModel>> fetchCourses() async {
     try {
       final response = await http.patch(
-        Uri.parse('$baseUrl/Doctor/CreateBubbleSheet'),
+        Uri.parse('$kBaseUrl/Doctor/CreateBubbleSheet'),
         headers: {'Content-Type': 'application/json'},
-        // body: jsonEncode({'idDoctor': id}), // إرسال `doctorId` في الـ body
+        body: jsonEncode({'idDoctor': id}),
       );
 
       if (response.statusCode == 200) {
@@ -44,7 +44,7 @@ class BubbleSheetRepository {
       }
 
       final response = await http.post(
-        Uri.parse('$baseUrl/Doctor/CreateBubbleSheet'),
+        Uri.parse('$kBaseUrl/Doctor/CreateBubbleSheet'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'Department': course.department,
