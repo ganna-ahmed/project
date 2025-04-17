@@ -1,0 +1,2 @@
+D:/Tasneem/project/android/app/.cxx/Debug/6o1v5b2w/x86_64/CMakeFiles/edit_cache.dir
+D:/Tasneem/project/android/app/.cxx/Debug/6o1v5b2w/x86_64/CMakeFiles/rebuild_cache.dir
