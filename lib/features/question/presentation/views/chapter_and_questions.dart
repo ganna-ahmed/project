@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/core/constants/colors.dart';
 import 'package:project/features/question/presentation/views/add_previous_exam.dart';
 import 'package:project/features/question/presentation/views/chapters_screen.dart';
 
@@ -16,7 +17,7 @@ class ChapterAndQuestionsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chapter and Questions'),
-        backgroundColor: const Color(0xFF004aad),
+        backgroundColor: AppColors.ceruleanBlue,
         foregroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
