@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/features/question/presentation/views/ai_questions.dart';
 
 import 'manual_questions.dart';
 
@@ -48,13 +49,13 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
         setState(() {
           chapters = List<Map<String, dynamic>>.from(
             data['pdfFiles'].map((fileName) => {
-              'name': fileName,
-              'manualUrl':
-              '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
-              'aiUrl':
-              '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
-              'hasPdf': true,
-            }),
+                  'name': fileName,
+                  'manualUrl':
+                      '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
+                  'aiUrl':
+                      '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
+                  'hasPdf': true,
+                }),
           );
           isLoading = false;
         });
@@ -98,15 +99,16 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
         );
 
         setState(() {
-          final index = chapters.indexWhere((chapter) => chapter['name'] == chapterName);
+          final index =
+              chapters.indexWhere((chapter) => chapter['name'] == chapterName);
           if (index != -1) {
             final newFileName = file.name;
             chapters[index]['name'] = newFileName;
             chapters[index]['hasPdf'] = true;
             chapters[index]['manualUrl'] =
-            '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
+                '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
             chapters[index]['aiUrl'] =
-            '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
+                '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
           }
         });
       } else {
@@ -125,7 +127,7 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
       setState(() {
         chapters = List.generate(
           count,
-              (index) => {
+          (index) => {
             'name': 'Chapter ${index + 1}',
             'hasPdf': false,
           },
@@ -195,70 +197,79 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
               ),
             ),
             SizedBox(height: 16),
-            buildGradientButton('Generate Chapters Locally', generateChaptersLocally),
+            buildGradientButton(
+                'Generate Chapters Locally', generateChaptersLocally),
             SizedBox(height: 16),
             buildGradientButton('Show PDFs on Server', fetchChapters),
             SizedBox(height: 24),
             isLoading
                 ? CircularProgressIndicator()
                 : Expanded(
-              child: ListView.builder(
-                itemCount: chapters.length,
-                itemBuilder: (context, index) {
-                  final chapter = chapters[index];
-                  return Card(
-                    color: Color(0xFFACE1F9),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 4,
-                    child: InkWell(
-                      onTap: () {
-                        if (chapter['hasPdf'] == false) {
-                          uploadPdfForChapter(chapter['name']);
-                        }
+                    child: ListView.builder(
+                      itemCount: chapters.length,
+                      itemBuilder: (context, index) {
+                        final chapter = chapters[index];
+                        return Card(
+                          color: Color(0xFFACE1F9),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          elevation: 4,
+                          child: InkWell(
+                            onTap: () {
+                              if (chapter['hasPdf'] == false) {
+                                uploadPdfForChapter(chapter['name']);
+                              }
+                            },
+                            child: ListTile(
+                              title: Text(
+                                chapter['name'],
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              trailing: chapter['hasPdf'] == true
+                                  ? Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                            icon: Icon(Icons.smart_toy,
+                                                color: Colors.blue),
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AIQuestionsScreen(
+                                                    courseName:
+                                                        widget.courseName,
+                                                    doctorId: widget.doctorId,
+                                                    fileName: chapter['name'],
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                        IconButton(
+                                          icon: Icon(Icons.edit_note,
+                                              color: Colors.green),
+                                          onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ManualQuestionScreen(
+                                                url: chapter['manualUrl'],
+                                                title: chapter['name'],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Icon(Icons.upload_file,
+                                      color: Colors.black54),
+                            ),
+                          ),
+                        );
                       },
-                      child: ListTile(
-                        title: Text(
-                          chapter['name'],
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        trailing: chapter['hasPdf'] == true
-                            ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.smart_toy, color: Colors.blue),
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LinkScreen(
-                                    url: chapter['aiUrl'],
-                                    title: 'AI Questions',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.edit_note, color: Colors.green),
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ManualQuestionScreen(
-                                    url: chapter['manualUrl'],
-                                    title: chapter['name'],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                            : Icon(Icons.upload_file, color: Colors.black54),
-                      ),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
           ],
         ),
       ),
