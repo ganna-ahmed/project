@@ -44,7 +44,7 @@ class _ShowAllMaualQuestionsScreenState
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'idDoctor': widget.doctorId,
-          'course': widget.courseName,
+          'courseName': widget.courseName,
           'file': widget.fileName,
         }),
       );

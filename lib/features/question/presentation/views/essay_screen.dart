@@ -35,7 +35,7 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
       'paragraph': '',
       'questions': [],
       'idDoctor': widget.doctorId,
-      'course': widget.courseName,
+      'courseName': widget.courseName,
       'file': widget.fileName,
     };
 
@@ -46,6 +46,9 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
     );
 
     if (response.statusCode == 200) {
+      print('🔴🔴🔴🔴🔴🔴🔴🔴🔴${widget.courseName}');
+      print('🔴🔴🔴🔴🔴🔴🔴🔴🔴${widget.fileName}');
+      print('🔴🔴🔴🔴🔴🔴🔴🔴🔴${widget.doctorId}');
       print('🔴🔴🔴${response.body}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Question added successfully!${response.body}')),

@@ -105,6 +105,7 @@ class _MCQScreenState extends State<MCQScreen> {
       );
 
       if (response.statusCode == 200) {
+        print('🔴🔴🚀🚀🚀${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Question Added Successfully!')),
         );
