@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:project/features/question/presentation/views/show_all_maual_questions.dart';
 import 'essay_screen.dart';
 import 'mcq_screen.dart';
 import 'multiChoice_screen.dart';
 
-
-
 class ManualQuestionScreen extends StatefulWidget {
-  final String url;
-  final String title;
+  // final String url;
+  // final String title;
+  final String courseName;
+  final String fileName;
+  final String doctorId;
 
   const ManualQuestionScreen({
     Key? key,
-    required this.url,
-    required this.title,
+    // required this.url,
+    // required this.title,
+    required this.courseName,
+    required this.fileName,
+    required this.doctorId,
   }) : super(key: key);
 
   @override
   State<ManualQuestionScreen> createState() => _ManualQuestionScreenState();
 }
 
-class _ManualQuestionScreenState extends State<ManualQuestionScreen> with TickerProviderStateMixin {
+class _ManualQuestionScreenState extends State<ManualQuestionScreen>
+    with TickerProviderStateMixin {
   bool showOptions = false;
 
   late final AnimationController _controller;
@@ -38,17 +45,20 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen> with Ticker
     _mcqOffset = Tween<Offset>(
       begin: Offset(0, -0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Interval(0.0, 0.4, curve: Curves.easeOut)));
+    ).animate(CurvedAnimation(
+        parent: _controller, curve: Interval(0.0, 0.4, curve: Curves.easeOut)));
 
     _easyOffset = Tween<Offset>(
       begin: Offset(0, -0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Interval(0.2, 0.6, curve: Curves.easeOut)));
+    ).animate(CurvedAnimation(
+        parent: _controller, curve: Interval(0.2, 0.6, curve: Curves.easeOut)));
 
     _multiOffset = Tween<Offset>(
       begin: Offset(0, -0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Interval(0.4, 0.8, curve: Curves.easeOut)));
+    ).animate(CurvedAnimation(
+        parent: _controller, curve: Interval(0.4, 0.8, curve: Curves.easeOut)));
   }
 
   void toggleMenu() {
@@ -62,7 +72,8 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen> with Ticker
     });
   }
 
-  Widget buildOption(String text, Animation<Offset> animation, VoidCallback onTap) {
+  Widget buildOption(
+      String text, Animation<Offset> animation, VoidCallback onTap) {
     return SlideTransition(
       position: animation,
       child: Padding(
@@ -110,20 +121,41 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen> with Ticker
                 children: [
                   if (showOptions)
                     buildOption("MCQ", _mcqOffset, () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MCQScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MCQScreen(
+                                    doctorId: widget.doctorId,
+                                    courseName: widget.courseName,
+                                    fileName: widget.fileName,
+                                  )));
                     }),
                   if (showOptions)
                     buildOption("Essay", _easyOffset, () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => EssayQuestionScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => EssayQuestionScreen(
+                                    doctorId: widget.doctorId,
+                                    courseName: widget.courseName,
+                                    fileName: widget.fileName,
+                                  )));
                     }),
                   if (showOptions)
                     buildOption("Multi Choice", _multiOffset, () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MultiChoiceScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MultiChoiceQuestionsScreen(
+                                    courseName: widget.courseName,
+                                    fileName: widget.fileName,
+                                    doctorId: widget.doctorId,
+                                  )));
                     }),
-                  SizedBox(height: 50),
+                  SizedBox(height: 50.h),
                   if (showOptions)
                     Container(
-                      width: 260,
+                      width: 260.w,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [Color(0xFFb2e8fa), Color(0xFF004aad)],
@@ -132,12 +164,19 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen> with Ticker
                       ),
                       child: TextButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => AllQuestionsScreen()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ShowAllMaualQuestionsScreen(
+                                        doctorId: widget.doctorId,
+                                        courseName: widget.courseName,
+                                        fileName: widget.fileName,
+                                      )));
                         },
                         child: Text(
                           "show all Questions",
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 24.sp,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
@@ -166,18 +205,12 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen> with Ticker
 // Screens to navigate to:
 /////////////////////////////////
 
-
-
-
-
-
-
-class AllQuestionsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("All Questions")),
-      body: Center(child: Text("All questions go here!")),
-    );
-  }
-}
+// class AllQuestionsScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text("All Questions")),
+//       body: Center(child: Text("All questions go here!")),
+//     );
+//   }
+// }

@@ -254,8 +254,11 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   ManualQuestionScreen(
-                                                url: chapter['manualUrl'],
-                                                title: chapter['name'],
+                                                // url: chapter['manualUrl'],
+                                                // title: chapter['name'],
+                                                courseName: widget.courseName,
+                                                fileName: chapter['name'],
+                                                doctorId: widget.doctorId,
                                               ),
                                             ),
                                           ),
