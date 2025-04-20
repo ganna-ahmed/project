@@ -6,6 +6,9 @@ import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 import 'package:project/core/utils/assets.dart';
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
+import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_cubit.dart';
+import 'package:project/features/create_bubble_sheet/data/repos/bubble_sheet_repo.dart';
+import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -59,7 +62,19 @@ class _HomeViewState extends State<HomeView> {
             SizedBox(height: 10.h),
             ElevatedButton(
               onPressed: () {
-                GoRouter.of(context).push(AppRouter.kUpdateView);
+                final doctorId = context.read<LoginCubit>().doctorDatabaseId;
+
+                if (doctorId == null || doctorId.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("⚠️ Doctor ID not found")),
+                  );
+                  return;
+                }
+
+                GoRouter.of(context).push(
+                  AppRouter.kCreateBubbleSheet,
+                  extra: doctorId, // فقط الـ id مش الـ BlocProvider
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.ceruleanBlue,

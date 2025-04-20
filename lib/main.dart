@@ -19,55 +19,11 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(428, 926),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => LoginCubit()),
-          // BubbleSheetCubit هيبقى محتاج الـ repository جوه Widget تاني بعد ما يكون loginCubit جهز
-        ],
-        child: Builder(
-          builder: (context) {
-            final doctorId =
-                BlocProvider.of<LoginCubit>(context).doctorDatabaseId ?? '';
-
-            final BubbleSheetRepository repository =
-                BubbleSheetRepository(id: doctorId);
-
-            return BlocProvider(
-              create: (context) => BubbleSheetCubit(repository),
-              child: MaterialApp.router(
-                routerConfig: AppRouter.router,
-                debugShowCheckedModeBanner: false,
-                theme: ThemeData().copyWith(
-                  scaffoldBackgroundColor: AppColors.white,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-
 // class MyApp extends StatelessWidget {
 //   MyApp({super.key});
 
-//   //  final AnswerSheetRepository repos = AnswerSheetRepository();
 //   @override
 //   Widget build(BuildContext context) {
-//     final doctorId = BlocProvider.of<LoginCubit>(context).doctorDatabaseId!;
-//     final BubbleSheetRepository repository =
-//         BubbleSheetRepository(id: doctorId);
 //     return ScreenUtilInit(
 //       designSize: const Size(428, 926),
 //       minTextAdapt: true,
@@ -75,17 +31,60 @@ class MyApp extends StatelessWidget {
 //       child: MultiBlocProvider(
 //         providers: [
 //           BlocProvider(create: (context) => LoginCubit()),
-//           BlocProvider(create: (context) => BubbleSheetCubit(repository)),
-//           //BlocProvider(create: (context) => AnswerSheetCubit(repos)),
+//           // BubbleSheetCubit هيبقى محتاج الـ repository جوه Widget تاني بعد ما يكون loginCubit جهز
 //         ],
-//         child: MaterialApp.router(
-//           routerConfig: AppRouter.router,
-//           debugShowCheckedModeBanner: false,
-//           theme: ThemeData().copyWith(
-//             scaffoldBackgroundColor: AppColors.white,
-//           ),
+//         child: Builder(
+//           builder: (context) {
+//             final doctorId =
+//                 BlocProvider.of<LoginCubit>(context).doctorDatabaseId ?? '';
+
+//             final BubbleSheetRepository repository =
+//                 BubbleSheetRepository(id: doctorId);
+
+//             return BlocProvider(
+//               create: (context) => BubbleSheetCubit(repository),
+//               child: MaterialApp.router(
+//                 routerConfig: AppRouter.router,
+//                 debugShowCheckedModeBanner: false,
+//                 theme: ThemeData().copyWith(
+//                   scaffoldBackgroundColor: AppColors.white,
+//                 ),
+//               ),
+//             );
+//           },
 //         ),
 //       ),
 //     );
 //   }
 // }
+
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
+  //  final AnswerSheetRepository repos = AnswerSheetRepository();
+  @override
+  Widget build(BuildContext context) {
+    // final doctorId = BlocProvider.of<LoginCubit>(context).doctorDatabaseId!;
+    // final BubbleSheetRepository repository =
+    //     BubbleSheetRepository(id: doctorId);
+    return ScreenUtilInit(
+      designSize: const Size(428, 926),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => LoginCubit()),
+          // BlocProvider(create: (context) => BubbleSheetCubit(repository)),
+          //BlocProvider(create: (context) => AnswerSheetCubit(repos)),
+        ],
+        child: MaterialApp.router(
+          routerConfig: AppRouter.router,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData().copyWith(
+            scaffoldBackgroundColor: AppColors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}

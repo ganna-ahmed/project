@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:project/constants.dart';
-import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 import 'dart:convert';
 import '../models/course_model.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
@@ -15,7 +13,6 @@ class BubbleSheetRepository {
   final String id;
 
   BubbleSheetRepository({required this.id});
-
   Future<List<CourseModel>> fetchCourses() async {
     try {
       final response = await http.patch(
@@ -23,10 +20,19 @@ class BubbleSheetRepository {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'idDoctor': id}),
       );
+      print('❌❌✅❌❌$id');
+      print('${response.body}');
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((json) => CourseModel.fromJson(json)).toList();
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['documents'] != null &&
+            responseData['documents'].isNotEmpty) {
+          final List<dynamic> documents = responseData['documents'];
+          return documents.map((json) => CourseModel.fromJson(json)).toList();
+        } else {
+          return []; // Return empty list if no documents
+        }
       } else {
         throw Exception('❌ Failed to load courses: ${response.statusCode}');
       }
@@ -34,6 +40,27 @@ class BubbleSheetRepository {
       throw Exception('⚠️ Network error: $e');
     }
   }
+
+  // Future<List<CourseModel>> fetchCourses() async {
+  //   try {
+  //     final response = await http.patch(
+  //       Uri.parse('$kBaseUrl/Doctor/CreateBubbleSheet'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({'idDoctor': id}),
+  //     );
+  //     print('❌❌✅❌❌$id');
+  //     print('${response.body}');
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+
+  //       return data.map((json) => CourseModel.fromJson(json)).toList();
+  //     } else {
+  //       throw Exception('❌ Failed to load courses: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('⚠️ Network error: $e');
+  //   }
+  // }
 
   /// 🔹 **إنشاء ملف PDF بناءً على بيانات الكورس**
   Future<void> createPDF(CourseModel course) async {
@@ -79,7 +106,7 @@ class BubbleSheetRepository {
     }
   }
 
-  /// 🔹 **تحميل وحفظ ملف PDF في مجلد التنزيلات**
+//   / 🔹 **تحميل وحفظ ملف PDF في مجلد التنزيلات**
   Future<File?> downloadFile(String fileName, http.Response response) async {
     try {
       const downloadPath = '/storage/emulated/0/Download';
@@ -197,4 +224,3 @@ class BubbleSheetRepository {
 //     }
 //   }
 // }
-

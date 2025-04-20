@@ -40,7 +40,7 @@ class CourseModel {
       time: json['Time'] ?? '',
       fullMark: json['FuLLMark'] ?? '',
       form: json['fORm'] ?? '',
-      numberOfQuestions: json['NumberofQuestions'] ?? 0,
+      numberOfQuestions: (json['NumberofQuestions'] ?? '').toString(),
     );
   }
 }

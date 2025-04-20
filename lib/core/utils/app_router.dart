@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:project/features/Main/presentation/view/main_screen.dart';
@@ -11,6 +12,8 @@ import 'package:project/features/correction_bubble_sheet/presentation/views/set_
 import 'package:project/features/correction_bubble_sheet/presentation/views/start_correction.dart';
 import 'package:project/features/correction_bubble_sheet/presentation/views/upload_model_answer.dart';
 import 'package:project/features/correction_bubble_sheet/presentation/views/upload_student_paper.dart';
+import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_cubit.dart';
+import 'package:project/features/create_bubble_sheet/data/repos/bubble_sheet_repo.dart';
 import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
@@ -81,10 +84,19 @@ abstract class AppRouter {
       //  path: kLastQuestion,
       //builder: (context, state) => const AddLastQuestion(),
       // ),
+      // AppRouter.dart
       GoRoute(
         path: kCreateBubbleSheet,
-        builder: (context, state) => const BubbleSheetPage(),
+        builder: (context, state) {
+          final doctorId = state.extra as String;
+          return BlocProvider(
+            create: (_) =>
+                BubbleSheetCubit(BubbleSheetRepository(id: doctorId)),
+            child: const BubbleSheetPage(),
+          );
+        },
       ),
+
       // GoRoute(
       //   path: kSetDegree,
       //   builder: (context, state) => SetDegree(),
@@ -212,7 +224,6 @@ abstract class AppRouter {
         path: kQuestionBank,
         builder: (context, state) => QuestionBank(),
       ),
-
     ],
   );
 }
