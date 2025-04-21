@@ -73,8 +73,8 @@ class ButtonsWidget extends StatelessWidget {
           );
         }),
         SizedBox(height: screenHeight * 0.02.h),
-        buildButton('Create New List', () {
-          GoRouter.of(context).push(AppRouter.kListScreen);
+        buildButton('Create Models Of Questions', () {
+          GoRouter.of(context).push(AppRouter.kStartExamPage);
         }),
       ],
     );

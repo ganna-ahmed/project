@@ -74,7 +74,6 @@ class BubbleSheetCubit extends Cubit<BubbleSheetState> {
       emit(CoursesLoaded(courses));
     } catch (e) {
       emit(BubbleSheetError(e.toString()));
-      print('❌❌❌❌❌$e');
     }
   }
 
@@ -102,6 +101,7 @@ class BubbleSheetCubit extends Cubit<BubbleSheetState> {
       emit(PDFCreatedSuccess());
     } catch (e) {
       emit(BubbleSheetError(e.toString()));
+      print('❌❌❌$e');
     }
   }
 }

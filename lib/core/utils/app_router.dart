@@ -18,6 +18,7 @@ import 'package:project/features/create_bubble_sheet/presentation/views/bubble_s
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
 import 'package:project/features/list/presentation/views/list_view.dart';
+import 'package:project/features/modelsOfQuestion/view/exam.dart';
 import 'package:project/features/question/presentation/views/add_last_question.dart';
 import 'package:project/features/question/presentation/views/add_question.dart';
 import 'package:project/features/question/presentation/views/bubble_sheet.dart';
@@ -41,7 +42,7 @@ abstract class AppRouter {
   static const kUpdateView = '/UpdateView';
   static const kUploadModelAnswer = '/UploadModelAnswer';
   static const kUploadStudentPaper = '/UploadStudentPaper';
-  static const kListScreen = '/ListScreen';
+  static const kStartExamPage = '/StartExamPage';
   static const kProcessingPage = '/kProcessingPage';
   static const kCheckForUpload = '/checkForUpload';
   static const kProgrssScreen = '/progressCorrect';
@@ -156,8 +157,8 @@ abstract class AppRouter {
       //     }),
 
       GoRoute(
-        path: kListScreen,
-        builder: (context, state) => const ListScreen(),
+        path: kStartExamPage,
+        builder: (context, state) => const StartExamPage(),
       ),
       // GoRoute(
       //   path: kStartCorrectScreen,
