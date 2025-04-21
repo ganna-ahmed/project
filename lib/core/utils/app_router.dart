@@ -14,6 +14,7 @@ import 'package:project/features/correction_bubble_sheet/presentation/views/uplo
 import 'package:project/features/correction_bubble_sheet/presentation/views/upload_student_paper.dart';
 import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_cubit.dart';
 import 'package:project/features/create_bubble_sheet/data/repos/bubble_sheet_repo.dart';
+import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet.dart';
 import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/intro/presentation/views/intro.dart';
@@ -99,9 +100,13 @@ abstract class AppRouter {
       ),
 
       // GoRoute(
-      //   path: kSetDegree,
-      //   builder: (context, state) => SetDegree(),
-      // ),
+      //     path: kCreateBubbleSheet,
+      //     builder: (context, state) {
+      //       final doctorId = state.extra as String;
+      //       BubbleSheetPage(
+      //         id:doctorId ,
+      //       );
+      //     }),
       GoRoute(
         path: kOnBoarding,
         builder: (context, state) => const OnBoarding(),

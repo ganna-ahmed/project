@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet.dart';
 
 class StartExamPage extends StatefulWidget {
   const StartExamPage({super.key});
@@ -41,7 +42,7 @@ class _StartExamPageState extends State<StartExamPage> {
     });
   }
 
-  void _handleGetStarted() async {
+  Future<void> _handleGetStarted() async {
     if (doctorId == null || doctorId!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("⚠ Doctor ID not found")),
@@ -50,18 +51,37 @@ class _StartExamPageState extends State<StartExamPage> {
     }
 
     final uri = Uri.parse('$kBaseUrl/Doctor/informationModel');
-    final params = uri.queryParameters;
-
     final newUri = uri.replace(
       queryParameters: {
-        ...params,
         'id': doctorId!,
         'modelName': modelName,
       },
     );
 
-    if (!await launchUrl(newUri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $newUri');
+    try {
+      final response = await http.get(newUri);
+      print('🚫🚫🚫${response.body}${response.statusCode}');
+      if (response.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BubbleSheet2Page(
+              id: doctorId!,
+              modelName: modelName,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  "❌ Failed to create exam model: ${response.statusCode}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("🚫 Error occurred: $e")),
+      );
     }
   }
 
@@ -81,6 +101,7 @@ class _StartExamPageState extends State<StartExamPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text('$modelName \n🚫🚫🚫$doctorId'),
                     Image.asset(
                       'assets/images/welcom.png',
                       height: 250,

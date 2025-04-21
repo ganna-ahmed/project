@@ -11,39 +11,6 @@ class BubbleSheetPage extends StatefulWidget {
   State<BubbleSheetPage> createState() => _BubbleSheetPageState();
 }
 
-// class _BubbleSheetPageState extends State<BubbleSheetPage> {
-//   @override
-//   void didChangeDependencies() {
-//     super.didChangeDependencies();
-
-//     context.read<BubbleSheetCubit>().loadCourses();
-//   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     context.read<BubbleSheetCubit>().resetState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider.value(
-//       value: context.read<BubbleSheetCubit>(),
-//       child: BlocBuilder<BubbleSheetCubit, BubbleSheetState>(
-//         builder: (context, state) {
-//           final courses = context.read<BubbleSheetCubit>().courses;
-//           final selectedCourse =
-//               context.read<BubbleSheetCubit>().selectedCourse;
-
-//           return Course(
-//             courses: courses,
-//             selectedCourse: selectedCourse,
-//           );
-//         },
-//       ),
-//     );
-//   }
 class _BubbleSheetPageState extends State<BubbleSheetPage> {
   bool _isInitialized = false;
 
@@ -77,3 +44,37 @@ class _BubbleSheetPageState extends State<BubbleSheetPage> {
     );
   }
 }
+
+// class _BubbleSheetPageState extends State<BubbleSheetPage> {
+//   @override
+//   void didChangeDependencies() {
+//     super.didChangeDependencies();
+
+//     context.read<BubbleSheetCubit>().loadCourses();
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     context.read<BubbleSheetCubit>().resetState();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocProvider.value(
+//       value: context.read<BubbleSheetCubit>(),
+//       child: BlocBuilder<BubbleSheetCubit, BubbleSheetState>(
+//         builder: (context, state) {
+//           final courses = context.read<BubbleSheetCubit>().courses;
+//           final selectedCourse =
+//               context.read<BubbleSheetCubit>().selectedCourse;
+
+//           return Course(
+//             courses: courses,
+//             selectedCourse: selectedCourse,
+//           );
+//         },
+//       ),
+//     );
+//   }

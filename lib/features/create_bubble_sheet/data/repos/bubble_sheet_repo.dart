@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path_lib;
 import 'package:path_provider/path_provider.dart';
 import 'package:project/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import '../models/course_model.dart';
 import 'dart:io';
@@ -124,6 +125,57 @@ class BubbleSheetRepository {
       print('❌ Error saving file: $e');
       print('🛠 Stacktrace: $stacktrace');
       return null;
+    }
+  }
+
+  Future<void> _submitForm(CourseModel course, {required modelName}) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$kBaseUrl/Doctor/informationModel'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'modelName': modelName,
+          'Department': course.department,
+          'CourseName': course.courseName,
+          'CourseCode': course.courseCode,
+          'CourseLevel': course.courseLevel,
+          'Semester': course.semester,
+          'Instructor': course.instructor,
+          'Date': course.date,
+          'Time': course.time,
+          'FuLLMark':
+              course.fullMark, // Fixed case to match backend's expectation
+          'fORm': course.form, // Fixed case to match backend's expectation
+          'NumberofQuestions': course.numberOfQuestions
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['message'] == 'Model saved successfully!') {
+          // Navigate to mymatrials page after delay
+          await Future.delayed(const Duration(seconds: 2));
+
+          final uri = Uri.parse('$kBaseUrl/Doctor/mymatrials');
+          final newUri = uri.replace(
+            queryParameters: {
+              'id': id,
+              'modelName': modelName,
+              'course': course.courseName,
+            },
+          );
+
+          if (await canLaunchUrl(newUri)) {
+            await launchUrl(newUri);
+          }
+        }
+      } else {
+        print(
+          'Failed to save information',
+        );
+      }
+    } catch (e) {
+      print('Error: ${e.toString()}');
     }
   }
 }
