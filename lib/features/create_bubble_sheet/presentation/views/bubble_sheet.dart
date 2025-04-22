@@ -12,6 +12,7 @@ import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 import 'package:project/features/create_bubble_sheet/data/models/course_model.dart';
+import 'package:project/features/modelsOfQuestion/view/information.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -195,8 +196,8 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'idDoctor': widget.id}),
       );
-      print('🔵 Doctor ID: ${widget.id}');
-      print('🟢 Response Body: ${response.body}');
+      // print('🔵 Doctor ID: ${widget.id}');
+      // print('🟢 Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -392,27 +393,26 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
         final data = json.decode(response.body);
         if (data['message'] == 'Model saved successfully!') {
           QuickAlert.show(
+            onConfirmBtnTap: () {
+              Navigator.pop(context); // <<< أهو دي الإضافة
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InformationPage(
+                    idDoctor: widget.id,
+                    modelName: widget.modelName,
+                    courseName: course.courseName,
+                  ),
+                ),
+              );
+            },
             context: context,
             type: QuickAlertType.success,
             title: 'Success',
             text: 'Information saved successfully',
           );
 
-          // Navigate to mymatrials page after delay
-          await Future.delayed(const Duration(seconds: 2));
-
-          final uri = Uri.parse('$kBaseUrl/Doctor/mymatrials');
-          final newUri = uri.replace(
-            queryParameters: {
-              'id': widget.id,
-              'modelName': widget.modelName,
-              'course': course.courseName,
-            },
-          );
-
-          if (await canLaunchUrl(newUri)) {
-            await launchUrl(newUri);
-          }
+          // (ممكن كمان تشيل الكود بتاع launchUrl لو مش عايزه بعدين)
         }
       } else {
         QuickAlert.show(
