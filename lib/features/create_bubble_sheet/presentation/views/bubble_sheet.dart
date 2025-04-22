@@ -12,6 +12,7 @@ import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 import 'package:project/features/create_bubble_sheet/data/models/course_model.dart';
+import 'package:project/features/modelsOfQuestion/view/infopage.dart';
 import 'package:project/features/modelsOfQuestion/view/information.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -398,7 +399,7 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => InformationPage(
+                  builder: (context) => InfoPage(
                     idDoctor: widget.id,
                     modelName: widget.modelName,
                     courseName: course.courseName,
