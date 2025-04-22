@@ -273,7 +273,7 @@ class _ShowFromPreviosExamState extends State<ShowFromPreviosExam> {
                 children: [
                   // Title
                   Text(
-                    'Questions for Chapter',
+                    'Questions for Exam',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,

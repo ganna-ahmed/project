@@ -7,6 +7,8 @@ import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/modelsOfQuestion/view/infopage.dart';
 import 'package:project/features/modelsOfQuestion/view/information.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class QuestionsForChapterManualPage extends StatefulWidget {
   const QuestionsForChapterManualPage({
@@ -72,6 +74,13 @@ class _QuestionsForChapterManualPageState
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
+        // التحقق من وجود بيانات
+        if (data == null || (data is List && data.isEmpty)) {
+          _showErrorAlert('No Questions Found',
+              'There are no questions available for this chapter.');
+          return;
+        }
+
         // Process the returned data
         List<dynamic> allQuestions = data;
         List<dynamic> mcqList = [];
@@ -98,17 +107,40 @@ class _QuestionsForChapterManualPageState
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load questions: ${response.statusCode}');
+        _showErrorAlert(
+            'Server Error', 'Failed to load questions: ${response.statusCode}');
       }
     } catch (e) {
       print('Error loading questions: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-      setState(() {
-        isLoading = false;
-      });
+      _showErrorAlert(
+          'Error', 'There are no Questions for this chapter manually');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
+  }
+
+// دالة لعرض تنبيه الخطأ
+  void _showErrorAlert(String title, String message) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: title,
+      text: message,
+      confirmBtnText: 'OK',
+      cancelBtnText: 'Go Back',
+      showCancelBtn: true,
+      onCancelBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه
+        Navigator.pop(context); // العودة للصفحة السابقة
+      },
+      onConfirmBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه فقط
+      },
+    );
   }
 
   void _toggleSelection(dynamic question, String type) {
@@ -255,7 +287,7 @@ class _QuestionsForChapterManualPageState
                 children: [
                   // Title
                   Text(
-                    'Questions for Chapter',
+                    'Questions for Exam',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,

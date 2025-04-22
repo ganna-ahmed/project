@@ -7,6 +7,8 @@ import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/modelsOfQuestion/view/infopage.dart';
 import 'package:project/features/modelsOfQuestion/view/information.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class QuestionsForChapterAiPage extends StatefulWidget {
   const QuestionsForChapterAiPage({
@@ -73,30 +75,60 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
 
         // التحقق من نجاح الاستجابة ونوعها
         if (data['success'] == true && data['type'] == "ai") {
-          setState(() {
-            // تحديث هيكل البيانات ليتوافق مع الكود الثاني
-            mcqQuestions = data['data']['mcq'] ?? [];
-            essayQuestions = data['data']['essay'] ?? [];
-            multiChoiceQuestions = data['data']['multi'] ?? [];
+          // التحقق من وجود البيانات
+          if (data['data'] != null) {
+            setState(() {
+              // تحديث هيكل البيانات بالتحقق من null
+              mcqQuestions = data['data']['mcq'] ?? [];
+              essayQuestions = data['data']['essay'] ?? [];
+              multiChoiceQuestions = data['data']['multi'] ?? [];
 
-            questionsLoaded = true;
-            isLoading = false;
-          });
+              questionsLoaded = true;
+              isLoading = false;
+            });
+          } else {
+            // إظهار رسالة خطأ عند عدم وجود بيانات
+            _showErrorAlert('No questions found for this chapter',
+                'Please try selecting another chapter or contact support.');
+          }
         } else {
-          throw Exception('API response format not as expected');
+          _showErrorAlert(
+              'Error Loading Questions', 'API response format not as expected');
         }
       } else {
-        throw Exception('Failed to load questions: ${response.statusCode}');
+        _showErrorAlert(
+            'Server Error', 'Failed to load questions: ${response.statusCode}');
       }
     } catch (e) {
       print('Error loading questions: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-      setState(() {
-        isLoading = false;
-      });
+      _showErrorAlert('Error', 'Failed to load questions: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
+  }
+
+  // دالة لعرض تنبيه الخطأ
+  void _showErrorAlert(String title, String message) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: title,
+      text: message,
+      confirmBtnText: 'OK',
+      cancelBtnText: 'Go Back',
+      showCancelBtn: true,
+      onCancelBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه
+        Navigator.pop(context); // العودة للصفحة السابقة
+      },
+      onConfirmBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه فقط
+      },
+    );
   }
 
   void _toggleSelection(dynamic question, String type) {
@@ -216,7 +248,7 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
                 children: [
                   // Title
                   Text(
-                    'Questions for Chapter',
+                    'Questions for Exam',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
