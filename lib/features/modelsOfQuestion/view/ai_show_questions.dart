@@ -7,6 +7,8 @@ import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/modelsOfQuestion/view/infopage.dart';
 import 'package:project/features/modelsOfQuestion/view/information.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class QuestionsForChapterAiPage extends StatefulWidget {
   const QuestionsForChapterAiPage({
@@ -73,30 +75,60 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
 
         // التحقق من نجاح الاستجابة ونوعها
         if (data['success'] == true && data['type'] == "ai") {
-          setState(() {
-            // تحديث هيكل البيانات ليتوافق مع الكود الثاني
-            mcqQuestions = data['data']['mcq'] ?? [];
-            essayQuestions = data['data']['essay'] ?? [];
-            multiChoiceQuestions = data['data']['multi'] ?? [];
+          // التحقق من وجود البيانات
+          if (data['data'] != null) {
+            setState(() {
+              // تحديث هيكل البيانات بالتحقق من null
+              mcqQuestions = data['data']['mcq'] ?? [];
+              essayQuestions = data['data']['essay'] ?? [];
+              multiChoiceQuestions = data['data']['multi'] ?? [];
 
-            questionsLoaded = true;
-            isLoading = false;
-          });
+              questionsLoaded = true;
+              isLoading = false;
+            });
+          } else {
+            // إظهار رسالة خطأ عند عدم وجود بيانات
+            _showErrorAlert('No questions found for this chapter',
+                'Please try selecting another chapter or contact support.');
+          }
         } else {
-          throw Exception('API response format not as expected');
+          _showErrorAlert(
+              'Error Loading Questions', 'API response format not as expected');
         }
       } else {
-        throw Exception('Failed to load questions: ${response.statusCode}');
+        _showErrorAlert(
+            'Server Error', 'Failed to load questions: ${response.statusCode}');
       }
     } catch (e) {
       print('Error loading questions: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-      setState(() {
-        isLoading = false;
-      });
+      _showErrorAlert('Error', 'Failed to load questions: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
+  }
+
+  // دالة لعرض تنبيه الخطأ
+  void _showErrorAlert(String title, String message) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: title,
+      text: message,
+      confirmBtnText: 'OK',
+      cancelBtnText: 'Go Back',
+      showCancelBtn: true,
+      onCancelBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه
+        Navigator.pop(context); // العودة للصفحة السابقة
+      },
+      onConfirmBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه فقط
+      },
+    );
   }
 
   void _toggleSelection(dynamic question, String type) {
@@ -216,7 +248,7 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
                 children: [
                   // Title
                   Text(
-                    'Questions for Chapter',
+                    'Questions for Exam',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -284,15 +316,15 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: questionsLoaded &&
-                              (selectedQuestions['mcq']!.isNotEmpty ||
-                                  selectedQuestions['essay']!.isNotEmpty ||
-                                  selectedQuestions['multi']!.isNotEmpty)
+                          (selectedQuestions['mcq']!.isNotEmpty ||
+                              selectedQuestions['essay']!.isNotEmpty ||
+                              selectedQuestions['multi']!.isNotEmpty)
                           ? _addToExam
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.ceruleanBlue,
                         disabledBackgroundColor:
-                            AppColors.ceruleanBlue.withOpacity(0.5),
+                        AppColors.ceruleanBlue.withOpacity(0.5),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.r),
@@ -453,7 +485,7 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border(
                       left:
-                          BorderSide(color: AppColors.ceruleanBlue, width: 4.w),
+                      BorderSide(color: AppColors.ceruleanBlue, width: 4.w),
                     ),
                   ),
                   child: Column(
@@ -488,10 +520,10 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
                       ),
                       ...List.generate(
                         (passage['questions'] as List<dynamic>?)
-                                ?.take(3)
-                                .length ??
+                            ?.take(3)
+                            .length ??
                             0,
-                        (qIndex) {
+                            (qIndex) {
                           final question = passage['questions'][qIndex];
                           return Container(
                             margin: EdgeInsets.only(
@@ -525,29 +557,29 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
                                       left: 15.w, right: 15.w, bottom: 15.h),
                                   child: Column(
                                     children: (question['options']
-                                                as List<dynamic>?)
-                                            ?.take(4)
-                                            .map((option) => Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 10.w,
-                                                    vertical: 6.h,
-                                                  ),
-                                                  margin: EdgeInsets.only(
-                                                      bottom: 5.h),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        const Color(0xFFf8faff),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.r),
-                                                  ),
-                                                  child: Text(
-                                                    option.toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 14.sp),
-                                                  ),
-                                                ))
-                                            .toList() ??
+                                    as List<dynamic>?)
+                                        ?.take(4)
+                                        .map((option) => Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10.w,
+                                        vertical: 6.h,
+                                      ),
+                                      margin: EdgeInsets.only(
+                                          bottom: 5.h),
+                                      decoration: BoxDecoration(
+                                        color:
+                                        const Color(0xFFf8faff),
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            5.r),
+                                      ),
+                                      child: Text(
+                                        option.toString(),
+                                        style: TextStyle(
+                                            fontSize: 14.sp),
+                                      ),
+                                    ))
+                                        .toList() ??
                                         [],
                                   ),
                                 ),
@@ -613,13 +645,13 @@ class _QuestionsForChapterAiPageState extends State<QuestionsForChapterAiPage> {
             SizedBox(height: 8.h),
             ...List.generate(
               (question['options'] as List).length,
-              (index) {
+                  (index) {
                 final option = question['options'][index];
                 return Padding(
                   padding: EdgeInsets.only(left: 30.w, top: 4.h),
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     margin: EdgeInsets.only(bottom: 5.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFf8faff),

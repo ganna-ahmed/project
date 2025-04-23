@@ -159,7 +159,7 @@ class _ShowFromPreviosExamState extends State<ShowFromPreviosExam> {
     setState(() {
       final selectedList = selectedQuestions[type]!;
       final questionText =
-          type == 'mcq' || type == 'multi' ? question['question'] : question;
+      type == 'mcq' || type == 'multi' ? question['question'] : question;
 
       // Check if already selected
       final isSelected = selectedList.any((q) => q['text'] == questionText);
@@ -170,7 +170,7 @@ class _ShowFromPreviosExamState extends State<ShowFromPreviosExam> {
         selectedList.add({
           'text': questionText,
           'options':
-              type == 'mcq' || type == 'multi' ? question['options'] : null,
+          type == 'mcq' || type == 'multi' ? question['options'] : null,
         });
       }
     });
@@ -178,7 +178,7 @@ class _ShowFromPreviosExamState extends State<ShowFromPreviosExam> {
 
   bool _isSelected(dynamic question, String type) {
     final questionText =
-        type == 'mcq' || type == 'multi' ? question['question'] : question;
+    type == 'mcq' || type == 'multi' ? question['question'] : question;
     return selectedQuestions[type]!.any((q) => q['text'] == questionText);
   }
 
@@ -273,7 +273,7 @@ class _ShowFromPreviosExamState extends State<ShowFromPreviosExam> {
                 children: [
                   // Title
                   Text(
-                    'Questions for Chapter',
+                    'Questions for Exam',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -341,15 +341,15 @@ class _ShowFromPreviosExamState extends State<ShowFromPreviosExam> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: questionsLoaded &&
-                              (selectedQuestions['mcq']!.isNotEmpty ||
-                                  selectedQuestions['essay']!.isNotEmpty ||
-                                  selectedQuestions['multi']!.isNotEmpty)
+                          (selectedQuestions['mcq']!.isNotEmpty ||
+                              selectedQuestions['essay']!.isNotEmpty ||
+                              selectedQuestions['multi']!.isNotEmpty)
                           ? _addToExam
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.ceruleanBlue,
                         disabledBackgroundColor:
-                            AppColors.ceruleanBlue.withOpacity(0.5),
+                        AppColors.ceruleanBlue.withOpacity(0.5),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.r),

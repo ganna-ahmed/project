@@ -7,6 +7,8 @@ import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/modelsOfQuestion/view/infopage.dart';
 import 'package:project/features/modelsOfQuestion/view/information.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class QuestionsForChapterManualPage extends StatefulWidget {
   const QuestionsForChapterManualPage({
@@ -72,6 +74,13 @@ class _QuestionsForChapterManualPageState
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
+        // التحقق من وجود بيانات
+        if (data == null || (data is List && data.isEmpty)) {
+          _showErrorAlert('No Questions Found',
+              'There are no questions available for this chapter.');
+          return;
+        }
+
         // Process the returned data
         List<dynamic> allQuestions = data;
         List<dynamic> mcqList = [];
@@ -98,17 +107,40 @@ class _QuestionsForChapterManualPageState
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load questions: ${response.statusCode}');
+        _showErrorAlert(
+            'Server Error', 'Failed to load questions: ${response.statusCode}');
       }
     } catch (e) {
       print('Error loading questions: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-      setState(() {
-        isLoading = false;
-      });
+      _showErrorAlert(
+          'Error', 'There are no Questions for this chapter manually');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
+  }
+
+// دالة لعرض تنبيه الخطأ
+  void _showErrorAlert(String title, String message) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: title,
+      text: message,
+      confirmBtnText: 'OK',
+      cancelBtnText: 'Go Back',
+      showCancelBtn: true,
+      onCancelBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه
+        Navigator.pop(context); // العودة للصفحة السابقة
+      },
+      onConfirmBtnTap: () {
+        Navigator.pop(context); // إغلاق التنبيه فقط
+      },
+    );
   }
 
   void _toggleSelection(dynamic question, String type) {
@@ -255,7 +287,7 @@ class _QuestionsForChapterManualPageState
                 children: [
                   // Title
                   Text(
-                    'Questions for Chapter',
+                    'Questions for Exam',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -323,15 +355,15 @@ class _QuestionsForChapterManualPageState
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: questionsLoaded &&
-                              (selectedQuestions['mcq']!.isNotEmpty ||
-                                  selectedQuestions['essay']!.isNotEmpty ||
-                                  selectedQuestions['multi']!.isNotEmpty)
+                          (selectedQuestions['mcq']!.isNotEmpty ||
+                              selectedQuestions['essay']!.isNotEmpty ||
+                              selectedQuestions['multi']!.isNotEmpty)
                           ? _addToExam
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.ceruleanBlue,
                         disabledBackgroundColor:
-                            AppColors.ceruleanBlue.withOpacity(0.5),
+                        AppColors.ceruleanBlue.withOpacity(0.5),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.r),
@@ -492,7 +524,7 @@ class _QuestionsForChapterManualPageState
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border(
                       left:
-                          BorderSide(color: AppColors.ceruleanBlue, width: 4.w),
+                      BorderSide(color: AppColors.ceruleanBlue, width: 4.w),
                     ),
                   ),
                   child: Column(
@@ -529,10 +561,10 @@ class _QuestionsForChapterManualPageState
                       ),
                       ...List.generate(
                         (passage['questions'] as List<dynamic>?)
-                                ?.take(3)
-                                .length ??
+                            ?.take(3)
+                            .length ??
                             0,
-                        (qIndex) {
+                            (qIndex) {
                           final question = passage['questions'][qIndex];
                           return Container(
                             margin: EdgeInsets.only(
@@ -566,30 +598,30 @@ class _QuestionsForChapterManualPageState
                                       left: 15.w, right: 15.w, bottom: 15.h),
                                   child: Column(
                                     children: ((question['options'] ??
-                                                    question['choices'])
-                                                as List<dynamic>?)
-                                            ?.take(4)
-                                            .map((option) => Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 10.w,
-                                                    vertical: 6.h,
-                                                  ),
-                                                  margin: EdgeInsets.only(
-                                                      bottom: 5.h),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        const Color(0xFFf8faff),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.r),
-                                                  ),
-                                                  child: Text(
-                                                    option.toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 14.sp),
-                                                  ),
-                                                ))
-                                            .toList() ??
+                                        question['choices'])
+                                    as List<dynamic>?)
+                                        ?.take(4)
+                                        .map((option) => Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10.w,
+                                        vertical: 6.h,
+                                      ),
+                                      margin: EdgeInsets.only(
+                                          bottom: 5.h),
+                                      decoration: BoxDecoration(
+                                        color:
+                                        const Color(0xFFf8faff),
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            5.r),
+                                      ),
+                                      child: Text(
+                                        option.toString(),
+                                        style: TextStyle(
+                                            fontSize: 14.sp),
+                                      ),
+                                    ))
+                                        .toList() ??
                                         [],
                                   ),
                                 ),
@@ -656,14 +688,14 @@ class _QuestionsForChapterManualPageState
             SizedBox(height: 8.h),
             ...List.generate(
               (question['options'] ?? question['choices'] as List).length,
-              (index) {
+                  (index) {
                 final option =
-                    (question['options'] ?? question['choices'])[index];
+                (question['options'] ?? question['choices'])[index];
                 return Padding(
                   padding: EdgeInsets.only(left: 30.w, top: 4.h),
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     margin: EdgeInsets.only(bottom: 5.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFf8faff),
