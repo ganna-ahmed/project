@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/constants.dart';
-import 'package:project/features/modelsOfQuestion/questions_for_chapter.dart';
 import 'package:project/features/modelsOfQuestion/view/ai_show_questions.dart';
 import 'package:project/features/modelsOfQuestion/view/manual_show_questions.dart';
 import 'package:project/features/modelsOfQuestion/view/review_exam.dart';
 import 'package:project/features/modelsOfQuestion/view/show_previous_exam.dart';
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({
@@ -163,11 +161,11 @@ class _InfoPageState extends State<InfoPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ShowFromPreviosExam(
-                                      idDoctor: widget.idDoctor,
-                                      courseName: widget.courseName,
-                                      modelName: widget.modelName,
-                                      year: selectedExam!,
-                                    )));
+                                          idDoctor: widget.idDoctor,
+                                          courseName: widget.courseName,
+                                          modelName: widget.modelName,
+                                          year: selectedExam!,
+                                        )));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -224,21 +222,21 @@ class _InfoPageState extends State<InfoPage> {
                               MaterialPageRoute(
                                 builder: (context) => selectedMode == 'manual'
                                     ? QuestionsForChapterManualPage(
-                                  idDoctor: widget.idDoctor,
-                                  courseName: widget.courseName,
-                                  modelName: widget.modelName,
-                                  // year: selectedExam!,
-                                  chapterName: selectedChapter!,
-                                  mode: selectedMode!,
-                                )
+                                        idDoctor: widget.idDoctor,
+                                        courseName: widget.courseName,
+                                        modelName: widget.modelName,
+                                        // year: selectedExam!,
+                                        chapterName: selectedChapter!,
+                                        mode: selectedMode!,
+                                      )
                                     : QuestionsForChapterAiPage(
-                                  idDoctor: widget.idDoctor,
-                                  courseName: widget.courseName,
-                                  modelName: widget.modelName,
-                                  // year: selectedExam!,
-                                  chapterName: selectedChapter!,
-                                  mode: selectedMode!,
-                                ),
+                                        idDoctor: widget.idDoctor,
+                                        courseName: widget.courseName,
+                                        modelName: widget.modelName,
+                                        // year: selectedExam!,
+                                        chapterName: selectedChapter!,
+                                        mode: selectedMode!,
+                                      ),
                               ),
                             );
                           },
@@ -261,51 +259,42 @@ class _InfoPageState extends State<InfoPage> {
                         ),
                       ),
                     ],
-                    if (selectedChapter != null && selectedMode != null ||
-                        selectedExam != null) ...[
-                      // hide button if manual is selected
-                      SizedBox(height: 20.h),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF004AAD), Color(0xFF7AB6F9)],
+                    SizedBox(height: 20.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF004AAD), Color(0xFF7AB6F9)],
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ExamReviewApp(
+                                        idDoctor: widget.idDoctor,
+                                        modelName: widget.modelName,
+                                      )));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(vertical: 14.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                         ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ExamReviewApp(
-                                          idDoctor: widget.idDoctor,
-                                          courseName: widget.courseName,
-                                          modelName: widget.modelName,
-                                          // year: selectedExam ?? '',
-                                          chapterName: selectedChapter!,
-                                          mode: selectedMode!,
-                                        )));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(vertical: 14.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                          ),
-                          child: Text(
-                            'Review Exam',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                        child: Text(
+                          'Review Exam',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),

@@ -1,19 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:project/constants.dart';
-import 'package:project/core/constants/colors.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 
@@ -21,18 +12,13 @@ import 'make_exam.dart';
 
 class ExamReviewApp extends StatelessWidget {
   final String idDoctor;
-  final String courseName;
+
   final String modelName;
-  final String chapterName;
-  final String mode;
 
   const ExamReviewApp({
     super.key,
     required this.idDoctor,
-    required this.courseName,
     required this.modelName,
-    required this.chapterName,
-    required this.mode
   });
 
   @override
@@ -47,9 +33,6 @@ class ExamReviewApp extends StatelessWidget {
       home: ExamReviewPage(
         idDoctor: idDoctor,
         modelName: modelName,
-        courseName: courseName,
-        chapterName: chapterName,
-        mode: mode,
       ),
     );
   }
@@ -58,17 +41,11 @@ class ExamReviewApp extends StatelessWidget {
 class ExamReviewPage extends StatefulWidget {
   final String idDoctor;
   final String modelName;
-  final String courseName;
-  final String chapterName;
-  final String mode;
 
   const ExamReviewPage({
     super.key,
     required this.idDoctor,
     required this.modelName,
-    required this.courseName,
-    required this.chapterName,
-    required this.mode,
   });
 
   @override
@@ -139,8 +116,7 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
       if (question['answers'] != null) {
         for (int j = 0; j < question['answers'].length; j++) {
           _optionControllers[questionKey]!.add(
-              TextEditingController(text: question['answers'][j]['value'])
-          );
+              TextEditingController(text: question['answers'][j]['value']));
         }
       }
 
@@ -151,10 +127,11 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
           _optionControllers[subKey] = [];
 
           if (question['questions'][j]['answers'] != null) {
-            for (int k = 0; k < question['questions'][j]['answers'].length; k++) {
-              _optionControllers[subKey]!.add(
-                  TextEditingController(text: question['questions'][j]['answers'][k]['value'])
-              );
+            for (int k = 0;
+                k < question['questions'][j]['answers'].length;
+                k++) {
+              _optionControllers[subKey]!.add(TextEditingController(
+                  text: question['questions'][j]['answers'][k]['value']));
             }
           }
         }
@@ -171,12 +148,14 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
     }
   }
 
-  void _setCorrectAnswer(int questionIndex, String questionKey, String answer, int optionIndex) {
+  void _setCorrectAnswer(
+      int questionIndex, String questionKey, String answer, int optionIndex) {
     _answerControllers[questionKey]?.text = answer;
     setState(() {
       _selectedAnswers[questionIndex] = answer;
       _showCorrectAnswer[questionIndex] = true;
-      _selectedOptionIndex[questionKey] = optionIndex; // Store which option was selected
+      _selectedOptionIndex[questionKey] =
+          optionIndex; // Store which option was selected
 
       // Hide notification after 3 seconds
       Future.delayed(const Duration(seconds: 3), () {
@@ -215,7 +194,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
             ),
             TextButton(
               onPressed: () {
-                _setCorrectAnswer(questionIndex, questionKey, answer, optionIndex);
+                _setCorrectAnswer(
+                    questionIndex, questionKey, answer, optionIndex);
                 Navigator.pop(context);
               },
               child: const Text('Accept'),
@@ -225,6 +205,7 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
       );
     }
   }
+
   void _validateAnswers() {
     List<String> warnings = [];
 
@@ -237,7 +218,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
 
           // Skip validation for Essay questions AND reading passages in Multi questions
           if (questionType != 'Essay' && questionType != 'Multi') {
-            warnings.add('⚠ Question ${questionIndex + 1} needs correct answer');
+            warnings
+                .add('⚠ Question ${questionIndex + 1} needs correct answer');
           }
         } else {
           final questionIndex = int.parse(parts[0].substring(1));
@@ -245,8 +227,10 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
 
           // Only validate sub-questions, not the reading passage
           if (questions[questionIndex]['type'] == 'Multi' &&
-              questions[questionIndex]['questions'][subQuestionIndex]['type'] != 'Essay') {
-            warnings.add('⚠ Sub Question ${questionIndex + 1}.${subQuestionIndex + 1} needs correct answer');
+              questions[questionIndex]['questions'][subQuestionIndex]['type'] !=
+                  'Essay') {
+            warnings.add(
+                '⚠ Sub Question ${questionIndex + 1}.${subQuestionIndex + 1} needs correct answer');
           }
         }
       }
@@ -258,6 +242,7 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
       _showToast('✅ All answers validated successfully!');
     }
   }
+
   Future<void> _submitExam() async {
     try {
       final response = await http.patch(
@@ -272,7 +257,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
 
       if (response.statusCode == 200) {
         _showSuccess('Exam submitted successfully!');
-        final url = '${kBaseUrl}/Doctor/DownloadArchive?id=${widget.idDoctor}&modelName=${widget.modelName}';
+        final url =
+            '${kBaseUrl}/Doctor/DownloadArchive?id=${widget.idDoctor}&modelName=${widget.modelName}';
         launchUrl(Uri.parse(url));
       } else {
         _showError('Failed to submit exam: ${response?.reasonPhrase}');
@@ -289,8 +275,12 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
         final questionData = {
           'type': q['type'],
           'text': q['text'] ?? q['passage'],
-          'answers': _optionControllers[questionKey]?.asMap().map((index, controller) =>
-              MapEntry(index.toString(), controller.text)).values.toList(),
+          'answers': _optionControllers[questionKey]
+              ?.asMap()
+              .map((index, controller) =>
+                  MapEntry(index.toString(), controller.text))
+              .values
+              .toList(),
           'correct_answer': _answerControllers[questionKey]?.text,
         };
 
@@ -300,15 +290,23 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
         }
 
         if (q['type'] == 'Multi') {
-          questionData['questions'] = (q['questions'] as List).asMap().map((j, sq) {
-            final subKey = 'q$i-s$j';
-            return MapEntry(j, {
-              'text': sq['text'],
-              'answers': _optionControllers[subKey]?.asMap().map((index, controller) =>
-                  MapEntry(index.toString(), controller.text)).values.toList(),
-              'correct_answer': _answerControllers[subKey]?.text,
-            });
-          }).values.toList();
+          questionData['questions'] = (q['questions'] as List)
+              .asMap()
+              .map((j, sq) {
+                final subKey = 'q$i-s$j';
+                return MapEntry(j, {
+                  'text': sq['text'],
+                  'answers': _optionControllers[subKey]
+                      ?.asMap()
+                      .map((index, controller) =>
+                          MapEntry(index.toString(), controller.text))
+                      .values
+                      .toList(),
+                  'correct_answer': _answerControllers[subKey]?.text,
+                });
+              })
+              .values
+              .toList();
         }
 
         return MapEntry(i.toString(), questionData);
@@ -352,15 +350,14 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
 
   void _showToast(String message) {
     FToast().init(context).showToast(
-        child: Container(
+            child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
             color: AppColors.ceruleanBlue,
           ),
           child: Text(message, style: const TextStyle(color: Colors.white)),
-        )
-    );
+        ));
   }
 
   void _navigateToMakeExam() {
@@ -374,6 +371,7 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
       ),
     );
   }
+
   @override
   void dispose() {
     for (var controller in _answerControllers.values) {
@@ -398,52 +396,55 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            ...List.generate(questions.length, (index) {
-              final question = questions[index];
-              final questionKey = 'q$index';
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  ...List.generate(questions.length, (index) {
+                    final question = questions[index];
+                    final questionKey = 'q$index';
 
-              if (question['type'] == 'MCQ') {
-                return _buildMcqQuestion(question, index);
-              } else if (question['type'] == 'Multi') {
-                return _buildMultiQuestion(question, index);
-              } else {
-                return _buildEssayQuestion(question, index);
-              }
-            }),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _validateAnswers,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.ceruleanBlue,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    if (question['type'] == 'MCQ') {
+                      return _buildMcqQuestion(question, index);
+                    } else if (question['type'] == 'Multi') {
+                      return _buildMultiQuestion(question, index);
+                    } else {
+                      return _buildEssayQuestion(question, index);
+                    }
+                  }),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _validateAnswers,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.ceruleanBlue,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                        ),
+                        child: const Text('Validate All Answers',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: _navigateToMakeExam,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                        ),
+                        child: const Text('Make Exam',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
                   ),
-                  child: const Text('Validate All Answers', style: TextStyle(color: Colors.white)),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: _navigateToMakeExam,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  ),
-                  child: const Text('Make Exam', style: TextStyle(color: Colors.white)),
-                ),
-              ],
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -466,11 +467,13 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               decoration: BoxDecoration(
                 color: Colors.green.shade100,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
               ),
               child: Text(
                 'Selected correct answer: ${_selectedAnswers[index]}',
-                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.green, fontWeight: FontWeight.bold),
               ),
             ),
 
@@ -483,12 +486,15 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                   children: [
                     Text(
                       'Question ${index + 1}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.ceruleanBlue),
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.ceruleanBlue),
                     ),
                     const SizedBox(width: 10),
                     IconButton(
-
-                      icon: const Icon(Icons.smart_toy, color: AppColors.ceruleanBlue),
+                      icon: const Icon(Icons.smart_toy,
+                          color: AppColors.ceruleanBlue),
                       onPressed: () => _getAIRecommendation(index, questionKey),
                       tooltip: 'Get AI recommendation',
                     ),
@@ -530,22 +536,32 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                               border: Border.all(color: Colors.grey.shade300),
                               borderRadius: BorderRadius.circular(4),
                               // Highlight the selected answer with green background
-                              color: isSelected ? Colors.green.shade50 : Colors.white,
+                              color: isSelected
+                                  ? Colors.green.shade50
+                                  : Colors.white,
                             ),
                             child: TextFormField(
                               controller: _optionControllers[questionKey]![i],
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 12),
                                 // Apply green text color to selected answer
                                 labelStyle: TextStyle(
-                                  color: isSelected ? Colors.green : Colors.black,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color:
+                                      isSelected ? Colors.green : Colors.black,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                               style: TextStyle(
-                                color: isSelected ? Colors.green.shade800 : Colors.black,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                color: isSelected
+                                    ? Colors.green.shade800
+                                    : Colors.black,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
                           ),
@@ -554,17 +570,18 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                         if (isSelected)
                           const IconButton(
                             icon: Icon(Icons.check_circle, color: Colors.green),
-                            onPressed: null, // No action needed when clicked on the checkmark
+                            onPressed:
+                                null, // No action needed when clicked on the checkmark
                           )
                         else
                           IconButton(
-                            icon: const Icon(Icons.circle_outlined, color: Colors.grey),
+                            icon: const Icon(Icons.circle_outlined,
+                                color: Colors.grey),
                             onPressed: () => _setCorrectAnswer(
                                 index,
                                 questionKey,
                                 _optionControllers[questionKey]![i].text,
-                                i
-                            ),
+                                i),
                           ),
                       ],
                     ),
@@ -577,14 +594,16 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(4),
-                    color: Colors.white, // Changed to white since it's now editable
+                    color: Colors
+                        .white, // Changed to white since it's now editable
                   ),
                   child: TextFormField(
                     controller: _answerControllers[questionKey],
                     decoration: const InputDecoration(
                       labelText: 'Correct Answer',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     ),
                     readOnly: false, // Changed to allow editing
                   ),
@@ -609,7 +628,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                     ),
                     const SizedBox(width: 10),
                     if (_questionImages[index] == null)
-                      Text('No file chosen', style: TextStyle(color: Colors.grey.shade600)),
+                      Text('No file chosen',
+                          style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               ],
@@ -641,7 +661,10 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                   children: [
                     Text(
                       'Question ${index + 1} (Multi-Part)',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.ceruleanBlue),
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.ceruleanBlue),
                     ),
                   ],
                 ),
@@ -689,12 +712,15 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                           children: [
                             Text(
                               'Part ${index + 1}.${subIndex + 1}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(width: 10),
                             IconButton(
-                              icon: const Icon(Icons.smart_toy, color: Colors.blue),
-                              onPressed: () => _getAIRecommendation(compositeIndex, subKey),
+                              icon: const Icon(Icons.smart_toy,
+                                  color: Colors.blue),
+                              onPressed: () =>
+                                  _getAIRecommendation(compositeIndex, subKey),
                               tooltip: 'Get AI recommendation',
                             ),
                           ],
@@ -703,7 +729,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
 
                         // Sub-question Text
                         TextFormField(
-                          controller: TextEditingController(text: subQuestion['text']),
+                          controller:
+                              TextEditingController(text: subQuestion['text']),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             filled: true,
@@ -713,7 +740,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                         const SizedBox(height: 10),
 
                         // Sub-question Options
-                        ...List.generate(_optionControllers[subKey]!.length, (i) {
+                        ...List.generate(_optionControllers[subKey]!.length,
+                            (i) {
                           final isSelected = _selectedOptionIndex[subKey] == i;
 
                           return Padding(
@@ -723,25 +751,39 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                                 Expanded(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey.shade300),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
                                       borderRadius: BorderRadius.circular(4),
                                       // Highlight the selected answer with green background
-                                      color: isSelected ? Colors.green.shade50 : Colors.white,
+                                      color: isSelected
+                                          ? Colors.green.shade50
+                                          : Colors.white,
                                     ),
                                     child: TextFormField(
-                                      controller: _optionControllers[subKey]![i],
+                                      controller:
+                                          _optionControllers[subKey]![i],
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 12),
                                         // Apply green text color to selected answer
                                         labelStyle: TextStyle(
-                                          color: isSelected ? Colors.green : Colors.black,
-                                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                          color: isSelected
+                                              ? Colors.green
+                                              : Colors.black,
+                                          fontWeight: isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
                                         ),
                                       ),
                                       style: TextStyle(
-                                        color: isSelected ? Colors.green.shade800 : Colors.black,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                        color: isSelected
+                                            ? Colors.green.shade800
+                                            : Colors.black,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                       ),
                                     ),
                                   ),
@@ -749,18 +791,20 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                                 // Only show the checkmark for the selected answer
                                 if (isSelected)
                                   const IconButton(
-                                    icon: Icon(Icons.check_circle, color: Colors.green),
-                                    onPressed: null, // No action needed when clicked on the checkmark
+                                    icon: Icon(Icons.check_circle,
+                                        color: Colors.green),
+                                    onPressed:
+                                        null, // No action needed when clicked on the checkmark
                                   )
                                 else
                                   IconButton(
-                                    icon: const Icon(Icons.circle_outlined, color: Colors.grey),
+                                    icon: const Icon(Icons.circle_outlined,
+                                        color: Colors.grey),
                                     onPressed: () => _setCorrectAnswer(
                                         compositeIndex,
                                         subKey,
                                         _optionControllers[subKey]![i].text,
-                                        i
-                                    ),
+                                        i),
                                   ),
                               ],
                             ),
@@ -773,14 +817,16 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(4),
-                            color: Colors.white, // Changed to white since it's now editable
+                            color: Colors
+                                .white, // Changed to white since it's now editable
                           ),
                           child: TextFormField(
                             controller: _answerControllers[subKey],
                             decoration: const InputDecoration(
                               labelText: 'Correct Answer',
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 12),
                             ),
                             readOnly: false, // Changed to allow editing
                           ),
@@ -808,7 +854,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                     ),
                     const SizedBox(width: 10),
                     if (_questionImages[index] == null)
-                      Text('No file chosen', style: TextStyle(color: Colors.grey.shade600)),
+                      Text('No file chosen',
+                          style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               ],
@@ -836,12 +883,14 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
               children: [
                 Text(
                   'Question ${index + 1} (Essay)',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.ceruleanBlue),
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.ceruleanBlue),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
-                  icon: const Icon(Icons.smart_toy, color: Colors.lightBlue
-                  ),
+                  icon: const Icon(Icons.smart_toy, color: Colors.lightBlue),
                   onPressed: () {},
                   tooltip: 'Get AI recommendation',
                 ),
@@ -887,7 +936,8 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
                 ),
                 const SizedBox(width: 10),
                 if (_questionImages[index] == null)
-                  Text('No file chosen', style: TextStyle(color: Colors.grey.shade600)),
+                  Text('No file chosen',
+                      style: TextStyle(color: Colors.grey.shade600)),
               ],
             ),
           ],
@@ -910,21 +960,12 @@ class MakeExamPage extends StatelessWidget {
         foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-
           onPressed: () => Navigator.of(context).pop(),
-
         ),
-
       ),
-
       body: const Center(
-
         child: Text('Make Exam Page - To be implemented'),
-
       ),
-
     );
-
   }
-
 }
