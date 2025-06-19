@@ -10,9 +10,8 @@ import 'package:project/core/constants/colors.dart';
 
 import 'make_exam.dart';
 
-class ExamReviewApp extends StatelessWidget {
+class ExamReviewApp extends StatefulWidget {
   final String idDoctor;
-
   final String modelName;
 
   const ExamReviewApp({
@@ -22,37 +21,10 @@ class ExamReviewApp extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Exam Review',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color(0xFFe3f2fd),
-      ),
-      home: ExamReviewPage(
-        idDoctor: idDoctor,
-        modelName: modelName,
-      ),
-    );
-  }
+  State<ExamReviewApp> createState() => _ExamReviewAppState();
 }
 
-class ExamReviewPage extends StatefulWidget {
-  final String idDoctor;
-  final String modelName;
-
-  const ExamReviewPage({
-    super.key,
-    required this.idDoctor,
-    required this.modelName,
-  });
-
-  @override
-  State<ExamReviewPage> createState() => _ExamReviewPageState();
-}
-
-class _ExamReviewPageState extends State<ExamReviewPage> {
+class _ExamReviewAppState extends State<ExamReviewApp> {
   List<dynamic> questions = [];
   bool isLoading = true;
   final Map<int, File?> _questionImages = {};
@@ -216,7 +188,7 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
           final questionIndex = int.parse(parts[0].substring(1));
           final questionType = questions[questionIndex]['type'];
 
-          // Skip validation for Essay questions AND reading passages in Multi questions
+          // Skip validation for Essay questions and reading passages in Multi questions
           if (questionType != 'Essay' && questionType != 'Multi') {
             warnings
                 .add('⚠ Question ${questionIndex + 1} needs correct answer');
@@ -240,33 +212,164 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
       _showWarning(warnings.join('\n'));
     } else {
       _showToast('✅ All answers validated successfully!');
+      _submitExam(); // Submit only if validation passes
     }
   }
+  // void _validateAnswers() {
+  //   _submitExam();
+  //   List<String> warnings = [];
 
+  //   _answerControllers.forEach((key, controller) {
+  //     if (controller.text.isEmpty) {
+  //       final parts = key.split('-');
+  //       if (parts.length == 1) {
+  //         final questionIndex = int.parse(parts[0].substring(1));
+  //         final questionType = questions[questionIndex]['type'];
+
+  //         // Skip validation for Essay questions AND reading passages in Multi questions
+  //         if (questionType != 'Essay' && questionType != 'Multi') {
+  //           warnings
+  //               .add('⚠ Question ${questionIndex + 1} needs correct answer');
+  //         }
+  //       } else {
+  //         final questionIndex = int.parse(parts[0].substring(1));
+  //         final subQuestionIndex = int.parse(parts[1].substring(1));
+
+  //         // Only validate sub-questions, not the reading passage
+  //         if (questions[questionIndex]['type'] == 'Multi' &&
+  //             questions[questionIndex]['questions'][subQuestionIndex]['type'] !=
+  //                 'Essay') {
+  //           warnings.add(
+  //               '⚠ Sub Question ${questionIndex + 1}.${subQuestionIndex + 1} needs correct answer');
+  //         }
+  //       }
+  //     }
+  //   });
+
+  //   if (warnings.isNotEmpty) {
+  //     _showWarning(warnings.join('\n'));
+  //   } else {
+  //     _showToast('✅ All answers validated successfully!');
+  //   }
+  // }
   Future<void> _submitExam() async {
+    final request = http.MultipartRequest(
+      'PATCH',
+      Uri.parse('${kBaseUrl}/Doctor/reviewExam'),
+    );
+
+    // Prepare exam data (excluding modelName and idDoctor)
+    final examData = {
+      'questions': questions
+          .asMap()
+          .map((i, q) {
+            final questionKey = 'q$i';
+            final questionData = {
+              'type': q['type'],
+              'text': q['text'] ?? q['passage'],
+              'answers':
+                  _optionControllers[questionKey]?.map((c) => c.text).toList(),
+              'correct_answer': _answerControllers[questionKey]?.text,
+            };
+
+            // Include image placeholder if an image exists
+            if (_questionImages.containsKey(i) && _questionImages[i] != null) {
+              questionData['image'] =
+                  'image_q$i'; // Placeholder for backend reference
+            }
+
+            // Handle multi-part questions
+            if (q['type'] == 'Multi') {
+              questionData['questions'] = (q['questions'] as List)
+                  .asMap()
+                  .map((j, sq) {
+                    final subKey = 'q$i-s$j';
+                    return MapEntry(j, {
+                      'text': sq['text'],
+                      'answers': _optionControllers[subKey]
+                          ?.map((c) => c.text)
+                          .toList(),
+                      'correct_answer': _answerControllers[subKey]?.text,
+                    });
+                  })
+                  .values
+                  .toList();
+            }
+            return MapEntry(i.toString(), questionData);
+          })
+          .values
+          .toList(),
+    };
+
+    // Add fields to the request
+    request.fields['examData'] = json.encode(examData);
+    request.fields['modelName'] = widget.modelName; // Send modelName separately
+    request.fields['idDoctor'] = widget.idDoctor; // Send idDoctor separately
+
+    // Debugging: Print request fields
+    print('Request fields: ${request.fields}');
+
+    // Add image files
+    for (var entry in _questionImages.entries) {
+      if (entry.value != null) {
+        try {
+          final file = entry.value!;
+          request.files.add(await http.MultipartFile.fromPath(
+            'images', // Field name should match backend expectations
+            file.path,
+            filename: 'question_${entry.key}.jpg', // Unique filename
+          ));
+        } catch (e) {
+          _showError('Error adding image for question ${entry.key}: $e');
+          return;
+        }
+      }
+    }
+
+    // Debugging: Print file names
+    print('Request files: ${request.files.map((f) => f.filename).toList()}');
+
+    // Send request
     try {
-      final response = await http.patch(
-        Uri.parse('${kBaseUrl}/Doctor/reviewExam'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'questions': _prepareExamData(),
-          'modelName': widget.modelName,
-          'idDoctor': widget.idDoctor,
-        }),
-      );
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      print('Response: $responseBody, Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        _showSuccess('Exam submitted successfully!');
-        final url =
-            '${kBaseUrl}/Doctor/DownloadArchive?id=${widget.idDoctor}&modelName=${widget.modelName}';
-        launchUrl(Uri.parse(url));
+        _showSuccess('✔ Exam submitted successfully!');
       } else {
-        _showError('Failed to submit exam: ${response?.reasonPhrase}');
+        _showError('Failed to submit exam: $responseBody');
       }
     } catch (e) {
-      _showError('Error submitting exam: ${e.toString()}');
+      _showError('Error submitting exam: $e');
     }
   }
+
+  // Future<void> _submitExam() async {
+  //   try {
+  //     final response = await http.patch(
+  //       Uri.parse('${kBaseUrl}/Doctor/reviewExam'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode({
+  //         'questions': _prepareExamData(),
+  //         'modelName': widget.modelName,
+  //         //'idDoctor': widget.idDoctor,
+  //       }),
+  //     );
+  //     print('😤😤😤😤${response.body}${response.statusCode}');
+
+  //     if (response.statusCode == 200) {
+  //       _showSuccess('Exam submitted successfully!');
+  //       final url =
+  //           '${kBaseUrl}/Doctor/DownloadArchive?id=${widget.idDoctor}&modelName=${widget.modelName}';
+  //       launchUrl(Uri.parse(url));
+  //     } else {
+  //       _showError('Failed to submit exam: ${response?.reasonPhrase}');
+  //     }
+  //   } catch (e) {
+  //     _showError('Error submitting exam: ${e.toString()}');
+  //   }
+  // }
 
   Map<String, dynamic> _prepareExamData() {
     return {
@@ -948,24 +1051,24 @@ class _ExamReviewPageState extends State<ExamReviewPage> {
 }
 
 // Simple placeholder for the Make Exam page
-class MakeExamPage extends StatelessWidget {
-  const MakeExamPage({super.key});
+// class MakeExamPage extends StatelessWidget {
+//   const MakeExamPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Make Exam'),
-        backgroundColor: AppColors.ceruleanBlue,
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: const Center(
-        child: Text('Make Exam Page - To be implemented'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Make Exam'),
+//         backgroundColor: AppColors.ceruleanBlue,
+//         foregroundColor: Colors.white,
+//         leading: IconButton(
+//           icon: const Icon(Icons.arrow_back),
+//           onPressed: () => Navigator.of(context).pop(),
+//         ),
+//       ),
+//       body: const Center(
+//         child: Text('Make Exam Page - To be implemented'),
+//       ),
+//     );
+//   }
+// }

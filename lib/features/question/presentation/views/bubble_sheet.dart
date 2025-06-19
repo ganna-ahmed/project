@@ -5,10 +5,10 @@ import 'widgets/custom_button.dart';
 import 'widgets/section.dart';
 
 class BubbleSheetForm extends StatelessWidget {
-   double containerWidth = 320.w;
-   double cornerRadius = 30.r;
+  double containerWidth = 320.w;
+  double cornerRadius = 30.r;
 
-   BubbleSheetForm({super.key});
+  BubbleSheetForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +27,7 @@ class BubbleSheetForm extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               FormSection(),
-
               SizedBox(height: 20.h),
-
               DoneButton(
                 width: 250.w,
                 height: 55.h,

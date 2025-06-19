@@ -1,9 +1,13 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:project/core/utils/app_router.dart';
+import 'package:project/features/modelsOfQuestion/view/exam.dart';
 import '../../../constants.dart';
 import '../../../core/constants/colors.dart';
 import 'dart:async';
@@ -33,7 +37,7 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
   String _errorMessage = '';
   late AnimationController _animationController;
   late Animation<double> _bounceAnimation;
-  final Dio _dio = Dio();
+  final http.Client _httpClient = http.Client();
 
   @override
   void initState() {
@@ -59,41 +63,63 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
 
   Future<void> _startDownload() async {
     try {
+      setState(() {
+        _progress = 0;
+        _errorMessage = '';
+      });
+
       final downloadUrl = '$kBaseUrl/Doctor/getPdf';
-      final directory = await getExternalStorageDirectory() ??
-          await getApplicationDocumentsDirectory();
+
+      // Get storage directory
+      final directory = await getApplicationDocumentsDirectory();
       final filePath = '${directory.path}/${widget.pdfName}.zip';
 
       setState(() {
         _downloadPath = filePath;
       });
 
-      await _dio.download(
-        downloadUrl,
-        filePath,
-        queryParameters: {
-          'id': widget.idDoctor,
-          'modelName': widget.modelName,
+      // Prepare the request (POST with JSON body, similar to web version)
+      final response = await _httpClient.post(
+        Uri.parse(downloadUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
           'pdfName': widget.pdfName,
-        },
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            setState(() {
-              _progress = received / total;
-            });
-          }
-        },
+          'modelName': widget.modelName,
+          'idDoctor':
+              widget.idDoctor, // Include idDoctor to match backend expectations
+        }),
       );
 
-      setState(() {
-        _downloadComplete = true;
-        _showSuccess = true;
-      });
+      print('Request body: ${json.encode({
+            'pdfName': widget.pdfName,
+            'modelName': widget.modelName,
+            'idDoctor': widget.idDoctor
+          })}');
+      print('Response: ${response.body}, Status: ${response.statusCode}');
 
-      _animationController.forward();
+      if (response.statusCode == 200) {
+        // Save the file
+        final file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+
+        // Verify the download completed successfully
+        if (await file.exists()) {
+          setState(() {
+            _progress = 1.0; // Set to 100% for UI consistency
+            _downloadComplete = true;
+            _showSuccess = true;
+          });
+          _animationController.forward();
+        } else {
+          throw Exception('File was not created successfully');
+        }
+      } else {
+        throw Exception(
+            'Failed to download file: ${response.body}, Status: ${response.statusCode}');
+      }
     } catch (e) {
       setState(() {
-        _errorMessage = 'حدث خطأ أثناء التحميل: ${e.toString()}';
+        _errorMessage = 'Download failed: ${e.toString()}';
       });
       print('Download error: $e');
     }
@@ -101,23 +127,52 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
 
   Future<void> _openDownloadedFile() async {
     try {
+      if (_downloadPath.isEmpty) {
+        _showSnackBar('File path is empty');
+        return;
+      }
+
+      final file = File(_downloadPath);
+      if (!await file.exists()) {
+        _showSnackBar('File does not exist at path: $_downloadPath');
+        return;
+      }
+
       final result = await OpenFile.open(_downloadPath);
       if (result.type != ResultType.done) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لا يمكن فتح الملف: ${result.message}')),
-        );
+        _showSnackBar('Cannot open file: ${result.message ?? 'Unknown error'}');
       }
     } catch (e) {
+      _showSnackBar('Error opening file: $e');
+    }
+  }
+
+  void _showSnackBar(String message) {
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ عند محاولة فتح الملف: $e')),
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
+  }
+
+  Future<void> _retryDownload() async {
+    setState(() {
+      _errorMessage = '';
+      _progress = 0;
+      _showSuccess = false;
+      _downloadComplete = false;
+    });
+    await _startDownload();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    _dio.close();
+    _httpClient.close();
     super.dispose();
   }
 
@@ -125,9 +180,10 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تحميل الامتحان'),
+        title: const Text('Download Exam'),
         backgroundColor: AppColors.ceruleanBlue,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -143,115 +199,174 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: _errorMessage.isNotEmpty
-              ? _buildErrorView()
-              : AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  child:
-                      _showSuccess ? _buildSuccessView() : _buildLoadingView(),
-                ),
+        child: SafeArea(
+          child: Center(
+            child: _errorMessage.isNotEmpty
+                ? _buildErrorView()
+                : AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: _showSuccess
+                        ? _buildSuccessView()
+                        : _buildLoadingView(),
+                  ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildLoadingView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 100,
-          height: 100,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CircularProgressIndicator(
-                value: _progress,
-                strokeWidth: 10,
-                backgroundColor: Colors.white.withOpacity(0.3),
-                color: Colors.white,
-              ),
-              Text(
-                '${(_progress * 100).toInt()}%',
-                style: const TextStyle(
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 120.h,
+            height: 120.h,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: _progress,
+                  strokeWidth: 8.w,
+                  backgroundColor: Colors.white.withOpacity(0.3),
                   color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-            ],
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${(_progress * 100).toInt()}%',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    const Text(
+                      'Downloading...',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            'برجاء الانتظار حتى يتم تحميل الامتحان...',
+          SizedBox(height: 32.h),
+          const Text(
+            'Please wait while downloading exam models...',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
+              fontWeight: FontWeight.w500,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildSuccessView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ScaleTransition(
-          scale: _bounceAnimation,
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check_circle,
-              color: Colors.green,
-              size: 80,
+    return Padding(
+      padding: EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ScaleTransition(
+            scale: _bounceAnimation,
+            child: Container(
+              width: 120.w,
+              height: 120.h,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 80,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 24),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 32),
-          child: Text(
-            'تم تحميل خمسة نماذج من الامتحان والـ PDF الخاص بورقة الإجابة بنجاح!',
+          SizedBox(height: 32.h),
+          Text(
+            'Success!',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            'The five models have been successfully downloaded, along with the PDF of the model answers for the bubble sheet.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w500,
             ),
           ),
-        ),
-        const SizedBox(height: 32),
-        ElevatedButton(
-          onPressed: _openDownloadedFile,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Color(0xFF7709e4),
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+          SizedBox(height: 40.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: _openDownloadedFile,
+                icon: const Icon(Icons.folder_open, size: 20),
+                label: const Text('Open File'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF7709e4),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                  elevation: 4,
+                ),
+              ),
+              SizedBox(width: 16.w),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const StartExamPage()));
+                },
+                icon: const Icon(Icons.home, size: 20),
+                label: const Text('Back to Home'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: Colors.white, width: 2.w),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                ),
+              ),
+            ],
           ),
-          child: const Text(
-            'فتح الملف',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -261,360 +376,74 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.white,
-            size: 64,
+          Container(
+            width: 100.w,
+            height: 100.h,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 60,
+            ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 24.h),
+          Text(
+            'Download Failed',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 12.h),
           Text(
             _errorMessage,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 16,
+              fontSize: 16.sp,
             ),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _errorMessage = '';
-                _progress = 0;
-              });
-              _startDownload();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Color(0xFF7709e4),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+          SizedBox(height: 32.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: _retryDownload,
+                icon: const Icon(Icons.refresh, size: 20),
+                label: const Text('Try Again'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF7709e4),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                ),
               ),
-            ),
-            child: const Text(
-              'محاولة مرة أخرى',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              SizedBox(width: 16.w),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back, size: 20),
+                label: const Text('Go Back'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: Colors.white, width: 2.w),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 }
-
-// import 'dart:io';
-// import 'package:flutter/material.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:open_file/open_file.dart';
-// import '../../../constants.dart';
-// import '../../../core/constants/colors.dart';
-
-// class PdfDownloadPage extends StatefulWidget {
-//   final String idDoctor;
-//   final String modelName;
-//   final String pdfName;
-
-//   const PdfDownloadPage({
-//     Key? key,
-//     required this.idDoctor,
-//     required this.modelName,
-//     required this.pdfName,
-//   }) : super(key: key);
-
-//   @override
-//   State<PdfDownloadPage> createState() => _PdfDownloadPageState();
-// }
-
-// class _PdfDownloadPageState extends State<PdfDownloadPage>
-//     with SingleTickerProviderStateMixin {
-//   double _progress = 0;
-//   bool _showSuccess = false;
-//   bool _downloadComplete = false;
-//   String _downloadPath = '';
-//   String _errorMessage = '';
-//   late AnimationController _animationController;
-//   late Animation<double> _bounceAnimation;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _initAnimations();
-//     _startDownload();
-//   }
-
-//   void _initAnimations() {
-//     _animationController = AnimationController(
-//       vsync: this,
-//       duration: const Duration(milliseconds: 1000),
-//     );
-
-//     _bounceAnimation = TweenSequence<double>(
-//       [
-//         TweenSequenceItem(tween: Tween(begin: 0.3, end: 1.1), weight: 50),
-//         TweenSequenceItem(tween: Tween(begin: 1.1, end: 0.9), weight: 20),
-//         TweenSequenceItem(tween: Tween(begin: 0.9, end: 1.0), weight: 30),
-//       ],
-//     ).animate(_animationController);
-//   }
-
-//   Future<void> _startDownload() async {
-//     print('🟢🟢🟢${widget.idDoctor}🟢🟢🟢${widget.modelName}');
-//     try {
-//       final downloadUrl = '$kBaseUrl/Doctor/getPdf';
-//       final directory = await getExternalStorageDirectory() ??
-//           await getApplicationDocumentsDirectory();
-//       final filePath = '${directory.path}/${widget.pdfName}.zip';
-
-//       setState(() {
-//         _downloadPath = filePath;
-//       });
-
-//       final response =
-//           await http.Client().send(http.Request('POST', Uri.parse(downloadUrl))
-//             ..url.replace(queryParameters: {
-//               'modelName': widget.modelName,
-//               'pdfName': widget.pdfName,
-//             }));
-
-//       final totalLength = response.contentLength ?? -1;
-//       var receivedLength = 0;
-//       final file = File(filePath);
-//       final bytes = <int>[];
-
-//       await for (final chunk in response.stream) {
-//         bytes.addAll(chunk);
-//         receivedLength += chunk.length;
-
-//         if (totalLength != -1) {
-//           setState(() {
-//             _progress = receivedLength / totalLength;
-//           });
-//         }
-//       }
-
-//       await file.writeAsBytes(bytes);
-
-//       setState(() {
-//         _downloadComplete = true;
-//         _showSuccess = true;
-//       });
-
-//       _animationController.forward();
-//     } catch (e) {
-//       setState(() {
-//         _errorMessage = 'حدث خطأ أثناء التحميل: ${e.toString()}';
-//       });
-//       print('Download error: $e');
-//     }
-//   }
-
-//   Future<void> _openDownloadedFile() async {
-//     try {
-//       final result = await OpenFile.open(_downloadPath);
-//       if (result.type != ResultType.done) {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text('لا يمكن فتح الملف: ${result.message}')),
-//         );
-//       }
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('حدث خطأ عند محاولة فتح الملف: $e')),
-//       );
-//     }
-//   }
-
-//   @override
-//   void dispose() {
-//     _animationController.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('تحميل الامتحان'),
-//         backgroundColor: AppColors.ceruleanBlue,
-//         foregroundColor: Colors.white,
-//       ),
-//       body: Container(
-//         decoration: const BoxDecoration(
-//           gradient: LinearGradient(
-//             colors: [
-//               Color(0xFF7709e4),
-//               Color(0xFF5b0296),
-//               Color(0xFF1787e4),
-//               Color(0xFFd5a8fc),
-//             ],
-//             stops: [0.0, 0.3, 0.6, 1.0],
-//             begin: Alignment.topLeft,
-//             end: Alignment.bottomRight,
-//           ),
-//         ),
-//         child: Center(
-//           child: _errorMessage.isNotEmpty
-//               ? _buildErrorView()
-//               : AnimatedSwitcher(
-//                   duration: const Duration(milliseconds: 500),
-//                   child:
-//                       _showSuccess ? _buildSuccessView() : _buildLoadingView(),
-//                 ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildLoadingView() {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: [
-//         SizedBox(
-//           width: 100,
-//           height: 100,
-//           child: Stack(
-//             alignment: Alignment.center,
-//             children: [
-//               CircularProgressIndicator(
-//                 value: _progress,
-//                 strokeWidth: 10,
-//                 backgroundColor: Colors.white.withOpacity(0.3),
-//                 color: Colors.white,
-//               ),
-//               Text(
-//                 '${(_progress * 100).toInt()}%',
-//                 style: const TextStyle(
-//                   color: Colors.white,
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//         const SizedBox(height: 20),
-//         const Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 24),
-//           child: Text(
-//             'برجاء الانتظار حتى يتم تحميل الامتحان...',
-//             textAlign: TextAlign.center,
-//             style: TextStyle(
-//               color: Colors.white,
-//               fontSize: 18,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-
-//   Widget _buildSuccessView() {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: [
-//         ScaleTransition(
-//           scale: _bounceAnimation,
-//           child: Container(
-//             width: 120,
-//             height: 120,
-//             decoration: const BoxDecoration(
-//               color: Colors.white,
-//               shape: BoxShape.circle,
-//             ),
-//             child: const Icon(
-//               Icons.check_circle,
-//               color: Colors.green,
-//               size: 80,
-//             ),
-//           ),
-//         ),
-//         const SizedBox(height: 24),
-//         const Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 32),
-//           child: Text(
-//             'تم تحميل خمسة نماذج من الامتحان والـ PDF الخاص بورقة الإجابة بنجاح!',
-//             textAlign: TextAlign.center,
-//             style: TextStyle(
-//               color: Colors.white,
-//               fontSize: 18,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//         ),
-//         const SizedBox(height: 32),
-//         ElevatedButton(
-//           onPressed: _openDownloadedFile,
-//           style: ElevatedButton.styleFrom(
-//             backgroundColor: Colors.white,
-//             foregroundColor: Color(0xFF7709e4),
-//             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-//             shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.circular(30),
-//             ),
-//           ),
-//           child: const Text(
-//             'فتح الملف',
-//             style: TextStyle(
-//               fontSize: 16,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-
-//   Widget _buildErrorView() {
-//     return Padding(
-//       padding: const EdgeInsets.all(24.0),
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           const Icon(
-//             Icons.error_outline,
-//             color: Colors.white,
-//             size: 64,
-//           ),
-//           const SizedBox(height: 16),
-//           Text(
-//             _errorMessage,
-//             textAlign: TextAlign.center,
-//             style: const TextStyle(
-//               color: Colors.white,
-//               fontSize: 16,
-//             ),
-//           ),
-//           const SizedBox(height: 24),
-//           ElevatedButton(
-//             onPressed: () {
-//               setState(() {
-//                 _errorMessage = '';
-//                 _progress = 0;
-//               });
-//               _startDownload();
-//             },
-//             style: ElevatedButton.styleFrom(
-//               backgroundColor: Colors.white,
-//               foregroundColor: Color(0xFF7709e4),
-//               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-//               shape: RoundedRectangleBorder(
-//                 borderRadius: BorderRadius.circular(30),
-//               ),
-//             ),
-//             child: const Text(
-//               'محاولة مرة أخرى',
-//               style: TextStyle(
-//                 fontSize: 16,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
