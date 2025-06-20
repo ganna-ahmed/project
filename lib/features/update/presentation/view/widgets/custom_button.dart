@@ -60,21 +60,21 @@ class ButtonsWidget extends StatelessWidget {
         buildButton('Correction Of Bubble Sheet', () {
           GoRouter.of(context).push(AppRouter.kUploadModelAnswer);
         }),
-        buildButton('Create Bubble Sheet', () {
-          final doctorId = context.read<LoginCubit>().doctorDatabaseId;
+        // buildButton('Create Bubble Sheet', () {
+        //   final doctorId = context.read<LoginCubit>().doctorDatabaseId;
 
-          if (doctorId == null || doctorId.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("⚠ Doctor ID not found")),
-            );
-            return;
-          }
+        //   if (doctorId == null || doctorId.isEmpty) {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(content: Text("⚠ Doctor ID not found")),
+        //     );
+        //     return;
+        //   }
 
-          GoRouter.of(context).push(
-            AppRouter.kCreateBubbleSheet,
-            extra: doctorId,
-          );
-        }),
+        //   GoRouter.of(context).push(
+        //     AppRouter.kCreateBubbleSheet,
+        //     extra: doctorId,
+        //   );
+        // }),
         buildButton('Create Models Of Questions', () {
           GoRouter.of(context).push(AppRouter.kStartExamPage);
         }),

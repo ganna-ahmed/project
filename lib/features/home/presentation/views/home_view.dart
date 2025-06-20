@@ -70,11 +70,11 @@ class _HomeViewState extends State<HomeView> {
                   );
                   return;
                 }
-
-                GoRouter.of(context).push(
-                  AppRouter.kCreateBubbleSheet,
-                  extra: doctorId, // فقط الـ id مش الـ BlocProvider
-                );
+                GoRouter.of(context).push(AppRouter.kStartExamPage);
+                // GoRouter.of(context).push(
+                //   AppRouter.kCreateBubbleSheet,
+                //   extra: doctorId, // فقط الـ id مش الـ BlocProvider
+                // );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.ceruleanBlue,

@@ -68,10 +68,10 @@ abstract class AppRouter {
         builder: (context, state) => const EditProfileScreen(),
       ),
       // ⚠️ حذفت الـ HomeView المنفصل لأنه هيبقى جوا MainScreen
-      GoRoute(
-        path: kAddQuestion,
-        builder: (context, state) => const AddQuestionPage(),
-      ),
+      // GoRoute(
+      //   path: kAddQuestion,
+      //   builder: (context, state) => const AddQuestionPage(),
+      // ),
       GoRoute(
         path: kCreateBubbleSheet,
         builder: (context, state) {
