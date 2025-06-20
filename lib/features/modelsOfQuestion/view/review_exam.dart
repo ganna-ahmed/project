@@ -211,7 +211,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
     if (warnings.isNotEmpty) {
       _showWarning(warnings.join('\n'));
     } else {
-      _showToast('✅ All answers validated successfully!');
+      //_showToast('✅ All answers validated successfully!');
       _submitExam(); // Submit only if validation passes
     }
   }
@@ -336,7 +336,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
       print('Response: $responseBody, Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        _showSuccess('✔ Exam submitted successfully!');
+        _showSuccess('✅ Exam submitted successfully!');
       } else {
         _showError('Failed to submit exam: $responseBody');
       }
