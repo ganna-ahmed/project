@@ -6,9 +6,6 @@ import 'package:project/core/constants/colors.dart';
 import 'package:project/core/utils/app_router.dart';
 import 'package:project/core/utils/assets.dart';
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
-import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_cubit.dart';
-import 'package:project/features/create_bubble_sheet/data/repos/bubble_sheet_repo.dart';
-import 'package:project/features/create_bubble_sheet/presentation/views/bubble_sheet_page.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -35,18 +32,63 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {}, // تعطيل الحدث عند الضغط على الصورة
+            onTap: () {}, // تعطيل الحدث عند الضغط على الصورة أو تفعيل للذهاب للبروفايل
             child: BlocBuilder<LoginCubit, LoginState>(
               builder: (context, state) {
                 if (state is LoginSuccess) {
-                  return CircleAvatar(
-                    radius: 25.r,
-                    backgroundImage: NetworkImage(state.doctor.image.path),
+                  return Container(
+                    margin: EdgeInsets.only(right: 16.w),
+                    child: CircleAvatar(
+                      radius: 25.r,
+                      backgroundColor: AppColors.darkBlue,
+                      child: ClipOval(
+                        child: Image.network(
+                          state.doctor.image.path,
+                          width: 50.w,
+                          height: 50.h,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            // في حالة فشل تحميل الصورة، اعرض الصورة الافتراضية
+                            return Image.asset(
+                              AssetsData.profile,
+                              width: 50.w,
+                              height: 50.h,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.white,
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                   );
                 } else {
-                  return Image.asset(
-                    AssetsData.profile,
-                    width: 73.w,
+                  // إذا مكنش في دكتور مسجل دخول، اعرض الصورة الافتراضية
+                  return Container(
+                    margin: EdgeInsets.only(right: 16.w),
+                    child: CircleAvatar(
+                      radius: 25.r,
+                      backgroundColor: AppColors.darkBlue,
+                      child: ClipOval(
+                        child: Image.asset(
+                          AssetsData.profile,
+                          width: 50.w,
+                          height: 50.h,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   );
                 }
               },
@@ -59,7 +101,35 @@ class _HomeViewState extends State<HomeView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10.h),
+            // إضافة ترحيب بالدكتور
+            BlocBuilder<LoginCubit, LoginState>(
+              builder: (context, state) {
+                if (state is LoginSuccess) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Welcome back,",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: AppColors.darkBlue.withOpacity(0.7),
+                        ),
+                      ),
+                      Text(
+                        "Dr. ${state.doctor.nameDoctor}",
+                        style: TextStyle(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.darkBlue,
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
+                  );
+                }
+                return SizedBox(height: 10.h);
+              },
+            ),
             ElevatedButton(
               onPressed: () {
                 final doctorId = context.read<LoginCubit>().doctorDatabaseId;
@@ -73,7 +143,7 @@ class _HomeViewState extends State<HomeView> {
 
                 GoRouter.of(context).push(
                   AppRouter.kCreateBubbleSheet,
-                  extra: doctorId, // فقط الـ id مش الـ BlocProvider
+                  extra: doctorId,
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -171,10 +241,10 @@ class ExamCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: professors
                   .map((professor) => Text(
-                        professor,
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.white),
-                      ))
+                professor,
+                style:
+                const TextStyle(fontSize: 16, color: Colors.white),
+              ))
                   .toList(),
             ),
           ],

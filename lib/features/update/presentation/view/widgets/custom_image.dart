@@ -13,11 +13,11 @@ class ImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(width * 0.20.w),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: width * 0.1.w),
       child: Image.asset(
         'assets/images/update.png',
-        height: height.h,
+        height: height,
         fit: BoxFit.contain,
       ),
     );

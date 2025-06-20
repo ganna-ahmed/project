@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:project/constants.dart';
-// Import the new component
 
 class MultiChoiceQuestionsScreen extends StatefulWidget {
   final String courseName;
@@ -29,13 +28,39 @@ class _MultiChoiceQuestionsScreenState
   String _aiResponse = '';
   bool _isLoading = false;
 
-  // Controller for active input
-  TextEditingController? _activeController;
+  // Controller for active input - for symbol insertion
+  TextEditingController? _focusedController;
 
   @override
   void initState() {
     super.initState();
-    _activeController = _paragraphController;
+    _focusedController = _paragraphController;
+  }
+
+  // Function to insert symbol at current cursor position
+  void _insertSymbolAtCursor(String symbol) {
+    if (_focusedController == null) return;
+
+    final TextEditingController controller = _focusedController!;
+    final TextSelection selection = controller.selection;
+    final String currentText = controller.text;
+
+    if (selection.isValid) {
+      // Insert symbol at current cursor position
+      final String newText = currentText.substring(0, selection.start) +
+          symbol +
+          currentText.substring(selection.end);
+
+      controller.text = newText;
+
+      // Update cursor position to be right after the inserted symbol
+      controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: selection.start + symbol.length),
+      );
+    } else {
+      // If cursor position is not valid, append symbol at the end
+      controller.text += symbol;
+    }
   }
 
   void _addSubQuestion() {
@@ -70,7 +95,7 @@ class _MultiChoiceQuestionsScreenState
           'choices': List.generate(
               4, (i) => q['optionControllers']?[i]?.text ?? q['options'][i]),
           'correctAnswer':
-              q['correctAnswerController']?.text ?? q['correctAnswer'],
+          q['correctAnswerController']?.text ?? q['correctAnswer'],
         };
       }).toList()
     };
@@ -163,27 +188,21 @@ class _MultiChoiceQuestionsScreenState
     }
   }
 
-  void _insertSymbolAtCursor(String symbol) {
-    if (_activeController == null) return;
-
-    final currentText = _activeController!.text;
-    final selection = _activeController!.selection;
-
-    if (selection.isValid) {
-      final newText = currentText.substring(0, selection.start) +
-          symbol +
-          currentText.substring(selection.end);
-
-      _activeController!.text = newText;
-
-      // Update cursor position
-      _activeController!.selection = TextSelection.fromPosition(
-        TextPosition(offset: selection.start + symbol.length),
-      );
-    } else {
-      // If no valid selection, add at the end
-      _activeController!.text += symbol;
-    }
+  // Custom TextField with focus detection
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {int maxLines = 1, int minLines = 1}) {
+    return TextField(
+      controller: controller,
+      decoration: _inputDecoration(hint),
+      maxLines: maxLines,
+      minLines: minLines,
+      onTap: () {
+        // Update the focused controller when field is tapped
+        setState(() {
+          _focusedController = controller;
+        });
+      },
+    );
   }
 
   InputDecoration _inputDecoration(String hint) {
@@ -217,18 +236,18 @@ class _MultiChoiceQuestionsScreenState
           foregroundColor: const Color(0xFF004aad),
           side: const BorderSide(color: Color(0xFF004aad), width: 1.5),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           minimumSize: const Size(double.infinity, 48),
         ),
         child: _isLoading
             ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Color(0xFF004aad),
-                ),
-              )
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Color(0xFF004aad),
+          ),
+        )
             : Text(label, style: const TextStyle(fontSize: 16)),
       ),
     );
@@ -243,21 +262,28 @@ class _MultiChoiceQuestionsScreenState
           backgroundColor: const Color(0xFF004aad),
           foregroundColor: Colors.white,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           minimumSize: const Size(double.infinity, 48),
           disabledBackgroundColor: Colors.grey,
         ),
         child: _isLoading
             ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.white,
+          ),
+        )
             : Text(label, style: const TextStyle(fontSize: 16)),
       ),
+    );
+  }
+
+  // Math Symbols Widget
+  Widget _buildMathSymbolsWidget() {
+    return MathSymbolsDropdown(
+      onSymbolSelected: _insertSymbolAtCursor,
     );
   }
 
@@ -312,18 +338,8 @@ class _MultiChoiceQuestionsScreenState
             ),
             const SizedBox(height: 12),
             // Question field
-            TextField(
-              controller: question['controller'],
-              decoration: _inputDecoration('Enter sub-question'),
-              maxLines: 2,
-              minLines: 1,
-              onTap: () {
-                setState(() {
-                  _activeController = question['controller'];
-                });
-              },
-              onChanged: (val) => question['question'] = val,
-            ),
+            _buildTextField(question['controller'], 'Enter sub-question',
+                maxLines: 2, minLines: 1),
             const SizedBox(height: 12),
             // Option fields
             for (int i = 0; i < 4; i++) ...[
@@ -347,16 +363,8 @@ class _MultiChoiceQuestionsScreenState
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: TextField(
-                      controller: question['optionControllers'][i],
-                      decoration: _inputDecoration('Option ${i + 1}'),
-                      onTap: () {
-                        setState(() {
-                          _activeController = question['optionControllers'][i];
-                        });
-                      },
-                      onChanged: (val) => question['options'][i] = val,
-                    ),
+                    child: _buildTextField(
+                        question['optionControllers'][i], 'Option ${i + 1}'),
                   ),
                 ],
               ),
@@ -372,16 +380,8 @@ class _MultiChoiceQuestionsScreenState
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: TextField(
-                    controller: question['correctAnswerController'],
-                    decoration: _inputDecoration('Correct answer'),
-                    onTap: () {
-                      setState(() {
-                        _activeController = question['correctAnswerController'];
-                      });
-                    },
-                    onChanged: (val) => question['correctAnswer'] = val,
-                  ),
+                  child: _buildTextField(
+                      question['correctAnswerController'], 'Correct answer'),
                 ),
               ],
             ),
@@ -459,31 +459,16 @@ class _MultiChoiceQuestionsScreenState
               ),
               const SizedBox(height: 12),
 
+              // Math Symbols Section
+              _buildMathSymbolsWidget(),
+              const SizedBox(height: 12),
+
               // Paragraph field
-              TextField(
-                controller: _paragraphController,
-                decoration:
-                    _inputDecoration("Enter the paragraph for your questions"),
-                maxLines: 5,
-                minLines: 3,
-                onTap: () {
-                  setState(() {
-                    _activeController = _paragraphController;
-                  });
-                },
-              ),
+              _buildTextField(_paragraphController,
+                  "Enter the paragraph for your questions",
+                  maxLines: 5, minLines: 3),
               const SizedBox(height: 16),
 
-              // Enhanced Math Symbols Dropdown
-              EnhancedMathSymbolsDropdown(
-                onSelected: (symbol) {
-                  _insertSymbolAtCursor(symbol);
-                },
-                primaryColor: const Color(0xFF004aad),
-                title: "Insert Math Symbols",
-              ),
-
-              const SizedBox(height: 16),
               // Divider with label
               Row(
                 children: [
@@ -561,179 +546,215 @@ class _MultiChoiceQuestionsScreenState
   }
 }
 
-class EnhancedMathSymbolsDropdown extends StatefulWidget {
-  final Function(String) onSelected;
-  final Color primaryColor;
-  final Color backgroundColor;
-  final String title;
+// Math Symbols Dropdown Widget (same as the first code)
+class MathSymbolsDropdown extends StatefulWidget {
+  final Function(String) onSymbolSelected;
 
-  const EnhancedMathSymbolsDropdown({
-    required this.onSelected,
-    this.primaryColor = const Color(0xFF004aad),
-    this.backgroundColor = Colors.white,
-    this.title = "Math Symbols",
+  const MathSymbolsDropdown({
     Key? key,
+    required this.onSymbolSelected,
   }) : super(key: key);
 
   @override
-  _EnhancedMathSymbolsDropdownState createState() =>
-      _EnhancedMathSymbolsDropdownState();
+  _MathSymbolsDropdownState createState() => _MathSymbolsDropdownState();
 }
 
-class _EnhancedMathSymbolsDropdownState
-    extends State<EnhancedMathSymbolsDropdown> {
+class _MathSymbolsDropdownState extends State<MathSymbolsDropdown> {
+  bool _isExpanded = false;
+  int _selectedCategoryIndex = 0;
+
   final List<Map<String, List<String>>> _symbolCategories = [
     {
-      'Basic': ['+', '-', '×', '÷', '=', '±', '≠', '≈', '∞'],
+      'Basic Math': ['+', '-', '×', '÷', '=', '±', '≠', '≈', '∞', '%'],
     },
     {
-      'Advanced': ['√', '∑', '∏', '^', '√x', 'π', 'e', '∫'],
+      'Advanced Math': ['√', '∑', '∏', '^', '²', '³', 'π', 'e', '∫', '∂'],
     },
     {
-      'Functions': ['log', 'ln', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot'],
+      'Trigonometry': ['sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sin⁻¹', 'cos⁻¹', 'tan⁻¹'],
     },
     {
-      'Inverse': ['asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh'],
+      'Hyperbolic': ['sinh', 'cosh', 'tanh', 'csch', 'sech', 'coth'],
+    },
+    {
+      'Logarithms': ['log', 'ln', 'log₂', 'log₁₀', 'lg'],
+    },
+    {
+      'Relations': ['<', '>', '≤', '≥', '∈', '∉', '⊂', '⊆', '∪', '∩'],
+    },
+    {
+      'Greek Letters': ['α', 'β', 'γ', 'δ', 'θ', 'λ', 'μ', 'σ', 'φ', 'ω'],
     },
   ];
-
-  int _selectedCategoryIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
         ],
-        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: widget.primaryColor.withOpacity(0.1),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+          // Header
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF004aad).withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF004aad),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Icon(
+                      Icons.functions,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Insert Math Symbols",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF004aad),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF004aad).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
+                      _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                      color: const Color(0xFF004aad),
+                      size: 20,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.functions,
-                  color: widget.primaryColor,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    color: widget.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
           ),
 
-          // Category tabs
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _symbolCategories.length,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemBuilder: (context, index) {
-                final categoryName = _symbolCategories[index].keys.first;
-                final isSelected = _selectedCategoryIndex == index;
+          // Expandable content
+          if (_isExpanded) ...[
+            const Divider(height: 1, color: Colors.grey),
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCategoryIndex = index;
-                    });
-                  },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    decoration: BoxDecoration(
-                      color:
-                          isSelected ? widget.primaryColor : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? widget.primaryColor
-                            : Colors.grey[300]!,
+            // Category tabs
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _symbolCategories.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final categoryName = entry.value.keys.first;
+                    final isSelected = _selectedCategoryIndex == index;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCategoryIndex = index;
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF004aad) : Colors.grey[50],
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF004aad) : Colors.grey[300]!,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected ? [
+                            BoxShadow(
+                              color: const Color(0xFF004aad).withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ] : null,
+                        ),
+                        child: Text(
+                          categoryName,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : const Color(0xFF004aad),
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      categoryName,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[700],
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
-          ),
 
-          // Symbols grid
-          Container(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _symbolCategories[_selectedCategoryIndex]
-                  .values
-                  .first
-                  .map((symbol) => _buildSymbolChip(symbol))
-                  .toList(),
+            // Symbols grid
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _symbolCategories[_selectedCategoryIndex]
+                    .values
+                    .first
+                    .map((symbol) => _buildSymbolButton(symbol))
+                    .toList(),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildSymbolChip(String symbol) {
+  Widget _buildSymbolButton(String symbol) {
     return InkWell(
       onTap: () {
-        widget.onSelected(symbol);
+        widget.onSymbolSelected(symbol);
       },
       child: Container(
-        width: 50,
-        height: 40,
+        width: 45,
+        height: 35,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey[300]!),
         ),
         child: Text(
           symbol,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: widget.primaryColor,
+            color: Color(0xFF004aad),
           ),
         ),
       ),

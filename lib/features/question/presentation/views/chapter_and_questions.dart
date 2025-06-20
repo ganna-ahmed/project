@@ -88,20 +88,6 @@ class ChapterAndQuestionsPage extends StatelessWidget {
                     );
                   },
                 ),
-                GradientButton(
-                  text: 'make model from previous exam',
-                  onPressed: () {
-                    Navigator.pushNamed(
-                        context, '/makeModel?course=$courseName&id=$doctorId');
-                  },
-                ),
-                GradientButton(
-                  text: 'Show Details',
-                  onPressed: () {
-                    Navigator.pushNamed(context,
-                        '/showDetails?course=$courseName&id=$doctorId');
-                  },
-                ),
               ],
             ),
           ),

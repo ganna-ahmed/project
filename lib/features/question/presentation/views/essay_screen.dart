@@ -11,9 +11,9 @@ class EssayQuestionScreen extends StatefulWidget {
 
   const EssayQuestionScreen(
       {super.key,
-      required this.doctorId,
-      required this.courseName,
-      required this.fileName});
+        required this.doctorId,
+        required this.courseName,
+        required this.fileName});
 
   @override
   _EssayQuestionScreenState createState() => _EssayQuestionScreenState();
@@ -21,7 +21,7 @@ class EssayQuestionScreen extends StatefulWidget {
 
 class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
   final TextEditingController _essayQuestionController =
-      TextEditingController();
+  TextEditingController();
   String _aiResponse = '';
 
   final String apiUrl = '$kBaseUrl/Doctor/manualQuestion';
@@ -144,7 +144,7 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
           foregroundColor: Color(0xFF004aad),
           side: BorderSide(color: Color(0xFF004aad), width: 1.5),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           minimumSize: Size(double.infinity, 48),
         ),
         child: Text(label, style: TextStyle(fontSize: 16)),
@@ -161,7 +161,7 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
           backgroundColor: Color(0xFF004aad),
           foregroundColor: Colors.white,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           minimumSize: Size(double.infinity, 48),
         ),
         child: Text(label, style: TextStyle(fontSize: 16)),
@@ -210,6 +210,13 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
     );
   }
 
+  // Math Symbols Widget
+  Widget _buildMathSymbolsWidget() {
+    return MathSymbolsDropdown(
+      onSymbolSelected: _insertSymbolAtCursor,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -234,26 +241,21 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
                   color: Color(0xFF004aad),
                 ),
               ),
+              SizedBox(height: 16),
+
+              // Math Symbols Section
+              _buildMathSymbolsWidget(),
               SizedBox(height: 12),
+
               TextField(
                 controller: _essayQuestionController,
                 decoration:
-                    _inputDecoration("Enter your essay question here..."),
+                _inputDecoration("Enter your essay question here..."),
                 maxLines: 5,
                 minLines: 3,
               ),
-              SizedBox(height: 16),
-
-              // Enhanced Math Symbols Dropdown
-              EnhancedMathSymbolsDropdown(
-                onSelected: (symbol) {
-                  _insertSymbolAtCursor(symbol);
-                },
-                primaryColor: Color(0xFF004aad),
-                title: "Insert Math Symbols",
-              ),
-
               SizedBox(height: 24),
+
               _outlinedButton("Add Question", _addQuestion),
               _outlinedButton("Ask AI for Help", _askAI),
               _filledButton("Done", () {
@@ -270,179 +272,215 @@ class _EssayQuestionScreenState extends State<EssayQuestionScreen> {
   }
 }
 
-class EnhancedMathSymbolsDropdown extends StatefulWidget {
-  final Function(String) onSelected;
-  final Color primaryColor;
-  final Color backgroundColor;
-  final String title;
+// Improved Math Symbols Dropdown with clear English category names
+class MathSymbolsDropdown extends StatefulWidget {
+  final Function(String) onSymbolSelected;
 
-  const EnhancedMathSymbolsDropdown({
-    required this.onSelected,
-    this.primaryColor = const Color(0xFF004aad),
-    this.backgroundColor = Colors.white,
-    this.title = "Math Symbols",
+  const MathSymbolsDropdown({
     Key? key,
+    required this.onSymbolSelected,
   }) : super(key: key);
 
   @override
-  _EnhancedMathSymbolsDropdownState createState() =>
-      _EnhancedMathSymbolsDropdownState();
+  _MathSymbolsDropdownState createState() => _MathSymbolsDropdownState();
 }
 
-class _EnhancedMathSymbolsDropdownState
-    extends State<EnhancedMathSymbolsDropdown> {
+class _MathSymbolsDropdownState extends State<MathSymbolsDropdown> {
+  bool _isExpanded = false;
+  int _selectedCategoryIndex = 0;
+
   final List<Map<String, List<String>>> _symbolCategories = [
     {
-      'Basic': ['+', '-', '×', '÷', '=', '±', '≠', '≈', '∞'],
+      'Basic Math': ['+', '-', '×', '÷', '=', '±', '≠', '≈', '∞', '%'],
     },
     {
-      'Advanced': ['√', '∑', '∏', '^', '√x', 'π', 'e', '∫'],
+      'Advanced Math': ['√', '∑', '∏', '^', '²', '³', 'π', 'e', '∫', '∂'],
     },
     {
-      'Functions': ['log', 'ln', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot'],
+      'Trigonometry': ['sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sin⁻¹', 'cos⁻¹', 'tan⁻¹'],
     },
     {
-      'Inverse': ['asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh'],
+      'Hyperbolic': ['sinh', 'cosh', 'tanh', 'csch', 'sech', 'coth'],
+    },
+    {
+      'Logarithms': ['log', 'ln', 'log₂', 'log₁₀', 'lg'],
+    },
+    {
+      'Relations': ['<', '>', '≤', '≥', '∈', '∉', '⊂', '⊆', '∪', '∩'],
+    },
+    {
+      'Greek Letters': ['α', 'β', 'γ', 'δ', 'θ', 'λ', 'μ', 'σ', 'φ', 'ω'],
     },
   ];
-
-  int _selectedCategoryIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
         ],
-        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: widget.primaryColor.withOpacity(0.1),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+          // Header
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF004aad).withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF004aad),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Icon(
+                      Icons.functions,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Insert Math Symbols",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF004aad),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF004aad).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
+                      _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                      color: const Color(0xFF004aad),
+                      size: 20,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.functions,
-                  color: widget.primaryColor,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    color: widget.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
           ),
 
-          // Category tabs
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _symbolCategories.length,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemBuilder: (context, index) {
-                final categoryName = _symbolCategories[index].keys.first;
-                final isSelected = _selectedCategoryIndex == index;
+          // Expandable content
+          if (_isExpanded) ...[
+            const Divider(height: 1, color: Colors.grey),
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCategoryIndex = index;
-                    });
-                  },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    decoration: BoxDecoration(
-                      color:
-                          isSelected ? widget.primaryColor : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? widget.primaryColor
-                            : Colors.grey[300]!,
+            // Category tabs
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _symbolCategories.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final categoryName = entry.value.keys.first;
+                    final isSelected = _selectedCategoryIndex == index;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCategoryIndex = index;
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF004aad) : Colors.grey[50],
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF004aad) : Colors.grey[300]!,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected ? [
+                            BoxShadow(
+                              color: const Color(0xFF004aad).withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ] : null,
+                        ),
+                        child: Text(
+                          categoryName,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : const Color(0xFF004aad),
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      categoryName,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[700],
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
-          ),
 
-          // Symbols grid
-          Container(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _symbolCategories[_selectedCategoryIndex]
-                  .values
-                  .first
-                  .map((symbol) => _buildSymbolChip(symbol))
-                  .toList(),
+            // Symbols grid
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _symbolCategories[_selectedCategoryIndex]
+                    .values
+                    .first
+                    .map((symbol) => _buildSymbolButton(symbol))
+                    .toList(),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildSymbolChip(String symbol) {
+  Widget _buildSymbolButton(String symbol) {
     return InkWell(
       onTap: () {
-        widget.onSelected(symbol);
+        widget.onSymbolSelected(symbol);
       },
       child: Container(
-        width: 50,
-        height: 40,
+        width: 45,
+        height: 35,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey[300]!),
         ),
         child: Text(
           symbol,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: widget.primaryColor,
+            color: Color(0xFF004aad),
           ),
         ),
       ),
