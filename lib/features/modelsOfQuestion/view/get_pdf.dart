@@ -7,7 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:project/core/utils/app_router.dart';
+import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/modelsOfQuestion/view/exam.dart';
+import 'package:project/features/update/presentation/view/update_view.dart';
 import '../../../constants.dart';
 import '../../../core/constants/colors.dart';
 import 'dart:async';
@@ -346,10 +348,7 @@ class _PdfDownloadPageState extends State<PdfDownloadPage>
               SizedBox(width: 16.w),
               OutlinedButton.icon(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const StartExamPage()));
+                  context.go(AppRouter.kHomeView); // Navigate using go_router
                 },
                 icon: const Icon(Icons.home, size: 20),
                 label: const Text('Back to Home'),

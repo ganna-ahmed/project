@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:project/core/constants/colors.dart';
 import 'package:project/features/home/presentation/views/home_view.dart';
 import 'package:project/features/update/presentation/view/update_view.dart';
@@ -23,6 +24,20 @@ class _MainScreenState extends State<MainScreen> {
     const UpdatePage(),
   ];
 
+  // دالة للانتقال لصفحة الـ Home مع الاحتفاظ بالـ bottom bar
+  void navigateToHome() {
+    setState(() {
+      _currentIndex = 0;
+    });
+  }
+
+  // دالة للانتقال لصفحة معينة مع الاحتفاظ بالـ bottom bar
+  void navigateToTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double navBarHeight = 55.0;
@@ -40,6 +55,7 @@ class _MainScreenState extends State<MainScreen> {
         buttonBackgroundColor: AppColors.lightGraynishBlue,
         animationDuration: const Duration(milliseconds: 300),
         key: _bottomNavigationKey,
+        index: _currentIndex, // تأكد من إضافة هذا السطر
         items: const <Widget>[
           Icon(
             FontAwesomeIcons.house,
@@ -63,6 +79,20 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+// Widget مساعد للوصول للـ MainScreen من أي مكان
+class MainScreenHelper {
+  static void navigateToHome(BuildContext context) {
+    context.go('/MainScreen');
+  }
+
+  static void navigateToHomeWithTab(BuildContext context, int tabIndex) {
+    // يمكنك إضافة معاملات إضافية هنا لتحديد التاب
+    context.go('/MainScreen');
+  }
+}
+
+
 // import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 // import 'package:flutter/material.dart';
 // import 'package:project/core/constants/colors.dart';
@@ -91,51 +121,40 @@ class _MainScreenState extends State<MainScreen> {
 //   @override
 //   Widget build(BuildContext context) {
 //     double navBarHeight = 55.0;
-
-//     // Use a Stack to overlay the navigation bar on top of the screens
-//     return Stack(
-//       children: [
-//         // IndexedStack preserves the state of all screens
-//         IndexedStack(
-//           index: _currentIndex,
-//           children: _screens,
-//         ),
-//         // Position the navigation bar at the bottom
-//         Positioned(
-//           left: 0,
-//           right: 0,
-//           bottom: 0,
-//           child: CurvedNavigationBar(
-//             letIndexChange: (index) => true,
-//             height: navBarHeight,
-//             color: AppColors.ceruleanBlue,
-//             backgroundColor:
-//                 Colors.transparent, // Use transparent to see content
-//             buttonBackgroundColor: AppColors.lightGraynishBlue,
-//             animationDuration: const Duration(milliseconds: 300),
-//             key: _bottomNavigationKey,
-//             items: const <Widget>[
-//               Icon(
-//                 FontAwesomeIcons.house,
-//                 color: AppColors.darkBlue,
-//               ),
-//               Icon(
-//                 FontAwesomeIcons.user,
-//                 color: AppColors.darkBlue,
-//               ),
-//               Icon(
-//                 Icons.update,
-//                 color: AppColors.darkBlue,
-//               ),
-//             ],
-//             onTap: (index) {
-//               setState(() {
-//                 _currentIndex = index;
-//               });
-//             },
+//     return Scaffold(
+//       extendBody: true,
+//       body: SafeArea(
+//         bottom: false,
+//         child: _screens[_currentIndex],
+//       ),
+//       bottomNavigationBar: CurvedNavigationBar(
+//         letIndexChange: (index) => true,
+//         height: navBarHeight,
+//         color: AppColors.ceruleanBlue,
+//         backgroundColor: AppColors.white,
+//         buttonBackgroundColor: AppColors.lightGraynishBlue,
+//         animationDuration: const Duration(milliseconds: 300),
+//         key: _bottomNavigationKey,
+//         items: const <Widget>[
+//           Icon(
+//             FontAwesomeIcons.house,
+//             color: AppColors.darkBlue,
 //           ),
-//         ),
-//       ],
+//           Icon(
+//             FontAwesomeIcons.user,
+//             color: AppColors.darkBlue,
+//           ),
+//           Icon(
+//             Icons.update,
+//             color: AppColors.darkBlue,
+//           ),
+//         ],
+//         onTap: (index) {
+//           setState(() {
+//             _currentIndex = index;
+//           });
+//         },
+//       ),
 //     );
 //   }
 // }

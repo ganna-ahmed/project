@@ -24,7 +24,7 @@ class MoreButton extends StatelessWidget {
         height: height.h,
         child: ElevatedButton(
           onPressed: () {
-            GoRouter.of(context).push(AppRouter.kLastQuestion);
+            // GoRouter.of(context).push(AppRouter.kLastQuestion);
           },
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
@@ -63,7 +63,7 @@ class DoneButton extends StatelessWidget {
         height: height.h,
         child: ElevatedButton(
           onPressed: () {
-            GoRouter.of(context).push(AppRouter.kLastQuestion);
+            //GoRouter.of(context).push(AppRouter.kLastQuestion);
           },
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
@@ -108,7 +108,6 @@ class NavigationButtons extends StatelessWidget {
             },
           ),
         ),
-
         Padding(
           padding: EdgeInsets.only(top: 50.h),
           child: Row(
@@ -121,7 +120,7 @@ class NavigationButtons extends StatelessWidget {
                   fontSize: fontSize,
                 ),
               ),
-               SizedBox(width: 20.w),
+              SizedBox(width: 20.w),
               Expanded(
                 child: DoneButton(
                   width: buttonWidth,

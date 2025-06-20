@@ -40,7 +40,7 @@ class HomeBody extends StatelessWidget {
                       minimumSize: Size(160.w, 60.h),
                     ),
                     onPressed: () {
-                      GoRouter.of(context).push(AppRouter.kUploadView);
+                      GoRouter.of(context).push(AppRouter.kUpdateView);
                     },
                     child: Column(
                       // Removed "const" here
