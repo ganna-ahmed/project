@@ -53,26 +53,38 @@ class ImageModel {
   final String path;
   final int size;
 
-  ImageModel(
-      {required this.fieldname,
-      required this.originalname,
-      required this.encoding,
-      required this.mimetype,
-      required this.destination,
-      required this.filename,
-      required this.path,
-      required this.size});
+  ImageModel({
+    required this.fieldname,
+    required this.originalname,
+    required this.encoding,
+    required this.mimetype,
+    required this.destination,
+    required this.filename,
+    required this.path,
+    required this.size,
+  });
+
   factory ImageModel.fromjson(jsonData) {
+    // إصلاح مشكلة الـ path
+    String imagePath;
+
+    if (jsonData != null && jsonData['filename'] != null) {
+      // الـ filename موجود مباشرة في jsonData
+      imagePath = '$kBaseUrl/images/${jsonData['filename']}';
+    } else {
+      // استخدام صورة افتراضية
+      imagePath = '$kBaseUrl/default_image.jpg';
+    }
+
     return ImageModel(
-        fieldname: jsonData['fieldname'],
-        originalname: jsonData['originalname'],
-        encoding: jsonData['encoding'],
-        mimetype: jsonData['mimetype'],
-        destination: jsonData['destination'],
-        filename: jsonData['filename'],
-        path: jsonData['image'] != null && jsonData['image']['filename'] != null
-            ? '$kBaseUrl/images/${jsonData['image']['filename']}'
-            : '$kBaseUrl/default_image.jpg',
-        size: jsonData['size']);
+      fieldname: jsonData['fieldname'] ?? '',
+      originalname: jsonData['originalname'] ?? '',
+      encoding: jsonData['encoding'] ?? '',
+      mimetype: jsonData['mimetype'] ?? '',
+      destination: jsonData['destination'] ?? '',
+      filename: jsonData['filename'] ?? '',
+      path: imagePath,
+      size: jsonData['size'] ?? 0,
+    );
   }
 }
