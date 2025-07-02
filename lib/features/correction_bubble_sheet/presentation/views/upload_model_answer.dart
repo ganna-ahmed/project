@@ -78,9 +78,10 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 600;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,8 +114,9 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
           children: [
             const Spacer(),
             Image.asset(
-              'assets/images/upload.png',
+              'assets/images/uplode.png',
               width: isLargeScreen ? 350 : 250,
+              color: colorScheme.brightness == Brightness.dark ? Colors.white70 : null, // Adjust image color for dark mode
             ),
             const SizedBox(height: 30),
 
@@ -124,7 +126,7 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
               icon: Icons.upload_file_rounded,
               title: "Upload Model Answer",
               subtitle:
-                  "Upload the model answer PDF.\nEnsure images are 870x600 for accurate results.",
+              "Upload the model answer PDF.\nEnsure images are 870x600 for accurate results.",
             ),
             const SizedBox(height: 10),
 
@@ -142,24 +144,24 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
 
             const SizedBox(height: 30),
 
-        ElevatedButton(
-  onPressed: fileName != null ? () {
-    String processedFileName = fileName!.replaceAll('.pdf', '');
-    GoRouter.of(context).push(AppRouter.kProcessingPage, extra: processedFileName);
-  } : null,  // زر معطل إذا لم يتم اختيار الملف
-  style: ElevatedButton.styleFrom(
-    backgroundColor: fileName != null ? const Color(0xff2262C6) : Colors.grey,
-    minimumSize: Size(screenWidth * 0.5, 50),
-    padding: const EdgeInsets.symmetric(vertical: 15),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(15),
-    ),
-  ),
-  child: const Text(
-    "Next",
-    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-  ),
-),
+            ElevatedButton(
+              onPressed: fileName != null ? () {
+                String processedFileName = fileName!.replaceAll('.pdf', '');
+                GoRouter.of(context).push(AppRouter.kProcessingPage, extra: processedFileName);
+              } : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: fileName != null ? const Color(0xff2262C6) : Colors.grey,
+                minimumSize: Size(screenWidth * 0.5, 50),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: const Text(
+                "Next",
+                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
 
 
             const Spacer(),

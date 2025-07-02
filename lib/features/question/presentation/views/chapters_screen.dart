@@ -49,13 +49,13 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
         setState(() {
           chapters = List<Map<String, dynamic>>.from(
             data['pdfFiles'].map((fileName) => {
-                  'name': fileName,
-                  'manualUrl':
-                      '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
-                  'aiUrl':
-                      '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
-                  'hasPdf': true,
-                }),
+              'name': fileName,
+              'manualUrl':
+              '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
+              'aiUrl':
+              '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(fileName)}',
+              'hasPdf': true,
+            }),
           );
           isLoading = false;
         });
@@ -100,15 +100,15 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
 
         setState(() {
           final index =
-              chapters.indexWhere((chapter) => chapter['name'] == chapterName);
+          chapters.indexWhere((chapter) => chapter['name'] == chapterName);
           if (index != -1) {
             final newFileName = file.name;
             chapters[index]['name'] = newFileName;
             chapters[index]['hasPdf'] = true;
             chapters[index]['manualUrl'] =
-                '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
+            '$kBaseUrl/Doctor/manualQuestion?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
             chapters[index]['aiUrl'] =
-                '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
+            '$kBaseUrl/Doctor/QuestionAi?course=${widget.courseName}&id=${widget.doctorId}&file=${Uri.encodeComponent(newFileName)}';
           }
         });
       } else {
@@ -127,7 +127,7 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
       setState(() {
         chapters = List.generate(
           count,
-          (index) => {
+              (index) => {
             'name': 'Chapter ${index + 1}',
             'hasPdf': false,
           },
@@ -141,6 +141,7 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
   }
 
   Widget buildGradientButton(String label, VoidCallback onPressed) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -165,7 +166,9 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         backgroundColor: AppColors.ceruleanBlue,
         iconTheme: IconThemeData(color: Colors.white),
@@ -205,74 +208,74 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
             isLoading
                 ? CircularProgressIndicator()
                 : Expanded(
-                    child: ListView.builder(
-                      itemCount: chapters.length,
-                      itemBuilder: (context, index) {
-                        final chapter = chapters[index];
-                        return Card(
-                          color: Color(0xFFACE1F9),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          elevation: 4,
-                          child: InkWell(
-                            onTap: () {
-                              if (chapter['hasPdf'] == false) {
-                                uploadPdfForChapter(chapter['name']);
-                              }
-                            },
-                            child: ListTile(
-                              title: Text(
-                                chapter['name'],
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              trailing: chapter['hasPdf'] == true
-                                  ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                            icon: Icon(Icons.smart_toy,
-                                                color: Colors.blue),
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AIQuestionsScreen(
-                                                    courseName:
-                                                        widget.courseName,
-                                                    doctorId: widget.doctorId,
-                                                    fileName: chapter['name'],
-                                                  ),
-                                                ),
-                                              );
-                                            }),
-                                        IconButton(
-                                          icon: Icon(Icons.edit_note,
-                                              color: Colors.green),
-                                          onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ManualQuestionScreen(
-                                                // url: chapter['manualUrl'],
-                                                // title: chapter['name'],
-                                                courseName: widget.courseName,
-                                                fileName: chapter['name'],
-                                                doctorId: widget.doctorId,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : Icon(Icons.upload_file,
-                                      color: Colors.black54),
-                            ),
-                          ),
-                        );
+              child: ListView.builder(
+                itemCount: chapters.length,
+                itemBuilder: (context, index) {
+                  final chapter = chapters[index];
+                  return Card(
+                    color: Color(0xFFACE1F9),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                    child: InkWell(
+                      onTap: () {
+                        if (chapter['hasPdf'] == false) {
+                          uploadPdfForChapter(chapter['name']);
+                        }
                       },
+                      child: ListTile(
+                        title: Text(
+                          chapter['name'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        trailing: chapter['hasPdf'] == true
+                            ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                                icon: Icon(Icons.smart_toy,
+                                    color: Colors.blue),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AIQuestionsScreen(
+                                            courseName:
+                                            widget.courseName,
+                                            doctorId: widget.doctorId,
+                                            fileName: chapter['name'],
+                                          ),
+                                    ),
+                                  );
+                                }),
+                            IconButton(
+                              icon: Icon(Icons.edit_note,
+                                  color: Colors.green),
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ManualQuestionScreen(
+                                        // url: chapter['manualUrl'],
+                                        // title: chapter['name'],
+                                        courseName: widget.courseName,
+                                        fileName: chapter['name'],
+                                        doctorId: widget.doctorId,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                            : Icon(Icons.upload_file,
+                            color: Colors.black54),
+                      ),
                     ),
-                  ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),

@@ -25,7 +25,8 @@ class BubbleSheet2Page extends StatefulWidget {
   final String modelName;
 
   const BubbleSheet2Page(
-      {super.key, required this.id, required this.modelName});
+      {Key? key, required this.id, required this.modelName})
+      : super(key: key);
 
   @override
   State<BubbleSheet2Page> createState() => _BubbleSheet2PageState();
@@ -438,7 +439,7 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
   void selectCourse(String courseId) {
     setState(() {
       _selectedCourse = _courses.firstWhere(
-        (course) => course.id == courseId,
+            (course) => course.id == courseId,
         orElse: () => _courses.first,
       );
       _updateControllers();
@@ -452,14 +453,16 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
     final screenHeight = MediaQuery.of(context).size.height;
     final isTablet = screenWidth > 600;
     final isLargeScreen = screenWidth > 900;
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = colorScheme.brightness == Brightness.dark;
 
     return ModalProgressHUD(
       color: AppColors.babyBlue,
       inAsyncCall: isLoading,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.ceruleanBlue,
-          foregroundColor: AppColors.white,
+          backgroundColor: isDarkMode ? colorScheme.background : AppColors.ceruleanBlue,
+          foregroundColor: Colors.white,
           title: Text(
             'Create Bubble Sheet',
             style: TextStyle(
@@ -468,6 +471,7 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             ),
           ),
         ),
+        backgroundColor: isDarkMode ? colorScheme.background : Colors.white,
         body: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -484,21 +488,21 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     // Dropdown للكورسات
-                    _buildResponsiveDropdown(isTablet),
+                    _buildResponsiveDropdown(isTablet, isDarkMode, colorScheme),
 
                     SizedBox(height: isTablet ? 30.h : 20.h),
 
                     // حقول النص في شبكة للشاشات الكبيرة
                     if (isLargeScreen) ...[
-                      _buildGridLayout(),
+                      _buildGridLayout(isDarkMode, colorScheme),
                     ] else ...[
-                      _buildSingleColumnLayout(isTablet),
+                      _buildSingleColumnLayout(isTablet, isDarkMode, colorScheme),
                     ],
 
                     SizedBox(height: isTablet ? 30.h : 20.h),
 
                     // الأزرار
-                    _buildResponsiveButtons(isTablet, screenWidth),
+                    _buildResponsiveButtons(isTablet, screenWidth, isDarkMode, colorScheme),
                   ],
                 ),
               ),
@@ -509,7 +513,7 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
     );
   }
 
-  Widget _buildResponsiveDropdown(bool isTablet) {
+  Widget _buildResponsiveDropdown(bool isTablet, bool isDarkMode, ColorScheme colorScheme) {
     return DropdownButtonFormField<String>(
       value: _selectedCourse?.id,
       decoration: InputDecoration(
@@ -530,8 +534,9 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
       ),
       style: TextStyle(
         fontSize: isTablet ? 16.sp : 14.sp,
-        color: Colors.black,
+        color: isDarkMode ? Colors.white : Colors.black,
       ),
+      dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
       items: _courses.map((course) {
         return DropdownMenuItem(
           value: course.id,
@@ -544,11 +549,11 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
         }
       },
       validator: (value) =>
-          value == null || value.isEmpty ? 'Please select a course' : null,
+      value == null || value.isEmpty ? 'Please select a course' : null,
     );
   }
 
-  Widget _buildGridLayout() {
+  Widget _buildGridLayout(bool isDarkMode, ColorScheme colorScheme) {
     return Column(
       children: [
         Row(
@@ -556,12 +561,12 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             Expanded(
                 child: _buildEditableTextField(
                     'Department', departmentController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
             SizedBox(width: 16.w),
             Expanded(
                 child: _buildEditableTextField(
                     'Course Name', courseNameController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
           ],
         ),
         Row(
@@ -569,106 +574,96 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             Expanded(
                 child: _buildEditableTextField(
                     'Course Code', courseCodeController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
             SizedBox(width: 16.w),
             Expanded(
                 child: _buildEditableTextField(
                     'Course Level', courseLevelController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
           ],
         ),
         Row(
           children: [
             Expanded(
                 child: _buildEditableTextField('Semester', semesterController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
             SizedBox(width: 16.w),
             Expanded(
                 child: _buildEditableTextField(
                     'Instructor', instructorController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
           ],
         ),
         Row(
           children: [
-            Expanded(child: _buildDatePicker(true)),
+            Expanded(child: _buildDatePicker(true, isDarkMode, colorScheme)),
             SizedBox(width: 16.w),
             Expanded(
                 child: _buildEditableTextField('Time', timeController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
           ],
         ),
         Row(
           children: [
             Expanded(
                 child: _buildEditableTextField('Full Mark', fullMarkController,
-                    keyboardType: TextInputType.number, isTablet: true)),
+                    keyboardType: TextInputType.number, isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
             SizedBox(width: 16.w),
             Expanded(
                 child: _buildEditableTextField(
                     'Form (Final or Midterm)', formController,
-                    isTablet: true)),
+                    isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme)),
           ],
         ),
         _buildEditableTextField(
             'Number of Questions', numberOfQuestionsController,
-            keyboardType: TextInputType.number, isTablet: true),
-        _buildNoteText(true),
+            keyboardType: TextInputType.number, isTablet: true, isDarkMode: isDarkMode, colorScheme: colorScheme),
+        _buildNoteText(true, isDarkMode, colorScheme),
       ],
     );
   }
 
-  Widget _buildSingleColumnLayout(bool isTablet) {
+  Widget _buildSingleColumnLayout(bool isTablet, bool isDarkMode, ColorScheme colorScheme) {
     return Column(
       children: [
         _buildEditableTextField('Department', departmentController,
-            isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Course Name', courseNameController,
-            isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Course Code', courseCodeController,
-            isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Course Level', courseLevelController,
-            isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Semester', semesterController,
-            isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Instructor', instructorController,
-            isTablet: isTablet),
-        _buildDatePicker(isTablet),
-        _buildEditableTextField('Time', timeController, isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
+        _buildDatePicker(isTablet, isDarkMode, colorScheme),
+        _buildEditableTextField('Time', timeController, isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Full Mark', fullMarkController,
-            keyboardType: TextInputType.number, isTablet: isTablet),
+            keyboardType: TextInputType.number, isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField('Form (Final or Midterm)', formController,
-            isTablet: isTablet),
+            isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
         _buildEditableTextField(
             'Number of Questions', numberOfQuestionsController,
-            keyboardType: TextInputType.number, isTablet: isTablet),
-        _buildNoteText(isTablet),
+            keyboardType: TextInputType.number, isTablet: isTablet, isDarkMode: isDarkMode, colorScheme: colorScheme),
+        _buildNoteText(isTablet, isDarkMode, colorScheme),
       ],
     );
   }
 
-  Widget _buildDatePicker(bool isTablet) {
+  Widget _buildDatePicker(bool isTablet, bool isDarkMode, ColorScheme colorScheme) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isTablet ? 15.h : 10.h),
       child: TextFormField(
         controller: dateController,
-        style: TextStyle(fontSize: isTablet ? 16.sp : 14.sp),
+        style: TextStyle(fontSize: isTablet ? 16.sp : 14.sp, color: isDarkMode ? Colors.white : Colors.black),
         decoration: InputDecoration(
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: AppColors.stoneBlue),
           ),
           prefixIconColor: AppColors.babyBlue,
-          labelStyle: TextStyle(
-            color: AppColors.darkBlue,
-            fontSize: isTablet ? 16.sp : 14.sp,
-          ),
-          filled: true,
-          fillColor: Colors.blue[50],
           labelText: 'Date (mm/dd/yyyy)',
-          suffixIcon: Icon(
-            Icons.calendar_today,
-            size: isTablet ? 24.w : 20.w,
-          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(isTablet ? 12.r : 10.r),
             borderSide: BorderSide.none,
@@ -676,6 +671,16 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
           contentPadding: EdgeInsets.symmetric(
             horizontal: isTablet ? 20.w : 16.w,
             vertical: isTablet ? 20.h : 16.h,
+          ),
+          filled: true,
+          fillColor: isDarkMode ? Colors.grey[700] : Colors.blue[50],
+          labelStyle: TextStyle(
+            color: isDarkMode ? Colors.white70 : Colors.black54,
+          ),
+          suffixIcon: Icon(
+            Icons.calendar_today,
+            size: isTablet ? 24.w : 20.w,
+            color: isDarkMode ? Colors.white70 : Colors.black54,
           ),
         ),
         readOnly: true,
@@ -685,6 +690,17 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             initialDate: DateTime.now(),
             firstDate: DateTime(2000),
             lastDate: DateTime(2100),
+            builder: (BuildContext context, Widget? child) {
+              return Theme(
+                data: ThemeData.light().copyWith(
+                  colorScheme: ColorScheme.fromSwatch(
+                    primarySwatch: Colors.blue,
+                  ),
+                  dialogBackgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                ),
+                child: child!,
+              );
+            },
           );
           if (date != null) {
             setState(() {
@@ -697,20 +713,20 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
     );
   }
 
-  Widget _buildNoteText(bool isTablet) {
+  Widget _buildNoteText(bool isTablet, bool isDarkMode, ColorScheme colorScheme) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isTablet ? 15.h : 10.h),
       child: Text(
         'The Number of questions of one column is 30',
         style: TextStyle(
-          color: Colors.grey,
+          color: isDarkMode ? Colors.grey[400] : Colors.grey,
           fontSize: isTablet ? 16.sp : 14.sp,
         ),
       ),
     );
   }
 
-  Widget _buildResponsiveButtons(bool isTablet, double screenWidth) {
+  Widget _buildResponsiveButtons(bool isTablet, double screenWidth, bool isDarkMode, ColorScheme colorScheme) {
     final buttonHeight = isTablet ? 60.h : 50.h;
     final fontSize = isTablet ? 18.sp : 16.sp;
 
@@ -722,7 +738,7 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _canEnableButtons() ? Colors.blue : Colors.grey,
+                _canEnableButtons() ? Colors.blue : Colors.grey,
                 minimumSize: Size(double.infinity, buttonHeight),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(isTablet ? 12.r : 8.r),
@@ -730,8 +746,8 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
               ),
               onPressed: _canEnableButtons()
                   ? () {
-                      createPDF(_getUpdatedCourse());
-                    }
+                createPDF(_getUpdatedCourse());
+              }
                   : null,
               child: Text(
                 'Generate PDF',
@@ -748,7 +764,7 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _canEnableButtons() ? AppColors.darkBlue : Colors.grey,
+                _canEnableButtons() ? AppColors.darkBlue : Colors.grey,
                 minimumSize: Size(double.infinity, buttonHeight),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(isTablet ? 12.r : 8.r),
@@ -756,8 +772,8 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
               ),
               onPressed: _canEnableButtons()
                   ? () {
-                      submitForm();
-                    }
+                submitForm();
+              }
                   : null,
               child: Text(
                 'Save Information',
@@ -781,15 +797,15 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _canEnableButtons() ? Colors.blue : Colors.grey,
+                _canEnableButtons() ? Colors.blue : Colors.grey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
               onPressed: _canEnableButtons()
                   ? () {
-                      createPDF(_getUpdatedCourse());
-                    }
+                createPDF(_getUpdatedCourse());
+              }
                   : null,
               child: Text(
                 'Generate PDF',
@@ -808,15 +824,15 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _canEnableButtons() ? AppColors.darkBlue : Colors.grey,
+                _canEnableButtons() ? AppColors.darkBlue : Colors.grey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
               onPressed: _canEnableButtons()
                   ? () {
-                      submitForm();
-                    }
+                submitForm();
+              }
                   : null,
               child: Text(
                 'Save Information',
@@ -834,23 +850,17 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
   }
 
   Widget _buildEditableTextField(String label, TextEditingController controller,
-      {TextInputType? keyboardType, bool isTablet = false}) {
+      {TextInputType? keyboardType, bool isTablet = false, required bool isDarkMode, required ColorScheme colorScheme}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isTablet ? 15.h : 10.h),
       child: TextFormField(
         controller: controller,
-        style: TextStyle(fontSize: isTablet ? 16.sp : 14.sp),
+        style: TextStyle(fontSize: isTablet ? 16.sp : 14.sp, color: isDarkMode ? Colors.white : Colors.black),
         decoration: InputDecoration(
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: AppColors.stoneBlue),
           ),
           prefixIconColor: AppColors.babyBlue,
-          labelStyle: TextStyle(
-            color: AppColors.darkBlue,
-            fontSize: isTablet ? 16.sp : 14.sp,
-          ),
-          filled: true,
-          fillColor: Colors.blue[50],
           labelText: label,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(isTablet ? 12.r : 10.r),
@@ -859,6 +869,11 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
           contentPadding: EdgeInsets.symmetric(
             horizontal: isTablet ? 20.w : 16.w,
             vertical: isTablet ? 20.h : 16.h,
+          ),
+          filled: true,
+          fillColor: isDarkMode ? Colors.grey[700] : Colors.blue[50],
+          labelStyle: TextStyle(
+            color: isDarkMode ? Colors.white70 : Colors.black54,
           ),
         ),
         keyboardType: keyboardType,
@@ -870,7 +885,6 @@ class _BubbleSheet2PageState extends State<BubbleSheet2Page> {
     );
   }
 }
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';

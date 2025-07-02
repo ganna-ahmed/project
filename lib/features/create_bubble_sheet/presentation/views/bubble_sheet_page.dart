@@ -5,7 +5,7 @@ import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cu
 import 'package:project/features/create_bubble_sheet/presentation/views/widgets/course.dart';
 
 class BubbleSheetPage extends StatefulWidget {
-  const BubbleSheetPage({super.key});
+  const BubbleSheetPage({Key? key}) : super(key: key);
 
   @override
   State<BubbleSheetPage> createState() => _BubbleSheetPageState();
@@ -27,24 +27,29 @@ class _BubbleSheetPageState extends State<BubbleSheetPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = colorScheme.brightness == Brightness.dark;
+
     return BlocProvider.value(
       value: context.read<BubbleSheetCubit>(),
-      child: BlocBuilder<BubbleSheetCubit, BubbleSheetState>(
-        builder: (context, state) {
-          final courses = context.read<BubbleSheetCubit>().courses;
-          final selectedCourse =
-              context.read<BubbleSheetCubit>().selectedCourse;
+      child: Scaffold(
+        backgroundColor: isDarkMode ? colorScheme.background : Colors.white,
+        body: BlocBuilder<BubbleSheetCubit, BubbleSheetState>(
+          builder: (context, state) {
+            final courses = context.read<BubbleSheetCubit>().courses;
+            final selectedCourse =
+                context.read<BubbleSheetCubit>().selectedCourse;
 
-          return Course(
-            courses: courses,
-            selectedCourse: selectedCourse,
-          );
-        },
+            return Course(
+              courses: courses,
+              selectedCourse: selectedCourse,
+            );
+          },
+        ),
       ),
     );
   }
 }
-
 // class _BubbleSheetPageState extends State<BubbleSheetPage> {
 //   @override
 //   void didChangeDependencies() {

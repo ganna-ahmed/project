@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'make_exam.dart';
 
@@ -15,10 +16,10 @@ class ExamReviewApp extends StatefulWidget {
   final String modelName;
 
   const ExamReviewApp({
-    super.key,
+    Key? key,
     required this.idDoctor,
     required this.modelName,
-  });
+  }) : super(key: key);
 
   @override
   State<ExamReviewApp> createState() => _ExamReviewAppState();
@@ -100,8 +101,8 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
 
           if (question['questions'][j]['answers'] != null) {
             for (int k = 0;
-                k < question['questions'][j]['answers'].length;
-                k++) {
+            k < question['questions'][j]['answers'].length;
+            k++) {
               _optionControllers[subKey]!.add(TextEditingController(
                   text: question['questions'][j]['answers'][k]['value']));
             }
@@ -211,47 +212,10 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
     if (warnings.isNotEmpty) {
       _showWarning(warnings.join('\n'));
     } else {
-      //_showToast('✅ All answers validated successfully!');
       _submitExam(); // Submit only if validation passes
     }
   }
-  // void _validateAnswers() {
-  //   _submitExam();
-  //   List<String> warnings = [];
 
-  //   _answerControllers.forEach((key, controller) {
-  //     if (controller.text.isEmpty) {
-  //       final parts = key.split('-');
-  //       if (parts.length == 1) {
-  //         final questionIndex = int.parse(parts[0].substring(1));
-  //         final questionType = questions[questionIndex]['type'];
-
-  //         // Skip validation for Essay questions AND reading passages in Multi questions
-  //         if (questionType != 'Essay' && questionType != 'Multi') {
-  //           warnings
-  //               .add('⚠ Question ${questionIndex + 1} needs correct answer');
-  //         }
-  //       } else {
-  //         final questionIndex = int.parse(parts[0].substring(1));
-  //         final subQuestionIndex = int.parse(parts[1].substring(1));
-
-  //         // Only validate sub-questions, not the reading passage
-  //         if (questions[questionIndex]['type'] == 'Multi' &&
-  //             questions[questionIndex]['questions'][subQuestionIndex]['type'] !=
-  //                 'Essay') {
-  //           warnings.add(
-  //               '⚠ Sub Question ${questionIndex + 1}.${subQuestionIndex + 1} needs correct answer');
-  //         }
-  //       }
-  //     }
-  //   });
-
-  //   if (warnings.isNotEmpty) {
-  //     _showWarning(warnings.join('\n'));
-  //   } else {
-  //     _showToast('✅ All answers validated successfully!');
-  //   }
-  // }
   Future<void> _submitExam() async {
     final request = http.MultipartRequest(
       'PATCH',
@@ -263,40 +227,40 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
       'questions': questions
           .asMap()
           .map((i, q) {
-            final questionKey = 'q$i';
-            final questionData = {
-              'type': q['type'],
-              'text': q['text'] ?? q['passage'],
-              'answers':
-                  _optionControllers[questionKey]?.map((c) => c.text).toList(),
-              'correct_answer': _answerControllers[questionKey]?.text,
-            };
+        final questionKey = 'q$i';
+        final questionData = {
+          'type': q['type'],
+          'text': q['text'] ?? q['passage'],
+          'answers':
+          _optionControllers[questionKey]?.map((c) => c.text).toList(),
+          'correct_answer': _answerControllers[questionKey]?.text,
+        };
 
-            // Include image placeholder if an image exists
-            if (_questionImages.containsKey(i) && _questionImages[i] != null) {
-              questionData['image'] =
-                  'image_q$i'; // Placeholder for backend reference
-            }
+        // Include image placeholder if an image exists
+        if (_questionImages.containsKey(i) && _questionImages[i] != null) {
+          questionData['image'] =
+          'image_q$i'; // Placeholder for backend reference
+        }
 
-            // Handle multi-part questions
-            if (q['type'] == 'Multi') {
-              questionData['questions'] = (q['questions'] as List)
-                  .asMap()
-                  .map((j, sq) {
-                    final subKey = 'q$i-s$j';
-                    return MapEntry(j, {
-                      'text': sq['text'],
-                      'answers': _optionControllers[subKey]
-                          ?.map((c) => c.text)
-                          .toList(),
-                      'correct_answer': _answerControllers[subKey]?.text,
-                    });
-                  })
-                  .values
-                  .toList();
-            }
-            return MapEntry(i.toString(), questionData);
+        // Handle multi-part questions
+        if (q['type'] == 'Multi') {
+          questionData['questions'] = (q['questions'] as List)
+              .asMap()
+              .map((j, sq) {
+            final subKey = 'q$i-s$j';
+            return MapEntry(j, {
+              'text': sq['text'],
+              'answers': _optionControllers[subKey]
+                  ?.map((c) => c.text)
+                  .toList(),
+              'correct_answer': _answerControllers[subKey]?.text,
+            });
           })
+              .values
+              .toList();
+        }
+        return MapEntry(i.toString(), questionData);
+      })
           .values
           .toList(),
     };
@@ -345,32 +309,6 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
     }
   }
 
-  // Future<void> _submitExam() async {
-  //   try {
-  //     final response = await http.patch(
-  //       Uri.parse('${kBaseUrl}/Doctor/reviewExam'),
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: json.encode({
-  //         'questions': _prepareExamData(),
-  //         'modelName': widget.modelName,
-  //         //'idDoctor': widget.idDoctor,
-  //       }),
-  //     );
-  //     print('😤😤😤😤${response.body}${response.statusCode}');
-
-  //     if (response.statusCode == 200) {
-  //       _showSuccess('Exam submitted successfully!');
-  //       final url =
-  //           '${kBaseUrl}/Doctor/DownloadArchive?id=${widget.idDoctor}&modelName=${widget.modelName}';
-  //       launchUrl(Uri.parse(url));
-  //     } else {
-  //       _showError('Failed to submit exam: ${response?.reasonPhrase}');
-  //     }
-  //   } catch (e) {
-  //     _showError('Error submitting exam: ${e.toString()}');
-  //   }
-  // }
-
   Map<String, dynamic> _prepareExamData() {
     return {
       'questions': questions.asMap().map((i, q) {
@@ -381,7 +319,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
           'answers': _optionControllers[questionKey]
               ?.asMap()
               .map((index, controller) =>
-                  MapEntry(index.toString(), controller.text))
+              MapEntry(index.toString(), controller.text))
               .values
               .toList(),
           'correct_answer': _answerControllers[questionKey]?.text,
@@ -396,18 +334,18 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
           questionData['questions'] = (q['questions'] as List)
               .asMap()
               .map((j, sq) {
-                final subKey = 'q$i-s$j';
-                return MapEntry(j, {
-                  'text': sq['text'],
-                  'answers': _optionControllers[subKey]
-                      ?.asMap()
-                      .map((index, controller) =>
-                          MapEntry(index.toString(), controller.text))
-                      .values
-                      .toList(),
-                  'correct_answer': _answerControllers[subKey]?.text,
-                });
-              })
+            final subKey = 'q$i-s$j';
+            return MapEntry(j, {
+              'text': sq['text'],
+              'answers': _optionControllers[subKey]
+                  ?.asMap()
+                  .map((index, controller) =>
+                  MapEntry(index.toString(), controller.text))
+                  .values
+                  .toList(),
+              'correct_answer': _answerControllers[subKey]?.text,
+            });
+          })
               .values
               .toList();
         }
@@ -453,7 +391,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
 
   void _showToast(String message) {
     FToast().init(context).showToast(
-            child: Container(
+        child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
@@ -490,6 +428,11 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Exam Review'),
@@ -500,63 +443,65 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
+      backgroundColor: isDarkMode ? colorScheme.background : Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  ...List.generate(questions.length, (index) {
-                    final question = questions[index];
-                    final questionKey = 'q$index';
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            ...List.generate(questions.length, (index) {
+              final question = questions[index];
+              final questionKey = 'q$index';
 
-                    if (question['type'] == 'MCQ') {
-                      return _buildMcqQuestion(question, index);
-                    } else if (question['type'] == 'Multi') {
-                      return _buildMultiQuestion(question, index);
-                    } else {
-                      return _buildEssayQuestion(question, index);
-                    }
-                  }),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _validateAnswers,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.ceruleanBlue,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
-                        ),
-                        child: const Text('Validate All Answers',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: _navigateToMakeExam,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
-                        ),
-                        child: const Text('Make Exam',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
+              if (question['type'] == 'MCQ') {
+                return _buildMcqQuestion(question, index, isDarkMode, colorScheme);
+              } else if (question['type'] == 'Multi') {
+                return _buildMultiQuestion(question, index, isDarkMode, colorScheme);
+              } else {
+                return _buildEssayQuestion(question, index, isDarkMode, colorScheme);
+              }
+            }),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _validateAnswers,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.ceruleanBlue,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
                   ),
-                ],
-              ),
+                  child: const Text('Validate All Answers',
+                      style: TextStyle(color: Colors.white)),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _navigateToMakeExam,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
+                  ),
+                  child: const Text('Make Exam',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
             ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildMcqQuestion(dynamic question, int index) {
+  Widget _buildMcqQuestion(dynamic question, int index, bool isDarkMode, ColorScheme colorScheme) {
     final questionKey = 'q$index';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 20),
       elevation: 3,
+      color: isDarkMode ? Colors.grey[800] : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.blue.shade200),
@@ -571,7 +516,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
               decoration: BoxDecoration(
                 color: Colors.green.shade100,
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
+                const BorderRadius.vertical(top: Radius.circular(12)),
               ),
               child: Text(
                 'Selected correct answer: ${_selectedAnswers[index]}',
@@ -589,7 +534,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                   children: [
                     Text(
                       'Question ${index + 1}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.ceruleanBlue),
@@ -608,10 +553,12 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                 // Question Text
                 TextFormField(
                   controller: TextEditingController(text: question['text']),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                    labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
                   ),
                   maxLines: 2,
                 ),
@@ -641,10 +588,11 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                               // Highlight the selected answer with green background
                               color: isSelected
                                   ? Colors.green.shade50
-                                  : Colors.white,
+                                  : isDarkMode ? Colors.grey[700] : Colors.white,
                             ),
                             child: TextFormField(
                               controller: _optionControllers[questionKey]![i],
+                              style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
@@ -652,20 +600,13 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                                 // Apply green text color to selected answer
                                 labelStyle: TextStyle(
                                   color:
-                                      isSelected ? Colors.green : Colors.black,
+                                  isSelected ? Colors.green : Colors.black,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
                                 ),
                               ),
-                              style: TextStyle(
-                                color: isSelected
-                                    ? Colors.green.shade800
-                                    : Colors.black,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              ),
+
                             ),
                           ),
                         ),
@@ -674,7 +615,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                           const IconButton(
                             icon: Icon(Icons.check_circle, color: Colors.green),
                             onPressed:
-                                null, // No action needed when clicked on the checkmark
+                            null, // No action needed when clicked on the checkmark
                           )
                         else
                           IconButton(
@@ -697,16 +638,17 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(4),
-                    color: Colors
+                    color: isDarkMode ? Colors.grey[700] : Colors
                         .white, // Changed to white since it's now editable
                   ),
                   child: TextFormField(
                     controller: _answerControllers[questionKey],
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                     decoration: const InputDecoration(
                       labelText: 'Correct Answer',
                       border: InputBorder.none,
                       contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     ),
                     readOnly: false, // Changed to allow editing
                   ),
@@ -743,12 +685,13 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
     );
   }
 
-  Widget _buildMultiQuestion(dynamic question, int index) {
+  Widget _buildMultiQuestion(dynamic question, int index, bool isDarkMode, ColorScheme colorScheme) {
     final questionKey = 'q$index';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 20),
       elevation: 3,
+      color: isDarkMode ? Colors.grey[800] : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.blue.shade200),
@@ -764,7 +707,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                   children: [
                     Text(
                       'Question ${index + 1} (Multi-Part)',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.ceruleanBlue),
@@ -776,11 +719,13 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                 // Reading Passage - Now just displays as text, not requiring an answer
                 TextFormField(
                   controller: TextEditingController(text: question['passage']),
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                  decoration: InputDecoration(
                     labelText: 'Reading Passage (Essay)',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                    labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
                   ),
                   maxLines: 4,
                   // Note: We're not tracking this with an answer controller
@@ -816,7 +761,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                             Text(
                               'Part ${index + 1}.${subIndex + 1}',
                               style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(width: 10),
                             IconButton(
@@ -833,86 +778,82 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                         // Sub-question Text
                         TextFormField(
                           controller:
-                              TextEditingController(text: subQuestion['text']),
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                          TextEditingController(text: subQuestion['text']),
+                          style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                            labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
                           ),
                         ),
                         const SizedBox(height: 10),
 
                         // Sub-question Options
                         ...List.generate(_optionControllers[subKey]!.length,
-                            (i) {
-                          final isSelected = _selectedOptionIndex[subKey] == i;
+                                (i) {
+                              final isSelected = _selectedOptionIndex[subKey] == i;
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey.shade300),
-                                      borderRadius: BorderRadius.circular(4),
-                                      // Highlight the selected answer with green background
-                                      color: isSelected
-                                          ? Colors.green.shade50
-                                          : Colors.white,
-                                    ),
-                                    child: TextFormField(
-                                      controller:
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                          borderRadius: BorderRadius.circular(4),
+                                          // Highlight the selected answer with green background
+                                          color: isSelected
+                                              ? Colors.green.shade50
+                                              : isDarkMode ? Colors.grey[700] : Colors.white,
+                                        ),
+                                        child: TextFormField(
+                                          controller:
                                           _optionControllers[subKey]![i],
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        contentPadding:
+                                          style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            contentPadding:
                                             const EdgeInsets.symmetric(
                                                 horizontal: 12, vertical: 12),
-                                        // Apply green text color to selected answer
-                                        labelStyle: TextStyle(
-                                          color: isSelected
-                                              ? Colors.green
-                                              : Colors.black,
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
+                                            // Apply green text color to selected answer
+                                            labelStyle: TextStyle(
+                                              color: isSelected
+                                                  ? Colors.green
+                                                  : Colors.black,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                            ),
+                                          ),
+
                                         ),
                                       ),
-                                      style: TextStyle(
-                                        color: isSelected
-                                            ? Colors.green.shade800
-                                            : Colors.black,
-                                        fontWeight: isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
                                     ),
-                                  ),
-                                ),
-                                // Only show the checkmark for the selected answer
-                                if (isSelected)
-                                  const IconButton(
-                                    icon: Icon(Icons.check_circle,
-                                        color: Colors.green),
-                                    onPressed:
+                                    // Only show the checkmark for the selected answer
+                                    if (isSelected)
+                                      const IconButton(
+                                        icon: Icon(Icons.check_circle,
+                                            color: Colors.green),
+                                        onPressed:
                                         null, // No action needed when clicked on the checkmark
-                                  )
-                                else
-                                  IconButton(
-                                    icon: const Icon(Icons.circle_outlined,
-                                        color: Colors.grey),
-                                    onPressed: () => _setCorrectAnswer(
-                                        compositeIndex,
-                                        subKey,
-                                        _optionControllers[subKey]![i].text,
-                                        i),
-                                  ),
-                              ],
-                            ),
-                          );
-                        }),
+                                      )
+                                    else
+                                      IconButton(
+                                        icon: const Icon(Icons.circle_outlined,
+                                            color: Colors.grey),
+                                        onPressed: () => _setCorrectAnswer(
+                                            compositeIndex,
+                                            subKey,
+                                            _optionControllers[subKey]![i].text,
+                                            i),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            }),
 
                         // Correct Answer Field for subquestion - Now editable
                         const SizedBox(height: 10),
@@ -920,11 +861,12 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(4),
-                            color: Colors
+                            color: isDarkMode ? Colors.grey[700] : Colors
                                 .white, // Changed to white since it's now editable
                           ),
                           child: TextFormField(
                             controller: _answerControllers[subKey],
+                            style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                             decoration: const InputDecoration(
                               labelText: 'Correct Answer',
                               border: InputBorder.none,
@@ -969,10 +911,11 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
     );
   }
 
-  Widget _buildEssayQuestion(dynamic question, int index) {
+  Widget _buildEssayQuestion(dynamic question, int index, bool isDarkMode, ColorScheme colorScheme) {
     return Card(
       margin: const EdgeInsets.only(bottom: 20),
       elevation: 3,
+      color: isDarkMode ? Colors.grey[800] : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.blue.shade200),
@@ -986,7 +929,7 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
               children: [
                 Text(
                   'Question ${index + 1} (Essay)',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.ceruleanBlue),
@@ -1004,11 +947,13 @@ class _ExamReviewAppState extends State<ExamReviewApp> {
             // Essay Prompt
             TextFormField(
               controller: TextEditingController(text: question['text']),
-              decoration: const InputDecoration(
+              style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+              decoration: InputDecoration(
                 labelText: 'Essay Prompt',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: isDarkMode ? Colors.grey[700] : Colors.white,
+                labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
               ),
               maxLines: 3,
             ),

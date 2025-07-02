@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/core/cubits/theme_cubit.dart';
 import 'package:project/core/utils/app_router.dart';
 import 'package:project/features/auth/data/cubits/login_cubit/login_cubit.dart';
 import 'package:project/features/create_bubble_sheet/data/cubits/bubble_sheet_cubit/bubble_sheet_cubit.dart';
@@ -74,16 +75,34 @@ class MyApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => LoginCubit()),
+          BlocProvider(create: (context) => ThemeCubit()),
           // BlocProvider(create: (context) => BubbleSheetCubit(repository)),
           //BlocProvider(create: (context) => AnswerSheetCubit(repos)),
         ],
-        child: MaterialApp.router(
-          routerConfig: AppRouter.router,
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData().copyWith(
-            scaffoldBackgroundColor: AppColors.white,
-          ),
-        ),
+        // child: MaterialApp.router(
+        //   routerConfig: AppRouter.router,
+        //   debugShowCheckedModeBanner: false,
+        //   theme: ThemeData().copyWith(
+        //     scaffoldBackgroundColor: AppColors.white,
+        //   ),
+        // ),
+        child:
+        BlocBuilder<ThemeCubit, ThemeMode>(builder: (context, themeMode) {
+          return MaterialApp.router(
+            routerConfig: AppRouter.router,
+            debugShowCheckedModeBanner: false,
+
+            theme: ThemeData(
+              scaffoldBackgroundColor: Colors.white,
+              colorScheme: ColorScheme.light(
+                background: Colors.white,
+                onBackground: Colors.black,
+              ),
+            ),
+            darkTheme: ThemeData.dark(),
+            themeMode: themeMode, // ربطناها بال ThemeCubit
+          );
+        }),
       ),
     );
   }

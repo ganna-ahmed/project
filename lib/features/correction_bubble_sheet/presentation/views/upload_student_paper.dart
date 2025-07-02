@@ -96,9 +96,10 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 600;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,6 +130,7 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
             Image.asset(
               'assets/images/upload.png',
               width: isLargeScreen ? 350 : 250,
+              color: colorScheme.brightness == Brightness.dark ? Colors.white70 : null, // Adjust image color for dark mode
             ),
             const SizedBox(height: 30),
 
@@ -156,11 +158,11 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
               onPressed: bubbleSheetStudent == null
                   ? null // 🔴 تعطيل الزر إذا لم يتم رفع الملف
                   : () {
-                      GoRouter.of(context).push(AppRouter.kCheckForUpload, extra: {
-                        'fileName': widget.fileName,
-                        'BubbleSheetStudent': bubbleSheetStudent,
-                      });
-                    },
+                GoRouter.of(context).push(AppRouter.kCheckForUpload, extra: {
+                  'fileName': widget.fileName,
+                  'BubbleSheetStudent': bubbleSheetStudent,
+                });
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: bubbleSheetStudent == null
                     ? Colors.grey[400] // 🔴 تغيير اللون إلى الرمادي عند تعطيل الزر

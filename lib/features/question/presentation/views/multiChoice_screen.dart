@@ -1,40 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:project/constants.dart';
+import 'package:project/features/question/presentation/views/widgets/common_widgets.dart';
 
 class MultiChoiceQuestionsScreen extends StatefulWidget {
+  final String doctorId;
   final String courseName;
   final String fileName;
-  final String doctorId;
 
   const MultiChoiceQuestionsScreen({
-    super.key,
+    Key? key,
+    required this.doctorId,
     required this.courseName,
     required this.fileName,
-    required this.doctorId,
-  });
+  }) : super(key: key);
 
   @override
   _MultiChoiceQuestionsScreenState createState() =>
       _MultiChoiceQuestionsScreenState();
 }
 
-class _MultiChoiceQuestionsScreenState
-    extends State<MultiChoiceQuestionsScreen> {
-  final TextEditingController _paragraphController = TextEditingController();
-  List<Map<String, dynamic>> _subQuestions = [];
+class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen> {
+  final TextEditingController _multiQuestionController =
+  TextEditingController();
+  List<Map<String, dynamic>> _multiQuestions = [];
+
+  // Keep track of controllers for multi-questions
+  final List<Map<String, TextEditingController>> _multiQuestionControllers = [];
+
   String _aiResponse = '';
   bool _isLoading = false;
 
-  // Controller for active input - for symbol insertion
+  // Currently focused text controller for symbol insertion
   TextEditingController? _focusedController;
+
+  final String apiUrl = '$kBaseUrl/Doctor/manualQuestion';
 
   @override
   void initState() {
     super.initState();
-    _focusedController = _paragraphController;
+    // Initialize _focusedController with question controller by default
+    _focusedController = _multiQuestionController;
   }
 
   // Function to insert symbol at current cursor position
@@ -63,66 +72,77 @@ class _MultiChoiceQuestionsScreenState
     }
   }
 
-  void _addSubQuestion() {
+  void _addMultiQuestion() {
+    final questionController = TextEditingController();
+    final option1Controller = TextEditingController();
+    final option2Controller = TextEditingController();
+    final option3Controller = TextEditingController();
+    final option4Controller = TextEditingController();
+    final correctAnswerController = TextEditingController();
+
     setState(() {
-      _subQuestions.add({
+      _multiQuestions.add({
         'question': '',
         'options': ['', '', '', ''],
         'correctAnswer': '',
-        'controller': TextEditingController(),
-        'optionControllers': List.generate(4, (_) => TextEditingController()),
-        'correctAnswerController': TextEditingController(),
+      });
+
+      _multiQuestionControllers.add({
+        'question': questionController,
+        'option1': option1Controller,
+        'option2': option2Controller,
+        'option3': option3Controller,
+        'option4': option4Controller,
+        'correctAnswer': correctAnswerController,
       });
     });
   }
 
-  Future<void> _submitQuestion() async {
+  Future<void> _addQuestion() async {
     setState(() {
       _isLoading = true;
     });
 
-    final url = Uri.parse('$kBaseUrl/Doctor/manualQuestion');
-
-    final body = {
-      'type': 'Multi-Choice',
-      'paragraph': _paragraphController.text,
-      'idDoctor': widget.doctorId,
-      'courseName': widget.courseName,
-      'file': widget.fileName,
-      'questions': _subQuestions.map((q) {
-        return {
-          'question': q['controller']?.text ?? q['question'],
-          'choices': List.generate(
-              4, (i) => q['optionControllers']?[i]?.text ?? q['options'][i]),
-          'correctAnswer':
-          q['correctAnswerController']?.text ?? q['correctAnswer'],
-        };
-      }).toList()
-    };
-
     try {
-      final res = await http.post(
-        url,
+      final Map<String, dynamic> questionData = {
+        'type': 'Multi-Choice',
+        'question': '', // Not used for Multi-Choice
+        'choices': [], // Not used for Multi-Choice
+        'correctAnswer': '', // Not used for Multi-Choice
+        'courseName': widget.courseName,
+        'idDoctor': widget.doctorId,
+        'file': widget.fileName,
+        'paragraph': _multiQuestionController.text,
+        'questions': _multiQuestions
+            .map((q) => {
+          'question': q['question'],
+          'choices': q['options'],
+          'correctAnswer': q['correctAnswer'],
+        })
+            .toList(),
+      };
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(body),
+        body: json.encode(questionData),
       );
 
-      if (res.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Questions added successfully ✅'),
-          backgroundColor: Colors.green,
-        ));
+      if (response.statusCode == 200) {
+        print('🔴🔴🚀🚀🚀${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Question Added Successfully!')),
+        );
+        _clearMultiChoiceFields();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to add questions ❌: ${res.statusCode}'),
-          backgroundColor: Colors.red,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error🚀🚀🚀: ${response.body}')),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Network error: $e'),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Network error: $e')),
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -131,56 +151,53 @@ class _MultiChoiceQuestionsScreenState
   }
 
   Future<void> _askAI() async {
-    if (_paragraphController.text.isEmpty) {
+    if (_multiQuestionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a paragraph first')));
+        const SnackBar(content: Text('Please enter a paragraph first')),
+      );
       return;
     }
 
     setState(() {
       _isLoading = true;
+      _aiResponse = '';
     });
 
-    final url = Uri.parse('$kBaseUrl/Doctor/manualQuestion');
-
-    final body = {
-      'type': 'Multi-Choice',
-      'paragraph': _paragraphController.text,
-      'idDoctor': widget.doctorId,
-      'course': widget.courseName,
-      'questions': _subQuestions.map((q) {
-        return {
-          'question': q['controller']?.text ?? q['question'],
-          'choices': List.generate(
-              4, (i) => q['optionControllers']?[i]?.text ?? q['options'][i]),
-        };
-      }).toList()
-    };
-
     try {
-      final res = await http.patch(
-        url,
+      final Map<String, dynamic> questionData = {
+        'type': 'Multi-Choice',
+        'question': '', // Not used for Multi-Choice
+        'choices': [], // Not used for Multi-Choice
+        'paragraph': _multiQuestionController.text,
+        'questions': _multiQuestions
+            .map((q) => {
+          'question': q['question'],
+          'choices': q['options'],
+        })
+            .toList(),
+      };
+
+      final response = await http.patch(
+        Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(body),
+        body: json.encode(questionData),
       );
 
-      if (res.statusCode == 200) {
-        final result = json.decode(res.body);
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body);
+        print('🚀🚀🚀🚀🚀${response.body}');
         setState(() {
-          _aiResponse =
-              result['message'] ?? 'AI response received successfully.';
+          _aiResponse = result['message'] ?? 'AI response received';
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('AI request failed ❌: ${res.statusCode}'),
-          backgroundColor: Colors.red,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.body}')),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Network error: $e'),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Network error: $e')),
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -188,130 +205,67 @@ class _MultiChoiceQuestionsScreenState
     }
   }
 
-  // Custom TextField with focus detection
-  Widget _buildTextField(TextEditingController controller, String hint,
-      {int maxLines = 1, int minLines = 1}) {
-    return TextField(
-      controller: controller,
-      decoration: _inputDecoration(hint),
-      maxLines: maxLines,
-      minLines: minLines,
-      onTap: () {
-        // Update the focused controller when field is tapped
-        setState(() {
-          _focusedController = controller;
-        });
-      },
-    );
+  void _clearMultiChoiceFields() {
+    _multiQuestionController.clear();
+    setState(() {
+      _multiQuestions = [];
+      _multiQuestionControllers.clear();
+      _aiResponse = '';
+    });
   }
 
-  InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: TextStyle(color: Colors.grey.shade400),
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFF004aad), width: 2),
-      ),
-    );
-  }
+  Widget _buildMultiQuestionItem(Map<String, dynamic> question, int index,
+      {Map<String, TextEditingController>? controllers}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    // Use provided controllers or create new ones
+    final questionController = controllers != null
+        ? controllers['question']!
+        : TextEditingController(text: question['question']);
+    final option1Controller = controllers != null
+        ? controllers['option1']!
+        : TextEditingController(text: question['options'][0]);
+    final option2Controller = controllers != null
+        ? controllers['option2']!
+        : TextEditingController(text: question['options'][1]);
+    final option3Controller = controllers != null
+        ? controllers['option3']!
+        : TextEditingController(text: question['options'][2]);
+    final option4Controller = controllers != null
+        ? controllers['option4']!
+        : TextEditingController(text: question['options'][3]);
+    final correctAnswerController = controllers != null
+        ? controllers['correctAnswer']!
+        : TextEditingController(text: question['correctAnswer']);
 
-  Widget _outlinedButton(String label, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: OutlinedButton(
-        onPressed: _isLoading ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF004aad),
-          side: const BorderSide(color: Color(0xFF004aad), width: 1.5),
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          minimumSize: const Size(double.infinity, 48),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Color(0xFF004aad),
-          ),
-        )
-            : Text(label, style: const TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-
-  Widget _filledButton(String label, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF004aad),
-          foregroundColor: Colors.white,
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          minimumSize: const Size(double.infinity, 48),
-          disabledBackgroundColor: Colors.grey,
-        ),
-        child: _isLoading
-            ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Colors.white,
-          ),
-        )
-            : Text(label, style: const TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-
-  // Math Symbols Widget
-  Widget _buildMathSymbolsWidget() {
-    return MathSymbolsDropdown(
-      onSymbolSelected: _insertSymbolAtCursor,
-    );
-  }
-
-  Widget _buildSubQuestion(Map<String, dynamic> question, int index) {
-    // Create controllers if they don't exist
-    if (question['controller'] == null) {
-      question['controller'] =
-          TextEditingController(text: question['question']);
-    }
-
-    if (question['optionControllers'] == null) {
-      question['optionControllers'] = List.generate(
-          4, (i) => TextEditingController(text: question['options'][i]));
-    }
-
-    if (question['correctAnswerController'] == null) {
-      question['correctAnswerController'] =
-          TextEditingController(text: question['correctAnswer']);
-    }
+    // Set up listeners to update the data when text changes
+    questionController.addListener(() {
+      question['question'] = questionController.text;
+    });
+    option1Controller.addListener(() {
+      question['options'][0] = option1Controller.text;
+    });
+    option2Controller.addListener(() {
+      question['options'][1] = option2Controller.text;
+    });
+    option3Controller.addListener(() {
+      question['options'][2] = option3Controller.text;
+    });
+    option4Controller.addListener(() {
+      question['options'][3] = option4Controller.text;
+    });
+    correctAnswerController.addListener(() {
+      question['correctAnswer'] = correctAnswerController.text;
+    });
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      color: colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: Colors.grey.shade300),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -320,441 +274,161 @@ class _MultiChoiceQuestionsScreenState
               children: [
                 Text(
                   "Sub-Question ${index + 1}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF004aad),
-                    fontSize: 16,
+                    color: colorScheme.primary,
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     setState(() {
-                      _subQuestions.removeAt(index);
+                      _multiQuestions.removeAt(index);
+                      if (_multiQuestionControllers.length > index) {
+                        _multiQuestionControllers.removeAt(index);
+                      }
                     });
                   },
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            // Question field
-            _buildTextField(question['controller'], 'Enter sub-question',
-                maxLines: 2, minLines: 1),
-            const SizedBox(height: 12),
-            // Option fields
-            for (int i = 0; i < 4; i++) ...[
-              Row(
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF004aad),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      String.fromCharCode(65 + i), // A, B, C, D
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildTextField(
-                        question['optionControllers'][i], 'Option ${i + 1}'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-            ],
-            // Correct answer field
+            const SizedBox(height: 8),
+            buildTextField(questionController, "Enter sub-question", onTap: () {
+              setState(() {
+                _focusedController = questionController;
+              });
+            }),
+            const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 24,
-                ),
-                const SizedBox(width: 8),
                 Expanded(
-                  child: _buildTextField(
-                      question['correctAnswerController'], 'Correct answer'),
+                  child: buildTextField(option1Controller, "Answer 1", onTap: () {
+                    setState(() {
+                      _focusedController = option1Controller;
+                    });
+                  }),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: buildTextField(option2Controller, "Answer 2", onTap: () {
+                    setState(() {
+                      _focusedController = option2Controller;
+                    });
+                  }),
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: buildTextField(option3Controller, "Answer 3", onTap: () {
+                    setState(() {
+                      _focusedController = option3Controller;
+                    });
+                  }),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: buildTextField(option4Controller, "Answer 4", onTap: () {
+                    setState(() {
+                      _focusedController = option4Controller;
+                    });
+                  }),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            buildTextField(correctAnswerController, "Correct Answer", onTap: () {
+              setState(() {
+                _focusedController = correctAnswerController;
+              });
+            }),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAIResponseSection() {
-    if (_aiResponse.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.only(top: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.green.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.smart_toy_outlined,
-                color: Colors.green,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                "AI Response:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _aiResponse,
-            style: TextStyle(color: Colors.green.shade800),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         backgroundColor: const Color(0xFF004aad),
-        title: const Text("Multi-Choice Questions",
+        title: const Text("Add Multi-Choice Questions",
             style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Main Paragraph",
+              Text(
+                "Multi Choice Question",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF004aad),
+                  color: colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // Math Symbols Section
-              _buildMathSymbolsWidget(),
+              MathSymbolsDropdown(
+                onSymbolSelected: _insertSymbolAtCursor,
+              ),
               const SizedBox(height: 12),
 
-              // Paragraph field
-              _buildTextField(_paragraphController,
-                  "Enter the paragraph for your questions",
-                  maxLines: 5, minLines: 3),
+              buildTextField(_multiQuestionController, "Enter paragraph",
+                  maxLines: 5, minLines: 3, onTap: () {
+                    setState(() {
+                      _focusedController = _multiQuestionController;
+                    });
+                  }),
               const SizedBox(height: 16),
-
-              // Divider with label
-              Row(
-                children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Sub Questions",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Sub questions
-              ..._subQuestions
-                  .asMap()
-                  .entries
-                  .map((e) => _buildSubQuestion(e.value, e.key)),
-
-              // Empty state for no sub questions
-              if (_subQuestions.isEmpty)
+              if (_multiQuestions.isEmpty) ...[
                 Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.question_answer_outlined,
-                          size: 48,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "No sub-questions added yet",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Click 'Add Sub-Question' to get started",
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-              const SizedBox(height: 16),
-              _outlinedButton('Add Sub-Question', _addSubQuestion),
-              _outlinedButton('Submit Questions', _submitQuestion),
-              _outlinedButton('Ask AI for Help', _askAI),
-              _filledButton('Done', () {
-                Navigator.pop(context);
-              }),
-
-              // AI Response section
-              _buildAIResponseSection(),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Math Symbols Dropdown Widget (same as the first code)
-class MathSymbolsDropdown extends StatefulWidget {
-  final Function(String) onSymbolSelected;
-
-  const MathSymbolsDropdown({
-    Key? key,
-    required this.onSymbolSelected,
-  }) : super(key: key);
-
-  @override
-  _MathSymbolsDropdownState createState() => _MathSymbolsDropdownState();
-}
-
-class _MathSymbolsDropdownState extends State<MathSymbolsDropdown> {
-  bool _isExpanded = false;
-  int _selectedCategoryIndex = 0;
-
-  final List<Map<String, List<String>>> _symbolCategories = [
-    {
-      'Basic Math': ['+', '-', '×', '÷', '=', '±', '≠', '≈', '∞', '%'],
-    },
-    {
-      'Advanced Math': ['√', '∑', '∏', '^', '²', '³', 'π', 'e', '∫', '∂'],
-    },
-    {
-      'Trigonometry': ['sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sin⁻¹', 'cos⁻¹', 'tan⁻¹'],
-    },
-    {
-      'Hyperbolic': ['sinh', 'cosh', 'tanh', 'csch', 'sech', 'coth'],
-    },
-    {
-      'Logarithms': ['log', 'ln', 'log₂', 'log₁₀', 'lg'],
-    },
-    {
-      'Relations': ['<', '>', '≤', '≥', '∈', '∉', '⊂', '⊆', '∪', '∩'],
-    },
-    {
-      'Greek Letters': ['α', 'β', 'γ', 'δ', 'θ', 'λ', 'μ', 'σ', 'φ', 'ω'],
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header
-          InkWell(
-            onTap: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-              });
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF004aad).withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF004aad),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Icon(
-                      Icons.functions,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    "Insert Math Symbols",
+                  child: Text(
+                    "Add sub-questions by clicking the button below",
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF004aad),
+                      color: Colors.grey.shade600,
+                      fontSize: 14,
                     ),
                   ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF004aad).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Icon(
-                      _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                      color: const Color(0xFF004aad),
-                      size: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Expandable content
-          if (_isExpanded) ...[
-            const Divider(height: 1, color: Colors.grey),
-
-            // Category tabs
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _symbolCategories.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final categoryName = entry.value.keys.first;
-                    final isSelected = _selectedCategoryIndex == index;
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedCategoryIndex = index;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        margin: const EdgeInsets.only(right: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF004aad) : Colors.grey[50],
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: isSelected ? const Color(0xFF004aad) : Colors.grey[300]!,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          boxShadow: isSelected ? [
-                            BoxShadow(
-                              color: const Color(0xFF004aad).withOpacity(0.3),
-                              spreadRadius: 1,
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ] : null,
-                        ),
-                        child: Text(
-                          categoryName,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : const Color(0xFF004aad),
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
                 ),
-              ),
-            ),
+              ],
 
-            // Symbols grid
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _symbolCategories[_selectedCategoryIndex]
-                    .values
-                    .first
-                    .map((symbol) => _buildSymbolButton(symbol))
-                    .toList(),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+              // Map through multi-questions with access to controllers
+              ..._multiQuestions.asMap().entries.map((entry) {
+                final index = entry.key;
+                final question = entry.value;
+                return _buildMultiQuestionItem(question, index,
+                    controllers: _multiQuestionControllers.length > index
+                        ? _multiQuestionControllers[index]
+                        : null);
+              }).toList(),
 
-  Widget _buildSymbolButton(String symbol) {
-    return InkWell(
-      onTap: () {
-        widget.onSymbolSelected(symbol);
-      },
-      child: Container(
-        width: 45,
-        height: 35,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        child: Text(
-          symbol,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF004aad),
+              const SizedBox(height: 12),
+              outlinedButton("Add Sub-Question", _addMultiQuestion,
+                  isLoading: _isLoading),
+              const SizedBox(height: 8),
+              outlinedButton("Add Question", _addQuestion,
+                  isLoading: _isLoading),
+              outlinedButton("AI Asking about Question", _askAI,
+                  isLoading: _isLoading),
+              filledButton("Done", () {
+                Navigator.pop(context);
+              }, isLoading: _isLoading),
+              if (_aiResponse.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                aiResponseSection(_aiResponse),
+              ],
+            ],
           ),
         ),
       ),
