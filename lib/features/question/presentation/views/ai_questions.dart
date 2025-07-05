@@ -16,9 +16,9 @@ class AIQuestionsScreen extends StatefulWidget {
 
   const AIQuestionsScreen(
       {super.key,
-      required this.courseName,
-      required this.doctorId,
-      required this.fileName});
+        required this.courseName,
+        required this.doctorId,
+        required this.fileName});
 }
 
 class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
@@ -44,7 +44,6 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
   @override
   void initState() {
     super.initState();
-    // Add listeners to all controllers and dropdowns to update state when values change
     _mcqCountController.addListener(_updateState);
     _essayCountController.addListener(_updateState);
     _multiCountController.addListener(_updateState);
@@ -73,7 +72,6 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
     try {
       final url = Uri.parse('$kBaseUrl/Doctor/QuestionAi');
 
-      // Create a map of the request body
       final Map<String, String> body = {
         'mcqCount': _mcqCountController.text.trim(),
         'mcqDifficulty': _mcqDifficulty,
@@ -87,7 +85,7 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
         'file': widget.fileName,
       };
 
-      print('Request body: $body'); // For debugging
+      print('Request body: $body');
 
       final response = await http.post(
         url,
@@ -140,22 +138,25 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
 
   Widget _buildCard({required String title, required List<Widget> children}) {
     return Card(
-      elevation: 4.h,
+      elevation: 4,
+      margin: EdgeInsets.symmetric(vertical: 8.h),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.r),
       ),
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: 18.sp,
+                fontSize: _getResponsiveFontSize(18),
                 fontWeight: FontWeight.bold,
+                color: AppColors.ceruleanBlue,
               ),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 16.h),
             ...children,
           ],
         ),
@@ -163,227 +164,248 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
     );
   }
 
+  double _getResponsiveFontSize(double baseSize) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 768) {
+      return baseSize + 2; // Tablet
+    } else if (screenWidth > 480) {
+      return baseSize; // Large mobile
+    } else {
+      return baseSize - 1; // Small mobile
+    }
+  }
+
+  double _getResponsiveSpacing(double baseSpacing) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 768) {
+      return baseSpacing * 1.5; // Tablet
+    } else if (screenWidth > 480) {
+      return baseSpacing; // Large mobile
+    } else {
+      return baseSpacing * 0.8; // Small mobile
+    }
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColors.ceruleanBlue, width: 2),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        hintText: hintText,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        hintStyle: TextStyle(fontSize: _getResponsiveFontSize(14)),
+      ),
+      keyboardType: TextInputType.number,
+      style: TextStyle(fontSize: _getResponsiveFontSize(16)),
+    );
+  }
+
+  Widget _buildDropdown<T>({
+    required T? value,
+    required String hint,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?> onChanged,
+  }) {
+    return DropdownButtonFormField<T>(
+      value: value,
+      hint: Text(
+        hint,
+        style: TextStyle(fontSize: _getResponsiveFontSize(14)),
+      ),
+      items: items,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColors.ceruleanBlue, width: 2),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      ),
+      style: TextStyle(
+        fontSize: _getResponsiveFontSize(16),
+        color: Colors.black,
+      ),
+      dropdownColor: Colors.white,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 768;
+    final maxWidth = isTablet ? 800.0 : screenWidth * 0.95;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Generate Questions Using AI'),
+        title: Text(
+          'Generate Questions Using AI',
+          style: TextStyle(fontSize: _getResponsiveFontSize(18)),
+        ),
         backgroundColor: AppColors.ceruleanBlue,
         foregroundColor: AppColors.white,
+        elevation: 0,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth:
-                        constraints.maxWidth < 600 ? constraints.maxWidth : 600,
-                  ),
-                  child: Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: _getResponsiveSpacing(16),
+            vertical: _getResponsiveSpacing(20),
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: Column(
+                children: [
+                  // MCQ Section
+                  _buildCard(
+                    title: 'Multiple Choice Questions (MCQ)',
                     children: [
-                      _buildCard(
-                        title: 'Multiple Choice Questions (MCQ)',
-                        children: [
-                          TextField(
-                            controller: _mcqCountController,
-                            decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              hintText: 'Number of questions',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: 10.h),
-                          DropdownButtonFormField(
-                            value:
-                                _mcqDifficulty.isEmpty ? null : _mcqDifficulty,
-                            hint: Text('Difficulty'),
-                            items: const [
-                              DropdownMenuItem(
-                                  value: 'easy', child: Text('Easy')),
-                              DropdownMenuItem(
-                                  value: 'medium', child: Text('Medium')),
-                              DropdownMenuItem(
-                                  value: 'hard', child: Text('Hard')),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _mcqDifficulty = value.toString();
-                              });
-                            },
-                            decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                          ),
-                        ],
+                      _buildTextField(
+                        controller: _mcqCountController,
+                        hintText: 'Number of questions',
                       ),
-                      SizedBox(height: 20.h),
-                      _buildCard(
-                        title: 'Essay Questions',
-                        children: [
-                          TextField(
-                            controller: _essayCountController,
-                            decoration: InputDecoration(
-                              focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              hintText: 'Number of questions',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: 10.h),
-                          DropdownButtonFormField<String>(
-                            value: _essayDifficulty.isEmpty
-                                ? null
-                                : _essayDifficulty,
-                            hint: Text('Difficulty'),
-                            items: [
-                              DropdownMenuItem(
-                                  value: 'easy', child: const Text('Easy')),
-                              DropdownMenuItem(
-                                  value: 'medium', child: Text('Medium')),
-                              DropdownMenuItem(
-                                  value: 'hard', child: Text('Hard')),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _essayDifficulty = value.toString();
-                              });
-                            },
-                            decoration: InputDecoration(
-                              focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          DropdownButtonFormField<String>(
-                            value: _essayType.isEmpty ? null : _essayType,
-                            hint: Text('Type'),
-                            items: [
-                              DropdownMenuItem(
-                                  value: 'text', child: Text('Text-based')),
-                              DropdownMenuItem(
-                                  value: 'numeric',
-                                  child: Text('Numeric-based')),
-                              DropdownMenuItem(
-                                  value: 'both', child: Text('Both')),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _essayType = value.toString();
-                              });
-                            },
-                            decoration: InputDecoration(
-                              focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                          ),
+                      SizedBox(height: _getResponsiveSpacing(12)),
+                      _buildDropdown<String>(
+                        value: _mcqDifficulty.isEmpty ? null : _mcqDifficulty,
+                        hint: 'Select Difficulty',
+                        items: const [
+                          DropdownMenuItem(value: 'easy', child: Text('Easy')),
+                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(value: 'hard', child: Text('Hard')),
                         ],
-                      ),
-                      SizedBox(height: 20.h),
-                      _buildCard(
-                        title: 'Multiple Choice',
-                        children: [
-                          TextField(
-                            controller: _multiCountController,
-                            decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              hintText: 'Number of questions',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: 10.h),
-                          DropdownButtonFormField<String>(
-                            value: _multiDifficulty.isEmpty
-                                ? null
-                                : _multiDifficulty,
-                            hint: const Text('Difficulty Level'),
-                            items: const [
-                              DropdownMenuItem(
-                                  value: 'easy', child: Text('Easy')),
-                              DropdownMenuItem(
-                                  value: 'medium', child: Text('Medium')),
-                              DropdownMenuItem(
-                                  value: 'hard', child: Text('Hard')),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _multiDifficulty = value.toString();
-                              });
-                            },
-                            decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.ceruleanBlue)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 30.h),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50.h,
-                        child: ElevatedButton(
-                          onPressed: _isFormValid ? _generateExam : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.ceruleanBlue,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey[300],
-                            disabledForegroundColor: Colors.grey[600],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                          ),
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white)
-                              : Text(
-                                  'Generate Exam',
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _mcqDifficulty = value.toString();
+                          });
+                        },
                       ),
                     ],
                   ),
-                ),
-              ],
+
+                  // Essay Section
+                  _buildCard(
+                    title: 'Essay Questions',
+                    children: [
+                      _buildTextField(
+                        controller: _essayCountController,
+                        hintText: 'Number of questions',
+                      ),
+                      SizedBox(height: _getResponsiveSpacing(12)),
+                      _buildDropdown<String>(
+                        value: _essayDifficulty.isEmpty ? null : _essayDifficulty,
+                        hint: 'Select Difficulty',
+                        items: const [
+                          DropdownMenuItem(value: 'easy', child: Text('Easy')),
+                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(value: 'hard', child: Text('Hard')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _essayDifficulty = value.toString();
+                          });
+                        },
+                      ),
+                      SizedBox(height: _getResponsiveSpacing(12)),
+                      _buildDropdown<String>(
+                        value: _essayType.isEmpty ? null : _essayType,
+                        hint: 'Select Type',
+                        items: const [
+                          DropdownMenuItem(value: 'text', child: Text('Text-based')),
+                          DropdownMenuItem(value: 'numeric', child: Text('Numeric-based')),
+                          DropdownMenuItem(value: 'both', child: Text('Both')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _essayType = value.toString();
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+
+                  // Multiple Choice Section
+                  _buildCard(
+                    title: 'Multiple Choice',
+                    children: [
+                      _buildTextField(
+                        controller: _multiCountController,
+                        hintText: 'Number of questions',
+                      ),
+                      SizedBox(height: _getResponsiveSpacing(12)),
+                      _buildDropdown<String>(
+                        value: _multiDifficulty.isEmpty ? null : _multiDifficulty,
+                        hint: 'Select Difficulty Level',
+                        items: const [
+                          DropdownMenuItem(value: 'easy', child: Text('Easy')),
+                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(value: 'hard', child: Text('Hard')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _multiDifficulty = value.toString();
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: _getResponsiveSpacing(30)),
+
+                  // Generate Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: isTablet ? 60.h : 50.h,
+                    child: ElevatedButton(
+                      onPressed: _isFormValid ? _generateExam : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.ceruleanBlue,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[300],
+                        disabledForegroundColor: Colors.grey[600],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                        elevation: 3,
+                      ),
+                      child: isLoading
+                          ? SizedBox(
+                        width: 24.w,
+                        height: 24.h,
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : Text(
+                        'Generate Exam',
+                        style: TextStyle(
+                          fontSize: _getResponsiveFontSize(16),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: _getResponsiveSpacing(20)),
+                ],
+              ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

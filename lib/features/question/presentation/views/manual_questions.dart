@@ -103,7 +103,7 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Color(0xFF004aad),
         iconTheme: IconThemeData(color: Colors.white),
@@ -125,10 +125,10 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen>
                           context,
                           MaterialPageRoute(
                               builder: (_) => MCQScreen(
-                                    doctorId: widget.doctorId,
-                                    courseName: widget.courseName,
-                                    fileName: widget.fileName,
-                                  )));
+                                doctorId: widget.doctorId,
+                                courseName: widget.courseName,
+                                fileName: widget.fileName,
+                              )));
                     }),
                   if (showOptions)
                     buildOption("Essay", _easyOffset, () {
@@ -136,10 +136,10 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen>
                           context,
                           MaterialPageRoute(
                               builder: (_) => EssayQuestionScreen(
-                                    doctorId: widget.doctorId,
-                                    courseName: widget.courseName,
-                                    fileName: widget.fileName,
-                                  )));
+                                doctorId: widget.doctorId,
+                                courseName: widget.courseName,
+                                fileName: widget.fileName,
+                              )));
                     }),
                   if (showOptions)
                     buildOption("Multi Choice", _multiOffset, () {
@@ -147,10 +147,10 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen>
                           context,
                           MaterialPageRoute(
                               builder: (_) => MultiChoiceQuestionsScreen(
-                                    courseName: widget.courseName,
-                                    fileName: widget.fileName,
-                                    doctorId: widget.doctorId,
-                                  )));
+                                courseName: widget.courseName,
+                                fileName: widget.fileName,
+                                doctorId: widget.doctorId,
+                              )));
                     }),
                   SizedBox(height: 50.h),
                   if (showOptions)
@@ -168,10 +168,10 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen>
                               context,
                               MaterialPageRoute(
                                   builder: (_) => ShowAllMaualQuestionsScreen(
-                                        doctorId: widget.doctorId,
-                                        courseName: widget.courseName,
-                                        fileName: widget.fileName,
-                                      )));
+                                    doctorId: widget.doctorId,
+                                    courseName: widget.courseName,
+                                    fileName: widget.fileName,
+                                  )));
                         },
                         child: Text(
                           "show all Questions",
@@ -190,7 +190,11 @@ class _ManualQuestionScreenState extends State<ManualQuestionScreen>
               top: 20,
               right: 20,
               child: IconButton(
-                icon: Icon(Icons.more_horiz, size: 38, color: Colors.black),
+                icon: Icon(
+                  Icons.more_horiz,
+                  size: 38,
+                  color: Color(0xFF004aad),
+                ),
                 onPressed: toggleMenu,
               ),
             ),

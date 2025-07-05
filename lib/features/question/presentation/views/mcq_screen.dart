@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:project/constants.dart';
+import 'package:project/features/question/presentation/views/widgets/common_widgets.dart'; // استيراد الملف
 
 class MCQScreen extends StatefulWidget {
   final String doctorId;
@@ -285,196 +286,44 @@ class _MCQScreenState extends State<MCQScreen> {
     });
   }
 
-  // Custom TextField with focus detection
-  Widget _buildTextField(TextEditingController controller, String hint,
-      {int maxLines = 1, int minLines = 1}) {
-    return TextField(
-      controller: controller,
-      decoration: _inputDecoration(hint),
-      maxLines: maxLines,
-      minLines: minLines,
-      onTap: () {
-        // Update the focused controller when field is tapped
-        setState(() {
-          _focusedController = controller;
-        });
-      },
-    );
-  }
-
-  InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: TextStyle(color: Colors.grey.shade400),
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFF004aad), width: 2),
-      ),
-    );
-  }
-
-  Widget _outlinedButton(String label, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: OutlinedButton(
-        onPressed: _isLoading ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF004aad),
-          side: const BorderSide(color: Color(0xFF004aad), width: 1.5),
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          minimumSize: const Size(double.infinity, 48),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Color(0xFF004aad),
-          ),
-        )
-            : Text(label, style: const TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-
-  Widget _filledButton(String label, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF004aad),
-          foregroundColor: Colors.white,
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          minimumSize: const Size(double.infinity, 48),
-          disabledBackgroundColor: Colors.grey,
-        ),
-        child: _isLoading
-            ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Colors.white,
-          ),
-        )
-            : Text(label, style: const TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-
-  Widget _buildSidebarButton(String text, String section) {
-    final bool isSelected = _selectedSection == section;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: ElevatedButton(
-        onPressed: () => _showSection(section),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? Colors.white : const Color(0xFF004aad),
-          foregroundColor: isSelected ? const Color(0xFF004aad) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: const BorderSide(color: Colors.white),
-          ),
-          minimumSize: const Size(double.infinity, 48),
-        ),
-        child: Text(text, style: const TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-
-  Widget _buildAIResponseSection() {
-    if (_aiResponse.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.green.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.smart_toy_outlined,
-                color: Colors.green,
-              ),
-              SizedBox(width: 8),
-              Text(
-                "AI Response:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _aiResponse,
-            style: TextStyle(color: Colors.green.shade800),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Math Symbols Widget
-  Widget _buildMathSymbolsWidget() {
-    return MathSymbolsDropdown(
-      onSymbolSelected: _insertSymbolAtCursor,
-    );
-  }
-
   Widget _buildMCQSection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "MCQ Question",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF004aad),
+            color: colorScheme.primary,
           ),
         ),
         const SizedBox(height: 16),
 
         // Math Symbols Section
-        _buildMathSymbolsWidget(),
+        MathSymbolsDropdown(
+          onSymbolSelected: _insertSymbolAtCursor,
+        ),
         const SizedBox(height: 12),
 
         // Fields that will update _focusedController when tapped
-        _buildTextField(_mcqQuestionController, "Enter Question",
-            maxLines: 3, minLines: 2),
+        buildTextField(_mcqQuestionController, "Enter Question",
+            maxLines: 3, minLines: 2, onTap: () {
+              setState(() {
+                _focusedController = _mcqQuestionController;
+              });
+            }),
         const SizedBox(height: 12),
 
         Row(
           children: [
             Expanded(
-              child: _buildTextField(_option1Controller, "Answer 1"),
+              child: buildTextField(_option1Controller, "Answer 1"),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _buildTextField(_option2Controller, "Answer 2"),
+              child: buildTextField(_option2Controller, "Answer 2"),
             ),
           ],
         ),
@@ -482,85 +331,99 @@ class _MCQScreenState extends State<MCQScreen> {
         Row(
           children: [
             Expanded(
-              child: _buildTextField(_option3Controller, "Answer 3"),
+              child: buildTextField(_option3Controller, "Answer 3"),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _buildTextField(_option4Controller, "Answer 4"),
+              child: buildTextField(_option4Controller, "Answer 4"),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        _buildTextField(_correctAnswerController, "Correct Answer"),
+        buildTextField(_correctAnswerController, "Correct Answer"),
         const SizedBox(height: 20),
 
-        _outlinedButton("Add Question", () => _addQuestion('MCQ')),
-        _outlinedButton("AI Asking about Question", () => _askAI('MCQ')),
-        _filledButton("Done", () {
+        outlinedButton("Add Question", () => _addQuestion('MCQ'), isLoading: _isLoading),
+        outlinedButton("AI Asking about Question", () => _askAI('MCQ'), isLoading: _isLoading),
+        filledButton("Done", () {
           Navigator.pop(context);
-        }),
+        }, isLoading: _isLoading),
         if (_aiResponse.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _buildAIResponseSection(),
+          aiResponseSection(_aiResponse),
         ],
       ],
     );
   }
 
   Widget _buildEssaySection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Essay Question",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF004aad),
+            color: colorScheme.primary,
           ),
         ),
         const SizedBox(height: 16),
 
         // Math Symbols Section
-        _buildMathSymbolsWidget(),
+        MathSymbolsDropdown(
+          onSymbolSelected: _insertSymbolAtCursor,
+        ),
         const SizedBox(height: 12),
 
-        _buildTextField(_essayQuestionController, "Enter essay question",
-            maxLines: 4, minLines: 2),
+        buildTextField(_essayQuestionController, "Enter essay question",
+            maxLines: 4, minLines: 2, onTap: () {
+              setState(() {
+                _focusedController = _essayQuestionController;
+              });
+            }),
         const SizedBox(height: 20),
-        _outlinedButton("Add Question", () => _addQuestion('Essay')),
-        _outlinedButton("AI Asking about Question", () => _askAI('Essay')),
-        _filledButton("Done", () {
+        outlinedButton("Add Question", () => _addQuestion('Essay'), isLoading: _isLoading),
+        outlinedButton("AI Asking about Question", () => _askAI('Essay'), isLoading: _isLoading),
+        filledButton("Done", () {
           Navigator.pop(context);
-        }),
+        }, isLoading: _isLoading),
         if (_aiResponse.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _buildAIResponseSection(),
+          aiResponseSection(_aiResponse),
         ],
       ],
     );
   }
 
   Widget _buildMultiChoiceSection() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Multi Choice Question",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF004aad),
+            color: colorScheme.primary,
           ),
         ),
         const SizedBox(height: 16),
 
         // Math Symbols Section
-        _buildMathSymbolsWidget(),
+        MathSymbolsDropdown(
+          onSymbolSelected: _insertSymbolAtCursor,
+        ),
         const SizedBox(height: 12),
 
-        _buildTextField(_multiQuestionController, "Enter paragraph",
-            maxLines: 5, minLines: 3),
+        buildTextField(_multiQuestionController, "Enter paragraph",
+            maxLines: 5, minLines: 3, onTap: () {
+              setState(() {
+                _focusedController = _multiQuestionController;
+              });
+            }),
         const SizedBox(height: 16),
         if (_multiQuestions.isEmpty) ...[
           Center(
@@ -585,17 +448,17 @@ class _MCQScreenState extends State<MCQScreen> {
         }).toList(),
 
         const SizedBox(height: 12),
-        _outlinedButton("Add Sub-Question", _addMultiQuestion),
+        outlinedButton("Add Sub-Question", _addMultiQuestion, isLoading: _isLoading),
         const SizedBox(height: 8),
-        _outlinedButton("Add Question", () => _addQuestion('Multi-Choice')),
-        _outlinedButton(
-            "AI Asking about Question", () => _askAI('Multi-Choice')),
-        _filledButton("Done", () {
+        outlinedButton("Add Question", () => _addQuestion('Multi-Choice'), isLoading: _isLoading),
+        outlinedButton(
+            "AI Asking about Question", () => _askAI('Multi-Choice'), isLoading: _isLoading),
+        filledButton("Done", () {
           Navigator.pop(context);
-        }),
+        }, isLoading: _isLoading),
         if (_aiResponse.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _buildAIResponseSection(),
+          aiResponseSection(_aiResponse),
         ],
       ],
     );
@@ -603,6 +466,7 @@ class _MCQScreenState extends State<MCQScreen> {
 
   Widget _buildMultiQuestionItem(Map<String, dynamic> question, int index,
       {Map<String, TextEditingController>? controllers}) {
+    final colorScheme = Theme.of(context).colorScheme;
     // Use provided controllers or create new ones
     final questionController = controllers != null
         ? controllers['question']!
@@ -645,6 +509,7 @@ class _MCQScreenState extends State<MCQScreen> {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
+      color: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(color: Colors.grey.shade300),
@@ -659,9 +524,9 @@ class _MCQScreenState extends State<MCQScreen> {
               children: [
                 Text(
                   "Sub-Question ${index + 1}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF004aad),
+                    color: colorScheme.primary,
                   ),
                 ),
                 IconButton(
@@ -678,16 +543,28 @@ class _MCQScreenState extends State<MCQScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            _buildTextField(questionController, "Enter sub-question"),
+            buildTextField(questionController, "Enter sub-question", onTap: () {
+              setState(() {
+                _focusedController = questionController;
+              });
+            }),
             const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField(option1Controller, "Answer 1"),
+                  child: buildTextField(option1Controller, "Answer 1", onTap: () {
+                    setState(() {
+                      _focusedController = option1Controller;
+                    });
+                  }),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _buildTextField(option2Controller, "Answer 2"),
+                  child: buildTextField(option2Controller, "Answer 2", onTap: () {
+                    setState(() {
+                      _focusedController = option2Controller;
+                    });
+                  }),
                 ),
               ],
             ),
@@ -695,16 +572,28 @@ class _MCQScreenState extends State<MCQScreen> {
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField(option3Controller, "Answer 3"),
+                  child: buildTextField(option3Controller, "Answer 3", onTap: () {
+                    setState(() {
+                      _focusedController = option3Controller;
+                    });
+                  }),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _buildTextField(option4Controller, "Answer 4"),
+                  child: buildTextField(option4Controller, "Answer 4", onTap: () {
+                    setState(() {
+                      _focusedController = option4Controller;
+                    });
+                  }),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            _buildTextField(correctAnswerController, "Correct Answer"),
+            buildTextField(correctAnswerController, "Correct Answer", onTap: () {
+              setState(() {
+                _focusedController = correctAnswerController;
+              });
+            }),
           ],
         ),
       ),
@@ -713,8 +602,9 @@ class _MCQScreenState extends State<MCQScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         backgroundColor: const Color(0xFF004aad),
         title:
@@ -747,265 +637,6 @@ class _MCQScreenState extends State<MCQScreen> {
     );
   }
 }
-
-// Improved Math Symbols Dropdown with clear English category names
-  class MathSymbolsDropdown extends StatefulWidget {
-  final Function(String) onSymbolSelected;
-
-  const MathSymbolsDropdown({
-    Key? key,
-    required this.onSymbolSelected,
-  }) : super(key: key);
-
-  @override
-  _MathSymbolsDropdownState createState() => _MathSymbolsDropdownState();
-}
-
-class _MathSymbolsDropdownState extends State<MathSymbolsDropdown> {
-  bool _isExpanded = false;
-  int _selectedCategoryIndex = 0;
-
-  final List<Map<String, List<String>>> _symbolCategories = [
-    {
-      'Basic Math': ['+', '-', '×', '÷', '=', '±', '≠', '≈', '∞', '%'],
-    },
-    {
-      'Advanced Math': ['√', '∑', '∏', '^', '²', '³', 'π', 'e', '∫', '∂'],
-    },
-    {
-      'Trigonometry': ['sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sin⁻¹', 'cos⁻¹', 'tan⁻¹'],
-    },
-    {
-      'Hyperbolic': ['sinh', 'cosh', 'tanh', 'csch', 'sech', 'coth'],
-    },
-    {
-      'Logarithms': ['log', 'ln', 'log₂', 'log₁₀', 'lg'],
-    },
-    {
-      'Relations': ['<', '>', '≤', '≥', '∈', '∉', '⊂', '⊆', '∪', '∩'],
-    },
-    {
-      'Greek Letters': ['α', 'β', 'γ', 'δ', 'θ', 'λ', 'μ', 'σ', 'φ', 'ω'],
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-          children: [
-          // Header
-          InkWell(
-          onTap: () {
-    setState(() {
-    _isExpanded = !_isExpanded;
-    });
-    },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF004aad).withOpacity(0.05),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF004aad),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Icon(
-                Icons.functions,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              "Insert Math Symbols",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF004aad),
-              ),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF004aad).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                color: const Color(0xFF004aad),
-                size: 20,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-
-    // Expandable content
-    if (_isExpanded) ...[
-    const Divider(height: 1, color: Colors.grey),
-
-    // Category tabs
-    Container(
-    padding: const EdgeInsets.all(16),
-    child: SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    child: Row(
-    children: _symbolCategories.asMap().entries.map((entry) {
-    final index = entry.key;
-    final categoryName = entry.value.keys.first;
-    final isSelected = _selectedCategoryIndex == index;
-
-    return GestureDetector(
-    onTap: () {
-    setState(() {
-    _selectedCategoryIndex = index;
-    });
-    },
-    child: AnimatedContainer(
-    duration: const Duration(milliseconds: 200),
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-    margin: const EdgeInsets.only(right: 12),
-    decoration: BoxDecoration(
-    color: isSelected ? const Color(0xFF004aad) : Colors.grey[50],
-    borderRadius: BorderRadius.circular(25),
-    border: Border.all(
-    color: isSelected ? const Color(0xFF004aad) : Colors.grey[300]!,
-    width: isSelected ? 2 : 1,
-    ),
-    boxShadow: isSelected ? [
-    BoxShadow(
-    color: const Color(0xFF004aad).withOpacity(0.3),
-    spreadRadius: 1,
-    blurRadius: 4,
-    offset: const Offset(0, 2),
-    ),
-    ] : null,
-    ),
-    child: Text(
-    categoryName,
-    style: TextStyle(
-    color: isSelected ? Colors.white : const Color(0xFF004aad),
-    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-    fontSize: 13,
-    ),
-    ),
-    ),
-    );
-    }).toList(),
-    ),
-    ),
-    ),
-
-    // Symbols grid
-    Container(
-      padding: const EdgeInsets.all(16),
-
-      child: Wrap(
-
-        spacing: 8,
-
-        runSpacing: 8,
-
-        children: _symbolCategories[_selectedCategoryIndex]
-
-            .values
-
-            .first
-
-            .map((symbol) => _buildSymbolButton(symbol))
-
-            .toList(),
-
-      ),
-
-    ),
-
-    ],
-
-          ],
-
-      ),
-
-    );
-
-  }
-
-
-
-  Widget _buildSymbolButton(String symbol) {
-
-    return InkWell(
-
-      onTap: () {
-
-        widget.onSymbolSelected(symbol);
-
-      },
-
-      child: Container(
-
-        width: 45,
-
-        height: 35,
-
-        alignment: Alignment.center,
-
-        decoration: BoxDecoration(
-
-          color: Colors.white,
-
-          borderRadius: BorderRadius.circular(8),
-
-          border: Border.all(color: Colors.grey[300]!),
-
-        ),
-
-        child: Text(
-
-          symbol,
-
-          style: const TextStyle(
-
-            fontSize: 16,
-
-            fontWeight: FontWeight.w500,
-
-            color: Color(0xFF004aad),
-
-          ),
-
-        ),
-
-      ),
-
-    );
-
-  }
-
-}
-
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';

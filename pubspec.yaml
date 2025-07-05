@@ -76,6 +76,8 @@ flutter_launcher_icons:
   ios: false
   image_path: "assets/images/groupp.png"
 
+  filter_list: ^1.0.3
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

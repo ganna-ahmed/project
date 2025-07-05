@@ -99,9 +99,10 @@ class _CorrectBubbleSheetForStudentState
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 600;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,6 +136,9 @@ class _CorrectBubbleSheetForStudentState
             Image.asset(
               'assets/images/upload.png',
               width: isLargeScreen ? 350 : 250,
+              color: colorScheme.brightness == Brightness.dark
+                  ? Colors.white70
+                  : null, // Adjust image color for dark mode
             ),
             const SizedBox(height: 30),
             CustomButtonn(

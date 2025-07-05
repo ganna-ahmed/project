@@ -68,6 +68,9 @@ class _QuestionBankState extends State<QuestionBank> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.ceruleanBlue,
@@ -81,65 +84,71 @@ class _QuestionBankState extends State<QuestionBank> {
       body: Column(
         children: [
           Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 16.h),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      text: 'Your ',
-                      style: TextStyle(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: 'material',
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                bool isLargeScreen = constraints.maxWidth > 600;
+
+                return Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? colorScheme.surface : Color(0xFFF6F8FF), // لون الخلفية للـ Light Mode
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 16.h),
+                      RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: 'Your ',
                           style: TextStyle(
-                            color: Color(0xFF004AAD),
+                            fontSize: isLargeScreen ? 26.sp : 22.sp,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? colorScheme.onSurface : Colors.black, // لون النص للـ Light Mode
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'material',
+                              style: TextStyle(
+                                color: Color(0xFF004AAD),
+                              ),
+                            ),
+                            TextSpan(
+                              text: '\naccording to your list',
+                              style: TextStyle(color: isDarkMode ? colorScheme.onSurface : Colors.black), // لون النص للـ Light Mode
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                      Image.asset(
+                        'assets/images/material.png',
+                        width: isLargeScreen ? 280.w : 220.w,
+                        height: isLargeScreen ? 280.h : 220.h,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 20.h),
+                      if (isLoading)
+                        CircularProgressIndicator()
+                      else if (errorMessage.isNotEmpty)
+                        Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red),
+                        )
+                      else
+                        Expanded(
+                          child: ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            itemCount: courses.length,
+                            itemBuilder: (context, index) {
+                              return CourseItem(course: courses[index]);
+                            },
                           ),
                         ),
-                        TextSpan(
-                          text: '\naccording to your list',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-                  SizedBox(height: 20.h),
-                  Image.asset(
-                    'assets/images/material.png',
-                    width: 220.w,
-                    height: 220.h,
-                    fit: BoxFit.contain,
-                  ),
-                  SizedBox(height: 20.h),
-                  if (isLoading)
-                    CircularProgressIndicator()
-                  else if (errorMessage.isNotEmpty)
-                    Text(
-                      errorMessage,
-                      style: TextStyle(color: Colors.red),
-                    )
-                  else
-                    Expanded(
-                      child: ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        itemCount: courses.length,
-                        itemBuilder: (context, index) {
-                          return CourseItem(course: courses[index]);
-                        },
-                      ),
-                    ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -155,45 +164,52 @@ class CourseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = colorScheme.brightness == Brightness.dark;
     final doctorId = BlocProvider.of<LoginCubit>(context).doctorDatabaseId;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChapterAndQuestionsPage(
-                courseName: course,
-                doctorId: doctorId ?? '',
-              ),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        bool isLargeScreen = constraints.maxWidth > 600;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChapterAndQuestionsPage(
+                    courseName: course,
+                    doctorId: doctorId ?? '',
+                  ),
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Text(
+                  course,
+                  style: TextStyle(
+                    fontSize: isLargeScreen ? 26.sp : 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? colorScheme.onSurface : Color(0xFF002D72), // لون النص للـ Light Mode
+                  ),
+                ),
+                Divider(
+                  color: Color(0xFF004AAD).withOpacity(0.5),
+                  thickness: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
+              ],
             ),
-          );
-        },
-        child: Column(
-          children: [
-            Text(
-              course,
-              style: TextStyle(
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF002D72),
-              ),
-            ),
-            Divider(
-              color: Color(0xFF004AAD).withOpacity(0.5),
-              thickness: 1,
-              indent: 16,
-              endIndent: 16,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -14,6 +14,7 @@ class ChapterAndQuestionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: Text('Chapter and Questions'),
@@ -26,7 +27,7 @@ class ChapterAndQuestionsPage extends StatelessWidget {
           },
         ),
       ),
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: colorScheme.background,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -44,7 +45,7 @@ class ChapterAndQuestionsPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: colorScheme.brightness == Brightness.dark ? Colors.white : Colors.black,
                         ),
                       ),
                       TextSpan(

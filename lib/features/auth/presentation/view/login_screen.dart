@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 290.h),
                         _buildCustomTextField(
                           controller: emailController,
-                          label: 'Doctor ID',
+                          label: 'professor ID',
                           hintText: 'Enter your ID',
                           validator: (value) {
                             if (value == null || value.isEmpty) {

@@ -111,6 +111,7 @@ class _AddPreviousExamsScreenState extends State<AddPreviousExamsScreen> {
 
   Widget _buildTextField(
       {required String hint, required TextEditingController controller}) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
@@ -123,7 +124,7 @@ class _AddPreviousExamsScreenState extends State<AddPreviousExamsScreen> {
             blurRadius: 6,
           ),
         ],
-        color: Colors.white,
+        color: colorScheme.surface, // Use surface color for text field background
       ),
       child: TextField(
         controller: controller,
@@ -140,6 +141,7 @@ class _AddPreviousExamsScreenState extends State<AddPreviousExamsScreen> {
 
   Widget _buildGradientButton(
       {required String text, required VoidCallback onPressed}) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       height: 50,
@@ -157,23 +159,24 @@ class _AddPreviousExamsScreenState extends State<AddPreviousExamsScreen> {
         child: isUploading
             ? CircularProgressIndicator(color: Colors.white)
             : Text(
-                text,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildDropdown() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface, // Use surface color for dropdown background
         border: Border.all(color: Colors.blue.shade300),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -219,8 +222,9 @@ class _AddPreviousExamsScreenState extends State<AddPreviousExamsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background, // Use background color for scaffold
       appBar: AppBar(
         backgroundColor: AppColors.ceruleanBlue,
         title: Text(

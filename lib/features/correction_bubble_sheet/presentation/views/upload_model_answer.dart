@@ -82,9 +82,10 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 600;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,8 +120,11 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
           children: [
             const Spacer(),
             Image.asset(
-              'assets/images/upload.png',
+              'assets/images/uplode.png',
               width: isLargeScreen ? 350 : 250,
+              color: colorScheme.brightness == Brightness.dark
+                  ? Colors.white70
+                  : null, // Adjust image color for dark mode
             ),
             const SizedBox(height: 30),
             CustomButtonn(
@@ -153,7 +157,7 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
                       GoRouter.of(context).push(AppRouter.kProcessingPage,
                           extra: processedFileName);
                     }
-                  : null, // زر معطل إذا لم يتم اختيار الملف
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                     fileName != null ? const Color(0xff2262C6) : Colors.grey,
