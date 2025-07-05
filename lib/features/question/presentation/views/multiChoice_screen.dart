@@ -23,9 +23,10 @@ class MultiChoiceQuestionsScreen extends StatefulWidget {
       _MultiChoiceQuestionsScreenState();
 }
 
-class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen> {
+class _MultiChoiceQuestionsScreenState
+    extends State<MultiChoiceQuestionsScreen> {
   final TextEditingController _multiQuestionController =
-  TextEditingController();
+      TextEditingController();
   List<Map<String, dynamic>> _multiQuestions = [];
 
   // Keep track of controllers for multi-questions
@@ -115,10 +116,10 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
         'paragraph': _multiQuestionController.text,
         'questions': _multiQuestions
             .map((q) => {
-          'question': q['question'],
-          'choices': q['options'],
-          'correctAnswer': q['correctAnswer'],
-        })
+                  'question': q['question'],
+                  'choices': q['options'],
+                  'correctAnswer': q['correctAnswer'],
+                })
             .toList(),
       };
 
@@ -171,9 +172,9 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
         'paragraph': _multiQuestionController.text,
         'questions': _multiQuestions
             .map((q) => {
-          'question': q['question'],
-          'choices': q['options'],
-        })
+                  'question': q['question'],
+                  'choices': q['options'],
+                })
             .toList(),
       };
 
@@ -302,7 +303,8 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
             Row(
               children: [
                 Expanded(
-                  child: buildTextField(option1Controller, "Answer 1", onTap: () {
+                  child:
+                      buildTextField(option1Controller, "Answer 1", onTap: () {
                     setState(() {
                       _focusedController = option1Controller;
                     });
@@ -310,7 +312,8 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: buildTextField(option2Controller, "Answer 2", onTap: () {
+                  child:
+                      buildTextField(option2Controller, "Answer 2", onTap: () {
                     setState(() {
                       _focusedController = option2Controller;
                     });
@@ -322,7 +325,8 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
             Row(
               children: [
                 Expanded(
-                  child: buildTextField(option3Controller, "Answer 3", onTap: () {
+                  child:
+                      buildTextField(option3Controller, "Answer 3", onTap: () {
                     setState(() {
                       _focusedController = option3Controller;
                     });
@@ -330,7 +334,8 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: buildTextField(option4Controller, "Answer 4", onTap: () {
+                  child:
+                      buildTextField(option4Controller, "Answer 4", onTap: () {
                     setState(() {
                       _focusedController = option4Controller;
                     });
@@ -339,7 +344,8 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
               ],
             ),
             const SizedBox(height: 10),
-            buildTextField(correctAnswerController, "Correct Answer", onTap: () {
+            buildTextField(correctAnswerController, "Correct Answer",
+                onTap: () {
               setState(() {
                 _focusedController = correctAnswerController;
               });
@@ -386,10 +392,10 @@ class _MultiChoiceQuestionsScreenState extends State<MultiChoiceQuestionsScreen>
 
               buildTextField(_multiQuestionController, "Enter paragraph",
                   maxLines: 5, minLines: 3, onTap: () {
-                    setState(() {
-                      _focusedController = _multiQuestionController;
-                    });
-                  }),
+                setState(() {
+                  _focusedController = _multiQuestionController;
+                });
+              }),
               const SizedBox(height: 16),
               if (_multiQuestions.isEmpty) ...[
                 Center(
