@@ -34,13 +34,14 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
         setState(() => isLoading = false);
       }
     } else {
-      Fluttertoast.showToast(msg: 'File size exceeds 10MB or invalid file type');
+      Fluttertoast.showToast(
+          msg: 'File size exceeds 10MB or invalid file type');
     }
   }
 
   Future<void> uploadFile(String filePath) async {
     final url = Uri.parse(
-      'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Doctor/AnswerSheet',
+      '$kBaseUrl/Doctor/AnswerSheet',
     );
     var request = http.MultipartRequest('PATCH', url);
     request.headers.addAll({
@@ -55,7 +56,9 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(respStr) as Map<String, dynamic>?;
-        if (data != null && data.containsKey('fileName') && data['fileName'] != null) {
+        if (data != null &&
+            data.containsKey('fileName') &&
+            data['fileName'] != null) {
           setState(() {
             fileName = data['fileName'] as String;
           });
@@ -67,7 +70,8 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
         Fluttertoast.showToast(msg: 'Upload successful!');
       } else {
         Fluttertoast.showToast(
-            msg: 'Upload failed: ${response.statusCode} - ${response.reasonPhrase}');
+            msg:
+                'Upload failed: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (error) {
       Fluttertoast.showToast(msg: 'Error: ${error.toString()}');
@@ -88,7 +92,9 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
             Text(
               "Correction Bubble Sheet",
               style: TextStyle(
-                  color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
             ),
             Text(
               "Accurate correction, secure results.",
@@ -117,7 +123,6 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
               width: isLargeScreen ? 350 : 250,
             ),
             const SizedBox(height: 30),
-
             CustomButtonn(
               onPressed: pickAndUploadFile,
               backgroundColor: const Color(0xff2D4263),
@@ -127,41 +132,45 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
                   "Upload the model answer PDF.\nEnsure images are 870x600 for accurate results.",
             ),
             const SizedBox(height: 10),
-
             if (isLoading)
               Column(
                 children: [
                   LinearProgressIndicator(
                     minHeight: 10,
                     backgroundColor: Colors.grey[300],
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.blue),
                   ),
                   const SizedBox(height: 20),
                 ],
               ),
-
             const SizedBox(height: 30),
-
-        ElevatedButton(
-  onPressed: fileName != null ? () {
-    String processedFileName = fileName!.replaceAll('.pdf', '');
-    GoRouter.of(context).push(AppRouter.kProcessingPage, extra: processedFileName);
-  } : null,  // زر معطل إذا لم يتم اختيار الملف
-  style: ElevatedButton.styleFrom(
-    backgroundColor: fileName != null ? const Color(0xff2262C6) : Colors.grey,
-    minimumSize: Size(screenWidth * 0.5, 50),
-    padding: const EdgeInsets.symmetric(vertical: 15),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(15),
-    ),
-  ),
-  child: const Text(
-    "Next",
-    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-  ),
-),
-
-
+            ElevatedButton(
+              onPressed: fileName != null
+                  ? () {
+                      String processedFileName =
+                          fileName!.replaceAll('.pdf', '');
+                      GoRouter.of(context).push(AppRouter.kProcessingPage,
+                          extra: processedFileName);
+                    }
+                  : null, // زر معطل إذا لم يتم اختيار الملف
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    fileName != null ? const Color(0xff2262C6) : Colors.grey,
+                minimumSize: Size(screenWidth * 0.5, 50),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: const Text(
+                "Next",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
             const Spacer(),
           ],
         ),

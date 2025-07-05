@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:lottie/lottie.dart';
+import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
 
 class ProgressScreen extends StatefulWidget {
@@ -32,7 +33,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
   @override
   void initState() {
     super.initState();
-    bubbleSheetStudentBaseName = widget.bubbleSheetStudent?.replaceAll('.pdf', '');
+    bubbleSheetStudentBaseName =
+        widget.bubbleSheetStudent?.replaceAll('.pdf', '');
     startProcess(); // يبدأ المعالجة مباشرة عند الدخول للشاشة
   }
 
@@ -41,8 +43,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Doctor/progrssCorrcetBubbleSheed'),
+        Uri.parse('$kBaseUrl/Doctor/progrssCorrcetBubbleSheed'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'BubbleSheetStudentBaseName': bubbleSheetStudentBaseName,
@@ -67,7 +68,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 'id': widget.idDoctor,
                 'BubbleSheetStudent': widget.bubbleSheetStudent,
                 'fileName': widget.fileName,
-                'degree': '0', // استبدل بقيمة ديناميكية إذا لزم الأمر
+                'degree': '100', // استبدل بقيمة ديناميكية إذا لزم الأمر
               });
             },
           );
@@ -106,15 +107,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(height: 10),
-                 const Text(
-                        "Processing, please wait...",
-                        style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                         color: Colors.blue, // يمكنك تغيير اللون هنا
-                      ),
-                             ),
-
+                  const Text(
+                    "Processing, please wait...",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue, // يمكنك تغيير اللون هنا
+                    ),
+                  ),
                 ],
               ),
             if (isComplete)

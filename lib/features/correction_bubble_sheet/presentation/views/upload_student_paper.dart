@@ -19,7 +19,8 @@ class CorrectBubbleSheetForStudent extends StatefulWidget {
       _CorrectBubbleSheetForStudentState();
 }
 
-class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStudent> {
+class _CorrectBubbleSheetForStudentState
+    extends State<CorrectBubbleSheetForStudent> {
   String? bubbleSheetStudent;
   bool isLoading = false;
   double progress = 0.0;
@@ -46,7 +47,7 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
 
   Future<void> uploadFile(String filePath) async {
     final url = Uri.parse(
-      'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Doctor/uploadBubbelSheets',
+      '$kBaseUrl/Doctor/uploadBubbelSheets',
     );
 
     var request = http.MultipartRequest('POST', url);
@@ -68,7 +69,9 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
 
       if (response.statusCode == 200) {
         final data = jsonDecode(respStr) as Map<String, dynamic>?;
-        if (data != null && data.containsKey('fileName') && data['fileName'] != null) {
+        if (data != null &&
+            data.containsKey('fileName') &&
+            data['fileName'] != null) {
           String uploadedFileName = data['fileName'] as String;
           if (mounted) {
             setState(() {
@@ -105,7 +108,10 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
           children: [
             Text(
               "Correction Bubble Sheet",
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
             ),
             Text(
               "Accurate correction, secure results.",
@@ -131,15 +137,14 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
               width: isLargeScreen ? 350 : 250,
             ),
             const SizedBox(height: 30),
-
             CustomButtonn(
               onPressed: pickAndUploadFile,
               backgroundColor: const Color(0xffC9DEFF),
               icon: Icons.upload_file_rounded,
               title: "Upload Student Paper",
-              subtitle: "Upload the student paper PDF.\nEnsure images are 870x600 for accurate results.",
+              subtitle:
+                  "Upload the student paper PDF.\nEnsure images are 870x600 for accurate results.",
             ),
-
             if (showProgressBar)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),
@@ -149,21 +154,21 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
               ),
-
             const SizedBox(height: 30),
-
             ElevatedButton(
               onPressed: bubbleSheetStudent == null
                   ? null // 🔴 تعطيل الزر إذا لم يتم رفع الملف
                   : () {
-                      GoRouter.of(context).push(AppRouter.kCheckForUpload, extra: {
+                      GoRouter.of(context)
+                          .push(AppRouter.kCheckForUpload, extra: {
                         'fileName': widget.fileName,
                         'BubbleSheetStudent': bubbleSheetStudent,
                       });
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: bubbleSheetStudent == null
-                    ? Colors.grey[400] // 🔴 تغيير اللون إلى الرمادي عند تعطيل الزر
+                    ? Colors
+                        .grey[400] // 🔴 تغيير اللون إلى الرمادي عند تعطيل الزر
                     : const Color(0xff2262C6),
                 minimumSize: Size(screenWidth * 0.5, 50), // Responsive width
                 padding: const EdgeInsets.symmetric(vertical: 15),
@@ -173,10 +178,12 @@ class _CorrectBubbleSheetForStudentState extends State<CorrectBubbleSheetForStud
               ),
               child: const Text(
                 "Correction",
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
               ),
             ),
-
             const Spacer(),
           ],
         ),

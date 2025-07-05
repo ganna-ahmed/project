@@ -45,7 +45,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
 
   Future<void> _sendForCorrection() async {
     final url = Uri.parse(
-      'https://843c-2c0f-fc88-5-597-49a2-fc16-b990-4a8b.ngrok-free.app/Doctor/waitedUpload',
+      '$kBaseUrl/Doctor/waitedUpload',
     );
 
     try {

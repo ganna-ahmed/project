@@ -336,6 +336,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project/constants.dart';
+import 'package:project/core/constants/colors.dart';
 
 class ResultStudentPage extends StatefulWidget {
   @override
@@ -397,6 +398,15 @@ class _ResultStudentPageState extends State<ResultStudentPage> {
     fetchResults();
   }
 
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.ceruleanBlue,
+      ),
+    );
+  }
+
   Future<void> fetchResults() async {
     try {
       // طباعة البيانات المُمررة للتحقق
@@ -450,8 +460,10 @@ class _ResultStudentPageState extends State<ResultStudentPage> {
               // 🔹 إنشاء الملف وحفظ البيانات فيه
               final File excelFile = File(filePath);
               await excelFile.writeAsBytes(responseFile.bodyBytes);
-              Fluttertoast.showToast(
-                  msg: 'The file has been successfully saved in: $filePath');
+              _showSuccess(
+                  '✅ The file has been successfully saved in: $filePath');
+              // Fluttertoast.showToast(
+              //     msg: 'The file has been successfully saved in: $filePath');
               print("✅ The file has been successfully saved in: $filePath");
             } else {
               print("❌ Permission denied to access storage.");
@@ -536,34 +548,34 @@ class _ResultStudentPageState extends State<ResultStudentPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header info container
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.lightBlue.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Student Results Processed',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          Text(
-                            'Successfully',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   width: double.infinity,
+                    //   padding: const EdgeInsets.all(16),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.lightBlue.shade50,
+                    //     borderRadius: BorderRadius.circular(12),
+                    //   ),
+                    //   child: const Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       Text(
+                    //         'Student Results Processed',
+                    //         style: TextStyle(
+                    //           fontSize: 18,
+                    //           color: Colors.blue,
+                    //         ),
+                    //       ),
+                    //       Text(
+                    //         'Successfully',
+                    //         style: TextStyle(
+                    //           fontSize: 18,
+                    //           color: Colors.blue,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     const SizedBox(height: 16),
 
                     // Check if tableData is empty
