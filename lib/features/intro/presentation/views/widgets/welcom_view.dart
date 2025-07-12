@@ -8,7 +8,8 @@ class WelcomeScreen extends StatelessWidget {
   final double titleFontSize;
   final double subtitleFontSize;
 
-  const WelcomeScreen({super.key, 
+  const WelcomeScreen({
+    super.key,
     this.imageWidth = 300.0,
     this.imageHeight = 300.0,
     this.titleFontSize = 30.0,
@@ -26,11 +27,10 @@ class WelcomeScreen extends StatelessWidget {
             color: Colors.blue[700],
           ),
         ),
-
         Align(
           alignment: const Alignment(0, -0.7),
           child: Text(
-            'Welcome to ORM',
+            'Welcome to SCORA',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: titleFontSize.sp,

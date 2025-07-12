@@ -37,7 +37,7 @@ class FAQScreen extends StatelessWidget {
                   ),
                   TextSpan(text: " "),
                   TextSpan(
-                    text: "ORM",
+                    text: "SCORA",
                     style: TextStyle(
                       color: AppColors.ceruleanBlue,
                       fontSize: 26,
@@ -51,13 +51,15 @@ class FAQScreen extends StatelessWidget {
             SizedBox(height: screenHeight * 0.025),
             Column(
               children: [
-                buildButton('Upload bubble sheets with ease.', AppColors.ceruleanBlue, screenWidth),
-                buildButton('Automate corrections for accurate results.', AppColors.darkBlue, screenWidth),
-                buildButton('Securely access and manage your data anytime', AppColors.LightTeal, screenWidth),
+                buildButton('Upload bubble sheets with ease.',
+                    AppColors.ceruleanBlue, screenWidth),
+                buildButton('Automate corrections for accurate results.',
+                    AppColors.darkBlue, screenWidth),
+                buildButton('Securely access and manage your data anytime',
+                    AppColors.LightTeal, screenWidth),
               ],
             ),
             SizedBox(height: screenHeight * 0.015),
-
             NextButton(
               width: screenWidth * 0.5,
               height: screenHeight * 0.06,

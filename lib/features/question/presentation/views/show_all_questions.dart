@@ -47,14 +47,14 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
           // FIXED: Properly handle multiple choice questions - ensure proper type casting
           if (data['multiple_choice_questions'] is Map) {
             final mcqMap =
-            data['multiple_choice_questions'] as Map<String, dynamic>;
+                data['multiple_choice_questions'] as Map<String, dynamic>;
             multipleChoiceQuestions =
                 mcqMap.entries.map<Map<String, dynamic>>((entry) {
-                  final questionData =
+              final questionData =
                   Map<String, dynamic>.from(entry.value as Map);
-                  questionData['id'] = entry.key;
-                  return questionData;
-                }).toList();
+              questionData['id'] = entry.key;
+              return questionData;
+            }).toList();
           } else {
             multipleChoiceQuestions = [];
           }
@@ -63,7 +63,7 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
           if (data['essay_questions'] != null) {
             if (data['essay_questions'] is List) {
               writtenQuestions =
-              List<dynamic>.from(data['essay_questions'] as List);
+                  List<dynamic>.from(data['essay_questions'] as List);
             } else if (data['essay_questions'] is Map) {
               // If it's coming as a Map instead of a List, convert Map values to a List
               final essayMap = data['essay_questions'] as Map<String, dynamic>;
@@ -80,7 +80,7 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
       } else {
         setState(() {
           errorMessage =
-          'Failed to load questions. Status code: ${response.statusCode}';
+              'Failed to load questions. Status code: ${response.statusCode}';
           isLoading = false;
         });
       }
@@ -95,30 +95,27 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         foregroundColor: AppColors.white,
         title: Text('${widget.courseName} - ${widget.year}'),
         backgroundColor: AppColors.ceruleanBlue,
       ),
-      backgroundColor: colorScheme.background,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
-          ? Center(
-        child: Text(
-          errorMessage,
-          style: TextStyle(color: Colors.red),
-          textAlign: TextAlign.center,
-        ),
-      )
-          : _buildResponsiveBody(),
+              ? Center(
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : _buildResponsiveBody(),
     );
   }
 
   Widget _buildResponsiveBody() {
-    final colorScheme = Theme.of(context).colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWideScreen = constraints.maxWidth > 600;
@@ -145,11 +142,10 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
   }
 
   Widget _buildEmptyMessage(String message) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
@@ -158,7 +154,7 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
           style: TextStyle(
             fontSize: 16,
             fontStyle: FontStyle.italic,
-            color: colorScheme.onSurface,
+            color: Colors.grey[700],
           ),
         ),
       ),
@@ -166,12 +162,11 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: colorScheme.cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -187,7 +182,7 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: colorScheme.primary,
+            color: Colors.blue[800],
           ),
         ),
       ),
@@ -195,7 +190,6 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
   }
 
   Widget _buildMCQList(bool isWideScreen) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: multipleChoiceQuestions.map((question) {
         // Safely extract options - FIXED by adding more robust type checking
@@ -208,7 +202,7 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
           margin: EdgeInsets.only(bottom: 16),
           padding: EdgeInsets.all(isWideScreen ? 16 : 12),
           decoration: BoxDecoration(
-            color: colorScheme.cardColor,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -228,19 +222,19 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
                 style: TextStyle(
                   fontSize: isWideScreen ? 18 : 16,
                   fontWeight: FontWeight.w600,
-                  color: colorScheme.onPrimaryContainer,
+                  color: Colors.blue[900],
                 ),
               ),
               SizedBox(height: 12),
               optionsMap.isNotEmpty
                   ? _buildDropdown(optionsMap)
                   : Text(
-                'No options available',
-                style: TextStyle(
-                  fontStyle: FontStyle.italic,
-                  color: colorScheme.onSurface,
-                ),
-              ),
+                      'No options available',
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey,
+                      ),
+                    ),
             ],
           ),
         );
@@ -250,7 +244,6 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
 
   // Separated dropdown widget for better error handling
   Widget _buildDropdown(Map<String, dynamic> optionsMap) {
-    final colorScheme = Theme.of(context).colorScheme;
     try {
       return DropdownButtonFormField<String>(
         isExpanded: true,
@@ -258,7 +251,7 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           filled: true,
-          fillColor: colorScheme.secondaryContainer,
+          fillColor: Color(0xFFE3F2FD),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
             borderSide: BorderSide(color: Colors.blue),
@@ -287,14 +280,13 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
   }
 
   Widget _buildEssayList(bool isWideScreen) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: writtenQuestions.map((question) {
         return Container(
           margin: EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.all(isWideScreen ? 18 : 15),
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: Color(0xFFE1F5FE),
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
@@ -308,16 +300,11 @@ class _ShowAllQuestionsScreenState extends State<ShowAllQuestionsScreen> {
             question.toString(),
             style: TextStyle(
               fontSize: isWideScreen ? 18 : 16,
-              color: colorScheme.onSurface,
+              color: Color(0xFF01579B),
             ),
           ),
         );
       }).toList(),
     );
   }
-}
-
-extension CustomColorScheme on ColorScheme {
-  Color get cardColor => brightness == Brightness.light ? Colors.white : Colors.grey[800]!;
-  Color get onPrimaryContainer => brightness == Brightness.light ? Colors.blue[900]! : Colors.white;
 }

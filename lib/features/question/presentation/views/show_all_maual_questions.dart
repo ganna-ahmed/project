@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:project/constants.dart';
 import 'package:project/core/constants/colors.dart';
+import 'package:project/core/utils/app_router.dart';
 
 class ShowAllMaualQuestionsScreen extends StatefulWidget {
   final String doctorId;
@@ -58,7 +60,8 @@ class _ShowAllMaualQuestionsScreenState
         });
       } else {
         setState(() {
-          errorMessage = 'Failed to load questions: ${response.statusCode}';
+          errorMessage =
+              'No questions have been added yet. Please add questions first';
           isLoading = false;
         });
       }
@@ -70,7 +73,6 @@ class _ShowAllMaualQuestionsScreenState
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -78,13 +80,70 @@ class _ShowAllMaualQuestionsScreenState
         backgroundColor: AppColors.ceruleanBlue,
         foregroundColor: AppColors.white,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : errorMessage.isNotEmpty
-              ? Center(
-                  child:
-                      Text(errorMessage, style: TextStyle(color: Colors.red)))
-              : _buildQuestionsList(),
+      body: Column(
+        children: [
+          // المحتوى الأساسي
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : errorMessage.isNotEmpty
+                    ? Center(
+                        child: Text(errorMessage,
+                            style: TextStyle(color: Colors.red)))
+                    : _buildQuestionsList(),
+          ),
+
+          // الزرار في الأسفل
+          Container(
+            padding: EdgeInsets.all(20.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.go(AppRouter.kHomeView);
+                  },
+                  icon: Icon(
+                    Icons.home,
+                    size: 22.sp,
+                  ),
+                  label: Text(
+                    'Back to Home',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff2262c6),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 16.h,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.r),
+                    ),
+                    elevation: 5,
+                    shadowColor: const Color(0xff2262c6).withOpacity(0.3),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

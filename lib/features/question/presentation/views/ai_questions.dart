@@ -16,9 +16,9 @@ class AIQuestionsScreen extends StatefulWidget {
 
   const AIQuestionsScreen(
       {super.key,
-        required this.courseName,
-        required this.doctorId,
-        required this.fileName});
+      required this.courseName,
+      required this.doctorId,
+      required this.fileName});
 }
 
 class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
@@ -100,7 +100,8 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
         final data = json.decode(response.body);
         if (data['message'] == 'Exam generated successfully') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(data['message'])),
+            SnackBar(
+                backgroundColor: Colors.green, content: Text(data['message'])),
           );
           Navigator.push(
             context,
@@ -115,19 +116,22 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+                backgroundColor: Colors.red,
                 content: Text(
                     'Failed to generate the exam: ${data['message'] ?? "Unknown error"}')),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Server error: ${response.statusCode}')),
+          SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('Server: ${response.body}')),
         );
       }
     } catch (e) {
       print('Exception: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(backgroundColor: Colors.red, content: Text('Error: $e')),
       );
     } finally {
       setState(() {
@@ -284,7 +288,8 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
                         hint: 'Select Difficulty',
                         items: const [
                           DropdownMenuItem(value: 'easy', child: Text('Easy')),
-                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(
+                              value: 'medium', child: Text('Medium')),
                           DropdownMenuItem(value: 'hard', child: Text('Hard')),
                         ],
                         onChanged: (value) {
@@ -306,11 +311,13 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
                       ),
                       SizedBox(height: _getResponsiveSpacing(12)),
                       _buildDropdown<String>(
-                        value: _essayDifficulty.isEmpty ? null : _essayDifficulty,
+                        value:
+                            _essayDifficulty.isEmpty ? null : _essayDifficulty,
                         hint: 'Select Difficulty',
                         items: const [
                           DropdownMenuItem(value: 'easy', child: Text('Easy')),
-                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(
+                              value: 'medium', child: Text('Medium')),
                           DropdownMenuItem(value: 'hard', child: Text('Hard')),
                         ],
                         onChanged: (value) {
@@ -324,8 +331,10 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
                         value: _essayType.isEmpty ? null : _essayType,
                         hint: 'Select Type',
                         items: const [
-                          DropdownMenuItem(value: 'text', child: Text('Text-based')),
-                          DropdownMenuItem(value: 'numeric', child: Text('Numeric-based')),
+                          DropdownMenuItem(
+                              value: 'text', child: Text('Text-based')),
+                          DropdownMenuItem(
+                              value: 'numeric', child: Text('Numeric-based')),
                           DropdownMenuItem(value: 'both', child: Text('Both')),
                         ],
                         onChanged: (value) {
@@ -347,11 +356,13 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
                       ),
                       SizedBox(height: _getResponsiveSpacing(12)),
                       _buildDropdown<String>(
-                        value: _multiDifficulty.isEmpty ? null : _multiDifficulty,
+                        value:
+                            _multiDifficulty.isEmpty ? null : _multiDifficulty,
                         hint: 'Select Difficulty Level',
                         items: const [
                           DropdownMenuItem(value: 'easy', child: Text('Easy')),
-                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(
+                              value: 'medium', child: Text('Medium')),
                           DropdownMenuItem(value: 'hard', child: Text('Hard')),
                         ],
                         onChanged: (value) {
@@ -383,20 +394,20 @@ class _AIQuestionsScreenState extends State<AIQuestionsScreen> {
                       ),
                       child: isLoading
                           ? SizedBox(
-                        width: 24.w,
-                        height: 24.h,
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
+                              width: 24.w,
+                              height: 24.h,
+                              child: const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
                           : Text(
-                        'Generate Exam',
-                        style: TextStyle(
-                          fontSize: _getResponsiveFontSize(16),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                              'Generate Exam',
+                              style: TextStyle(
+                                fontSize: _getResponsiveFontSize(16),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
 

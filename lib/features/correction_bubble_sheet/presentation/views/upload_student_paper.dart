@@ -26,6 +26,15 @@ class _CorrectBubbleSheetForStudentState
   double progress = 0.0;
   bool showProgressBar = false;
 
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.ceruleanBlue,
+      ),
+    );
+  }
+
   Future<void> pickAndUploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -80,7 +89,8 @@ class _CorrectBubbleSheetForStudentState
               showProgressBar = false;
             });
           }
-          Fluttertoast.showToast(msg: 'Upload successful!');
+          _showSuccess('✅Uploaded successfully');
+          //Fluttertoast.showToast(msg: 'Upload successful!');
         }
       } else {
         throw Exception('Upload failed: ${response.statusCode}');

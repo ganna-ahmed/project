@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:project/core/utils/app_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 import '../../../correction_bubble_sheet/presentation/views/upload_student_paper.dart';
 import '../../../question/presentation/views/manual_questions.dart';
@@ -39,6 +40,25 @@ class NoteModel {
     required this.createdAt,
     this.isCompleted = false,
   });
+
+  // Serialization methods
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'content': content,
+        'imagePath': imagePath,
+        'createdAt': createdAt.toIso8601String(),
+        'isCompleted': isCompleted,
+      };
+
+  factory NoteModel.fromJson(Map<String, dynamic> json) => NoteModel(
+        id: json['id'],
+        title: json['title'],
+        content: json['content'],
+        imagePath: json['imagePath'],
+        createdAt: DateTime.parse(json['createdAt']),
+        isCompleted: json['isCompleted'],
+      );
 }
 
 // Reminder Model
@@ -56,6 +76,23 @@ class ReminderModel {
     required this.reminderDate,
     this.isCompleted = false,
   });
+
+  // Serialization methods
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'reminderDate': reminderDate.toIso8601String(),
+        'isCompleted': isCompleted,
+      };
+
+  factory ReminderModel.fromJson(Map<String, dynamic> json) => ReminderModel(
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+        reminderDate: DateTime.parse(json['reminderDate']),
+        isCompleted: json['isCompleted'],
+      );
 }
 
 class HomeView extends StatefulWidget {
@@ -106,10 +143,54 @@ class _HomeViewState extends State<HomeView> {
     },
   ];
 
+  @override
   void initState() {
     super.initState();
-
     filteredSections = allSections;
+    _loadData();
+  }
+
+  // Load data from SharedPreferences
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      notes = _loadNotes(prefs);
+      reminders = _loadReminders(prefs);
+    });
+  }
+
+  List<NoteModel> _loadNotes(SharedPreferences prefs) {
+    final notesJson = prefs.getStringList('notes');
+    if (notesJson == null) return [];
+    return notesJson
+        .map((json) => NoteModel.fromJson(jsonDecode(json)))
+        .toList();
+  }
+
+  List<ReminderModel> _loadReminders(SharedPreferences prefs) {
+    final remindersJson = prefs.getStringList('reminders');
+    if (remindersJson == null) return [];
+    return remindersJson
+        .map((json) => ReminderModel.fromJson(jsonDecode(json)))
+        .toList();
+  }
+
+  // Save data to SharedPreferences
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await _saveNotes(prefs);
+    await _saveReminders(prefs);
+  }
+
+  Future<void> _saveNotes(SharedPreferences prefs) async {
+    final notesJson = notes.map((note) => jsonEncode(note.toJson())).toList();
+    await prefs.setStringList('notes', notesJson);
+  }
+
+  Future<void> _saveReminders(SharedPreferences prefs) async {
+    final remindersJson =
+        reminders.map((reminder) => jsonEncode(reminder.toJson())).toList();
+    await prefs.setStringList('reminders', remindersJson);
   }
 
   @override
@@ -164,7 +245,7 @@ class _HomeViewState extends State<HomeView> {
                               color: AppColors.white,
                               value: loadingProgress.expectedTotalBytes != null
                                   ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
+                                      loadingProgress.expectedTotalBytes!
                                   : null,
                             ),
                           );
@@ -208,19 +289,19 @@ class _HomeViewState extends State<HomeView> {
                 fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
                 prefixIcon: searchText.isNotEmpty
                     ? IconButton(
-                  icon: Icon(Icons.arrow_back,
-                      color:
-                      isDarkMode ? Colors.white70 : Colors.black45),
-                  onPressed: () {
-                    setState(() {
-                      searchText = '';
-                      _controller.clear();
-                      filteredSections = allSections;
-                    });
-                  },
-                )
+                        icon: Icon(Icons.arrow_back,
+                            color:
+                                isDarkMode ? Colors.white70 : Colors.black45),
+                        onPressed: () {
+                          setState(() {
+                            searchText = '';
+                            _controller.clear();
+                            filteredSections = allSections;
+                          });
+                        },
+                      )
                     : Icon(Icons.search,
-                    color: isDarkMode ? Colors.white70 : Colors.black45),
+                        color: isDarkMode ? Colors.white70 : Colors.black45),
 
                 // 👈 نخلي الـ suffix فاضي أثناء البحث
                 suffixIcon: null,
@@ -235,8 +316,8 @@ class _HomeViewState extends State<HomeView> {
                   searchText = val;
                   filteredSections = allSections
                       .where((section) => section['title']
-                      .toLowerCase()
-                      .contains(val.toLowerCase()))
+                          .toLowerCase()
+                          .contains(val.toLowerCase()))
                       .toList();
                 });
               },
@@ -266,7 +347,7 @@ class _HomeViewState extends State<HomeView> {
                             fontSize: 24.sp,
                             fontWeight: FontWeight.bold,
                             color:
-                            isDarkMode ? Colors.white : AppColors.darkBlue,
+                                isDarkMode ? Colors.white : AppColors.darkBlue,
                           ),
                         ),
                         SizedBox(height: 20.h),
@@ -331,65 +412,65 @@ class _HomeViewState extends State<HomeView> {
     return Column(
       children: filteredSections
           .map((section) => Container(
-        margin: EdgeInsets.only(bottom: 12.h),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              isDarkMode ? Colors.grey[800]! : Colors.grey[50]!,
-              isDarkMode ? Colors.grey[750]! : Colors.white,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: isDarkMode ? Colors.grey[700]! : Colors.grey[200]!,
-          ),
-        ),
-        child: ListTile(
-          contentPadding: EdgeInsets.all(16.w),
-          leading: Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: AppColors.darkBlue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(
-              section['icon'],
-              color: AppColors.darkBlue,
-              size: 24.sp,
-            ),
-          ),
-          title: Text(
-            section['title'],
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : AppColors.darkBlue,
-            ),
-          ),
-          subtitle: Text(
-            section['subtitle'],
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: isDarkMode ? Colors.white70 : Colors.grey[600],
-            ),
-          ),
-          trailing: Icon(
-            Icons.arrow_forward_ios,
-            color: AppColors.darkBlue,
-            size: 16.sp,
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => section['widget'],
-              ),
-            );
-          },
-        ),
-      ))
+                margin: EdgeInsets.only(bottom: 12.h),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      isDarkMode ? Colors.grey[800]! : Colors.grey[50]!,
+                      isDarkMode ? Colors.grey[750]! : Colors.white,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(
+                    color: isDarkMode ? Colors.grey[700]! : Colors.grey[200]!,
+                  ),
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16.w),
+                  leading: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkBlue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Icon(
+                      section['icon'],
+                      color: AppColors.darkBlue,
+                      size: 24.sp,
+                    ),
+                  ),
+                  title: Text(
+                    section['title'],
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : AppColors.darkBlue,
+                    ),
+                  ),
+                  subtitle: Text(
+                    section['subtitle'],
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: isDarkMode ? Colors.white70 : Colors.grey[600],
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: AppColors.darkBlue,
+                    size: 16.sp,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => section['widget'],
+                      ),
+                    );
+                  },
+                ),
+              ))
           .toList(),
     );
   }
@@ -534,7 +615,7 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Container(
                       padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                       decoration: BoxDecoration(
                         color: CustomColors.lightTeal.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20.r),
@@ -571,7 +652,7 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Container(
                       padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                       decoration: BoxDecoration(
                         color: CustomColors.stoneBlue.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20.r),
@@ -616,9 +697,9 @@ class _HomeViewState extends State<HomeView> {
           colors: note.isCompleted
               ? [Colors.grey[100]!, Colors.grey[50]!]
               : [
-            CustomColors.lightTeal.withOpacity(0.08),
-            CustomColors.lightTeal.withOpacity(0.03)
-          ],
+                  CustomColors.lightTeal.withOpacity(0.08),
+                  CustomColors.lightTeal.withOpacity(0.03)
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -647,6 +728,7 @@ class _HomeViewState extends State<HomeView> {
               onTap: () {
                 setState(() {
                   note.isCompleted = !note.isCompleted;
+                  _saveData(); // Save changes
                 });
               },
               child: Container(
@@ -658,7 +740,7 @@ class _HomeViewState extends State<HomeView> {
                       : Colors.transparent,
                   border: Border.all(
                     color:
-                    note.isCompleted ? CustomColors.lightTeal : Colors.grey,
+                        note.isCompleted ? CustomColors.lightTeal : Colors.grey,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(4.r),
@@ -679,7 +761,7 @@ class _HomeViewState extends State<HomeView> {
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w700,
                       decoration:
-                      note.isCompleted ? TextDecoration.lineThrough : null,
+                          note.isCompleted ? TextDecoration.lineThrough : null,
                       color: note.isCompleted
                           ? Colors.grey
                           : CustomColors.lightTeal,
@@ -692,7 +774,7 @@ class _HomeViewState extends State<HomeView> {
                       style: TextStyle(
                         fontSize: 13.sp,
                         color:
-                        note.isCompleted ? Colors.grey : Colors.grey[700],
+                            note.isCompleted ? Colors.grey : Colors.grey[700],
                         decoration: note.isCompleted
                             ? TextDecoration.lineThrough
                             : null,
@@ -728,10 +810,11 @@ class _HomeViewState extends State<HomeView> {
                 onPressed: () {
                   setState(() {
                     notes.remove(note);
+                    _saveData(); // Save changes
                   });
                 },
                 icon:
-                Icon(Icons.delete_outline, color: Colors.red, size: 22.sp),
+                    Icon(Icons.delete_outline, color: Colors.red, size: 22.sp),
               ),
             ),
           ],
@@ -748,9 +831,9 @@ class _HomeViewState extends State<HomeView> {
           colors: reminder.isCompleted
               ? [Colors.grey[100]!, Colors.grey[50]!]
               : [
-            CustomColors.stoneBlue.withOpacity(0.08),
-            CustomColors.stoneBlue.withOpacity(0.03)
-          ],
+                  CustomColors.stoneBlue.withOpacity(0.08),
+                  CustomColors.stoneBlue.withOpacity(0.03)
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -787,6 +870,7 @@ class _HomeViewState extends State<HomeView> {
                 onChanged: (val) {
                   setState(() {
                     reminder.isCompleted = val ?? false;
+                    _saveData(); // Save changes
                   });
                 },
                 activeColor: Colors.transparent,
@@ -831,7 +915,7 @@ class _HomeViewState extends State<HomeView> {
                   SizedBox(height: 8.h),
                   Container(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                     decoration: BoxDecoration(
                       color: reminder.isCompleted
                           ? Colors.grey[300]
@@ -879,10 +963,11 @@ class _HomeViewState extends State<HomeView> {
                 onPressed: () {
                   setState(() {
                     reminders.remove(reminder);
+                    _saveData(); // Save changes
                   });
                 },
                 icon:
-                Icon(Icons.delete_outline, color: Colors.red, size: 22.sp),
+                    Icon(Icons.delete_outline, color: Colors.red, size: 22.sp),
               ),
             ),
           ],
@@ -901,271 +986,272 @@ class _HomeViewState extends State<HomeView> {
         barrierDismissible: false,
         builder: (context) => StatefulBuilder(
             builder: (context, setDialogState) => Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.r)),
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white,
-                      CustomColors.lightTeal.withOpacity(0.05)
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(20.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.lightTeal.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(24.w),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Header
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12.w),
-                              decoration: BoxDecoration(
-                                color:
-                                CustomColors.lightTeal.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.note_add,
-                                color: CustomColors.lightTeal,
-                                size: 20.sp,
-                              ),
-                            ),
-                            SizedBox(width: 12.w),
-                            Text(
-                              "Add New Note",
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
-                                color: CustomColors.lightTeal,
-                              ),
-                            ),
-                            Spacer(),
-                            IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: Icon(Icons.close, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20.h),
-
-                        // Title Field
-                        TextField(
-                          controller: titleController,
-                          decoration: InputDecoration(
-                            labelText: "Note Title",
-                            hintText: "Enter note title...",
-                            filled: true,
-                            fillColor:
-                            CustomColors.lightTeal.withOpacity(0.05),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(
-                                  color: CustomColors.lightTeal
-                                      .withOpacity(0.3)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(
-                                  color: CustomColors.lightTeal
-                                      .withOpacity(0.3)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(
-                                  color: CustomColors.lightTeal, width: 2),
-                            ),
-                            prefixIcon: Icon(Icons.title,
-                                color: CustomColors.lightTeal),
-                          ),
-                        ),
-                        SizedBox(height: 16.h),
-
-                        // Content Field
-                        TextField(
-                          controller: contentController,
-                          maxLines: 4,
-                          decoration: InputDecoration(
-                            labelText: "Note Content",
-                            hintText: "Enter note content...",
-                            filled: true,
-                            fillColor:
-                            CustomColors.lightTeal.withOpacity(0.05),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(
-                                  color: CustomColors.lightTeal
-                                      .withOpacity(0.3)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(
-                                  color: CustomColors.lightTeal
-                                      .withOpacity(0.3)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(
-                                  color: CustomColors.lightTeal, width: 2),
-                            ),
-                            prefixIcon: Icon(Icons.notes,
-                                color: CustomColors.lightTeal),
-                          ),
-                        ),
-                        SizedBox(height: 16.h),
-
-                        // Image Selection
-                        if (imagePath != null)
-                          Container(
-                            height: 100.h,
-                            width: double.infinity,
-                            margin: EdgeInsets.only(bottom: 16.h),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.r),
-                              border: Border.all(
-                                  color: CustomColors.lightTeal
-                                      .withOpacity(0.3)),
-                              image: DecorationImage(
-                                image: FileImage(File(imagePath!)),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-
-                        // Image picker button
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color:
-                              CustomColors.lightTeal.withOpacity(0.3),
-                              style: BorderStyle.solid,
-                            ),
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: TextButton.icon(
-                            onPressed: () async {
-                              final ImagePicker picker = ImagePicker();
-                              final XFile? image = await picker.pickImage(
-                                  source: ImageSource.gallery);
-                              if (image != null) {
-                                setDialogState(() {
-                                  imagePath = image.path;
-                                });
-                              }
-                            },
-                            icon: Icon(Icons.image,
-                                color: CustomColors.lightTeal),
-                            label: Text(
-                              imagePath != null
-                                  ? "Change Image"
-                                  : "Add Image (Optional)",
-                              style:
-                              TextStyle(color: CustomColors.lightTeal),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-
-                        // Action Buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                style: TextButton.styleFrom(
-                                  padding:
-                                  EdgeInsets.symmetric(vertical: 16.h),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.circular(12.r),
-                                    side: BorderSide(
-                                        color: Colors.grey[300]!),
-                                  ),
-                                ),
-                                child: Text(
-                                  "Cancel",
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      CustomColors.lightTeal,
-                                      CustomColors.lightTeal
-                                          .withOpacity(0.8)
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (titleController.text.isNotEmpty) {
-                                      final note = NoteModel(
-                                        id: DateTime.now()
-                                            .millisecondsSinceEpoch
-                                            .toString(),
-                                        title: titleController.text,
-                                        content: contentController.text,
-                                        imagePath: imagePath,
-                                        createdAt: DateTime.now(),
-                                      );
-                                      setState(() {
-                                        notes.add(note);
-                                      });
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 16.h),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(12.r),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    "Add Note",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.r)),
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white,
+                          CustomColors.lightTeal.withOpacity(0.05)
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(20.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: CustomColors.lightTeal.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: Offset(0, 10),
                         ),
                       ],
                     ),
+                    child: Padding(
+                      padding: EdgeInsets.all(24.w),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Header
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(12.w),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        CustomColors.lightTeal.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.note_add,
+                                    color: CustomColors.lightTeal,
+                                    size: 20.sp,
+                                  ),
+                                ),
+                                SizedBox(width: 12.w),
+                                Text(
+                                  "Add New Note",
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.lightTeal,
+                                  ),
+                                ),
+                                Spacer(),
+                                IconButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: Icon(Icons.close, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h),
+
+                            // Title Field
+                            TextField(
+                              controller: titleController,
+                              decoration: InputDecoration(
+                                labelText: "Note Title",
+                                hintText: "Enter note title...",
+                                filled: true,
+                                fillColor:
+                                    CustomColors.lightTeal.withOpacity(0.05),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                      color: CustomColors.lightTeal
+                                          .withOpacity(0.3)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                      color: CustomColors.lightTeal
+                                          .withOpacity(0.3)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                      color: CustomColors.lightTeal, width: 2),
+                                ),
+                                prefixIcon: Icon(Icons.title,
+                                    color: CustomColors.lightTeal),
+                              ),
+                            ),
+                            SizedBox(height: 16.h),
+
+                            // Content Field
+                            TextField(
+                              controller: contentController,
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                labelText: "Note Content",
+                                hintText: "Enter note content...",
+                                filled: true,
+                                fillColor:
+                                    CustomColors.lightTeal.withOpacity(0.05),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                      color: CustomColors.lightTeal
+                                          .withOpacity(0.3)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                      color: CustomColors.lightTeal
+                                          .withOpacity(0.3)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                      color: CustomColors.lightTeal, width: 2),
+                                ),
+                                prefixIcon: Icon(Icons.notes,
+                                    color: CustomColors.lightTeal),
+                              ),
+                            ),
+                            SizedBox(height: 16.h),
+
+                            // Image Selection
+                            if (imagePath != null)
+                              Container(
+                                height: 100.h,
+                                width: double.infinity,
+                                margin: EdgeInsets.only(bottom: 16.h),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  border: Border.all(
+                                      color: CustomColors.lightTeal
+                                          .withOpacity(0.3)),
+                                  image: DecorationImage(
+                                    image: FileImage(File(imagePath!)),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+
+                            // Image picker button
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color:
+                                      CustomColors.lightTeal.withOpacity(0.3),
+                                  style: BorderStyle.solid,
+                                ),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: TextButton.icon(
+                                onPressed: () async {
+                                  final ImagePicker picker = ImagePicker();
+                                  final XFile? image = await picker.pickImage(
+                                      source: ImageSource.gallery);
+                                  if (image != null) {
+                                    setDialogState(() {
+                                      imagePath = image.path;
+                                    });
+                                  }
+                                },
+                                icon: Icon(Icons.image,
+                                    color: CustomColors.lightTeal),
+                                label: Text(
+                                  imagePath != null
+                                      ? "Change Image"
+                                      : "Add Image (Optional)",
+                                  style:
+                                      TextStyle(color: CustomColors.lightTeal),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 24.h),
+
+                            // Action Buttons
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    style: TextButton.styleFrom(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 16.h),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.r),
+                                        side: BorderSide(
+                                            color: Colors.grey[300]!),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12.w),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          CustomColors.lightTeal,
+                                          CustomColors.lightTeal
+                                              .withOpacity(0.8)
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        if (titleController.text.isNotEmpty) {
+                                          final note = NoteModel(
+                                            id: DateTime.now()
+                                                .millisecondsSinceEpoch
+                                                .toString(),
+                                            title: titleController.text,
+                                            content: contentController.text,
+                                            imagePath: imagePath,
+                                            createdAt: DateTime.now(),
+                                          );
+                                          setState(() {
+                                            notes.add(note);
+                                            _saveData(); // Save changes
+                                          });
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        shadowColor: Colors.transparent,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 16.h),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.r),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "Add Note",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            )));
+                )));
   }
 
   void _showAddReminderDialog() {
@@ -1180,7 +1266,7 @@ class _HomeViewState extends State<HomeView> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => Dialog(
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
           elevation: 0,
           backgroundColor: Colors.transparent,
           child: Container(
@@ -1265,7 +1351,7 @@ class _HomeViewState extends State<HomeView> {
                               color: CustomColors.stoneBlue, width: 2),
                         ),
                         prefixIcon:
-                        Icon(Icons.title, color: CustomColors.stoneBlue),
+                            Icon(Icons.title, color: CustomColors.stoneBlue),
                       ),
                     ),
                     SizedBox(height: 16.h),
@@ -1308,7 +1394,7 @@ class _HomeViewState extends State<HomeView> {
                             decoration: BoxDecoration(
                               border: Border.all(
                                   color:
-                                  CustomColors.stoneBlue.withOpacity(0.3)),
+                                      CustomColors.stoneBlue.withOpacity(0.3)),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: ListTile(
@@ -1324,7 +1410,7 @@ class _HomeViewState extends State<HomeView> {
                                   initialDate: selectedDate,
                                   firstDate: DateTime.now(),
                                   lastDate:
-                                  DateTime.now().add(Duration(days: 365)),
+                                      DateTime.now().add(Duration(days: 365)),
                                 );
                                 if (date != null) {
                                   setDialogState(() {
@@ -1341,7 +1427,7 @@ class _HomeViewState extends State<HomeView> {
                             decoration: BoxDecoration(
                               border: Border.all(
                                   color:
-                                  CustomColors.stoneBlue.withOpacity(0.3)),
+                                      CustomColors.stoneBlue.withOpacity(0.3)),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: ListTile(
@@ -1385,7 +1471,7 @@ class _HomeViewState extends State<HomeView> {
                             child: Text(
                               "Cancel",
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: Colors.black,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -1423,6 +1509,7 @@ class _HomeViewState extends State<HomeView> {
                                   );
                                   setState(() {
                                     reminders.add(reminder);
+                                    _saveData(); // Save changes
                                   });
                                   Navigator.pop(context);
                                 }
@@ -1457,6 +1544,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 }
+
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
 
@@ -1474,7 +1562,8 @@ class _SettingsViewState extends State<SettingsView> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
+      backgroundColor:
+          isDarkMode ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -1999,6 +2088,7 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 }
+
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';

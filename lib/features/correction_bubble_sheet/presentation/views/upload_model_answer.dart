@@ -20,6 +20,15 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
   String? fileName;
   bool isLoading = false;
 
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.ceruleanBlue,
+      ),
+    );
+  }
+
   Future<void> pickAndUploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -67,7 +76,8 @@ class _UploadModelAnswerState extends State<UploadModelAnswer> {
             fileName = "File uploaded";
           });
         }
-        Fluttertoast.showToast(msg: 'Upload successful!');
+        _showSuccess('✅ Uploaded successfully');
+        //Fluttertoast.showToast(msg: 'Upload successful!');
       } else {
         Fluttertoast.showToast(
             msg:
